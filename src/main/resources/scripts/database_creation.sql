@@ -1,3 +1,4 @@
+
 CREATE TABLE `person` (
   `id` bigint PRIMARY KEY AUTO_INCREMENT,
   `fullname` varchar(255) NOT NULL,
@@ -48,4 +49,3 @@ ALTER TABLE `rt_disheslist_dish` ADD FOREIGN KEY (`disheslist_id`) REFERENCES `d
 ALTER TABLE `rt_disheslist_dish` ADD FOREIGN KEY (`dish_id`) REFERENCES `dish` (`id`);
 
 ALTER TABLE `planning` ADD FOREIGN KEY (`person_id`) REFERENCES `person` (`id`);
-
