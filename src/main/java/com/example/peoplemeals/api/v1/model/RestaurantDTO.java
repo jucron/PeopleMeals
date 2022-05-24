@@ -1,7 +1,6 @@
 package com.example.peoplemeals.api.v1.model;
 
 
-import com.example.peoplemeals.domain.Dish;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,5 +21,5 @@ public class RestaurantDTO {
     private LocalDateTime openingTime;
     private LocalDateTime closingTime;
     private DayOfWeek staffRestDay;
-    private Set<Dish> dishes;
+    private Set<DishDTO> dishDTOS;
 }
