@@ -14,7 +14,7 @@ public class Dish {
 
     private String name;
 
-    @Column(name = "recipeurl")
+    @Column(name = "recipe_url")
     private String recipeUrl;
 
     @ManyToMany(fetch = FetchType.EAGER)

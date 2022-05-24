@@ -15,12 +15,12 @@ public class Restaurant {
 
     private String name;
 
-    @Column(name = "openingtime")
+    @Column(name = "opening_time")
     private LocalDateTime openingTime;
 
-    @Column(name = "closingtime")
+    @Column(name = "closing_time")
     private LocalDateTime closingTime;
 
-    @Column(name = "staffrestday")
+    @Column(name = "staff_rest_day")
     private DayOfWeek staffRestDay;
 }

@@ -1,15 +1,10 @@
-spring.datasource.url=jdbc:mysql://localhost:3306/poeplemeals
-spring.datasource.username=user
-spring.datasource.password=JG4yKk@JAqZp
-spring.jpa.generate-ddl=true
-spring.jpa.hibernate.ddl-auto=update
 
 spring:
   datasource:
-    url: jdbc:db://localhost:3306/poeplemeals
+    url: jdbc:mysql://localhost:3306/poeplemeals #sera 'jdbc:db'?
     username: user
     password: JG4yKk@JAqZp
-    driver-class-name: com.mysql.jdbc.Driver
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
     generate-ddl: true

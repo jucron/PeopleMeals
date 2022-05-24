@@ -10,20 +10,20 @@ CREATE TABLE `person` (
 CREATE TABLE `restaurant` (
   `id` bigint PRIMARY KEY AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
-  `openingtime` date NOT NULL,
-  `closingtime` date NOT NULL,
-  `staffrestday` date NOT NULL
+  `opening_time` date NOT NULL,
+  `closing_time` date NOT NULL,
+  `staff_rest_day` date NOT NULL
 );
 
 CREATE TABLE `dish` (
   `id` bigint PRIMARY KEY AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
-  `recipeurl` varchar(255)
+  `recipe_url` varchar(255)
 );
 
 CREATE TABLE `planning` (
   `id` bigint PRIMARY KEY AUTO_INCREMENT,
-  `dayofweek` varchar(255) NOT NULL,
+  `day_of_week` varchar(255) NOT NULL,
   `dish_id` bigint,
   `person_id` bigint
 );

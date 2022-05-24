@@ -18,4 +18,4 @@ http://localhost:8088/
 
 ## Database schema plan
 
-![img.png](img.png)
+![img_2.png](database_schema.png)
