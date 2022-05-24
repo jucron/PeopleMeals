@@ -5,6 +5,7 @@ import lombok.Data;
 import javax.persistence.*;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Entity
 @Data
@@ -23,4 +24,10 @@ public class Restaurant {
 
     @Column(name = "staff_rest_day")
     private DayOfWeek staffRestDay;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "rt_restaurant_dish",
+            joinColumns = @JoinColumn(name = "restaurant_id"),
+            inverseJoinColumns = @JoinColumn(name = "dish_id"))
+    private Set<Dish> dishes;
 }
