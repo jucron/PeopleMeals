@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.With;
 
 import java.time.DayOfWeek;
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Set;
 
 @Data
@@ -18,8 +18,8 @@ public class RestaurantDTO {
 
     private Long id;
     private String name;
-    private LocalDateTime openingTime;
-    private LocalDateTime closingTime;
+    private LocalTime openingTime;
+    private LocalTime closingTime;
     private DayOfWeek staffRestDay;
     private Set<DishDTO> dishDTOS;
 }

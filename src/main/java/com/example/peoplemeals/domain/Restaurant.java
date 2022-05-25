@@ -1,14 +1,20 @@
 package com.example.peoplemeals.domain;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.With;
 
 import javax.persistence.*;
 import java.time.DayOfWeek;
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Set;
 
 @Entity
 @Data
+@With
+@AllArgsConstructor
+@NoArgsConstructor
 public class Restaurant {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,10 +23,10 @@ public class Restaurant {
     private String name;
 
     @Column(name = "opening_time")
-    private LocalDateTime openingTime;
+    private LocalTime openingTime;
 
     @Column(name = "closing_time")
-    private LocalDateTime closingTime;
+    private LocalTime closingTime;
 
     @Column(name = "staff_rest_day")
     private DayOfWeek staffRestDay;
