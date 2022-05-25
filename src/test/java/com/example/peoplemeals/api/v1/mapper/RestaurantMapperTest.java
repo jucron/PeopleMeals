@@ -14,7 +14,7 @@ class RestaurantMapperTest {
     @Test
     void convertRestaurantToRestaurantDTO() {
         //given
-        Restaurant restaurant = PojoExampleCreation.createRestaurantExample();
+        Restaurant restaurant = PojoExampleCreation.createRestaurantExample(1);
         //when
         RestaurantDTO restaurantDTO = restaurantMapper.restaurantToRestaurantDTO(restaurant);
         //then

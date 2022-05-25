@@ -14,7 +14,7 @@ class DishMapperTest {
     @Test
     void convertDishToDishDTO() {
         //given
-        Dish dish = PojoExampleCreation.createDishExample();
+        Dish dish = PojoExampleCreation.createDishExample(1);
         //when
         DishDTO dishDTO = dishMapper.dishToDishDTO(dish);
         //then

@@ -14,7 +14,7 @@ class PlanningMapperTest {
     @Test
     void convertPlanningToPlanningDTO() {
         //given
-        Planning planning = PojoExampleCreation.createPlanningExample();
+        Planning planning = PojoExampleCreation.createPlanningExample(1);
         //when
         PlanningDTO planningDTO = planningMapper.planningToPlanningDTO(planning);
         //then

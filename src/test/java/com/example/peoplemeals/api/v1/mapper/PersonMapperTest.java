@@ -14,7 +14,7 @@ class PersonMapperTest {
     @Test
     void convertPersonToPersonDTO() {
         //given
-        Person person = PojoExampleCreation.createPersonExample();
+        Person person = PojoExampleCreation.createPersonExample(1);
          //when
         PersonDTO personDTO = personMapper.personToPersonDTO(person);
         //then
