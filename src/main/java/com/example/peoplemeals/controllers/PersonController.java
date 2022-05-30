@@ -21,8 +21,8 @@ public class PersonController {
     }
     @DeleteMapping({"/remove/{personId}"})
     @ResponseStatus(HttpStatus.OK)
-    public PersonDTO removePerson (@PathVariable Long personId) {
-        return personService.remove(personId);
+    public void removePerson (@PathVariable Long personId) {
+        personService.remove(personId);
     }
     @PutMapping({"/update/{personId}"})
     @ResponseStatus(HttpStatus.OK)

@@ -25,4 +25,18 @@ class PersonMapperTest {
         assertEquals(person.getTelephone(),personDTO.getTelephone());
         assertEquals(person.getUsername(),personDTO.getUsername());
     }
+    @Test
+    void convertPersonDTOToPerson() {
+        //given
+        PersonDTO personDTO = PojoExampleCreation.createPersonDTOExample(1);
+        //when
+        Person person = personMapper.personDTOToPerson(personDTO);
+        //then
+        assertEquals(personDTO.getId(),person.getId());
+        assertEquals(personDTO.getFiscal(),person.getFiscal());
+        assertEquals(personDTO.getFullName(),person.getFullName());
+        assertEquals(personDTO.getMobile(),person.getMobile());
+        assertEquals(personDTO.getTelephone(),person.getTelephone());
+        assertEquals(personDTO.getUsername(),person.getUsername());
+    }
 }

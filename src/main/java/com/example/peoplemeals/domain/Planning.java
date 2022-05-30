@@ -19,7 +19,7 @@ public class Planning {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "day_of_week")
+    @Column(name = "day_of_week", length = 10)
     private DayOfWeek dayOfWeek;
 
     @ManyToOne
