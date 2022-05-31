@@ -68,13 +68,13 @@ class PersonServiceImplTest {
         //when
         PersonDTO personDTOUpdated = personService.update(personId,personDTO);
         //then
-        verify(personRepository).findById(personId);
+        verify(personRepository).findById(personId);       //Person is fetched by ID
         verify(personRepository).save(personArgumentCaptor.capture());  //Person is updated
         verify(personMapper).personDTOToPerson(any(PersonDTO.class));   //PersonDTO is mapped to be Updated
         verify(personMapper).personToPersonDTO(any(Person.class));      //Person is mapped back to DTO and returned
 
         Person personCaptured = personArgumentCaptor.getValue();    //Capture the object saved
-        assertEquals(personId,personCaptured.getId());         //Assert that ID was passed before persisted
+        assertEquals(personId,personCaptured.getId());              //Assert that ID was the same as fetched before persisted
 
     }
 }

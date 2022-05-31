@@ -40,7 +40,6 @@ class PersonControllerTest {
 
     @BeforeEach
     void setUp() {
-//        MockitoAnnotations.initMocks(this);
         mockMvc = MockMvcBuilders.standaloneSetup(personController).build();
     }
 
