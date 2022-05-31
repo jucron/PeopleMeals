@@ -12,4 +12,5 @@ public interface DishMapper {
 
     DishDTO dishToDishDTO(Dish dish);
 
+    Dish dishDTOToDish(DishDTO dishDTO);
 }

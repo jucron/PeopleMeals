@@ -17,10 +17,10 @@ public class PersonServiceImpl implements PersonService {
 
     @Override
     public PersonDTO add(PersonDTO personDTO) {
-        Person personSaved = personMapper.personDTOToPerson(personDTO);
-        personSaved.setId(null); //must remove ID to perform auto-generate
-        personRepository.save(personSaved);
-        return personMapper.personToPersonDTO(personSaved);
+        Person personToBeSaved = personMapper.personDTOToPerson(personDTO);
+        personToBeSaved.setId(null); //must remove ID to perform auto-generate
+        personRepository.save(personToBeSaved);
+        return personMapper.personToPersonDTO(personToBeSaved);
     }
 
     @Override

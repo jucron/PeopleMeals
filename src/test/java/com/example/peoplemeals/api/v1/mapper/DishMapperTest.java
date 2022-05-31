@@ -22,4 +22,15 @@ class DishMapperTest {
         assertEquals(dish.getName(),dishDTO.getName());
         assertEquals(dish.getRecipeUrl(),dishDTO.getRecipeUrl());
     }
+    @Test
+    void convertDishDTOToDish() {
+        //given
+        DishDTO dishDTO = PojoExampleCreation.createDishDTOExample(1);
+        //when
+        Dish dish = dishMapper.dishDTOToDish(dishDTO);
+        //then
+        assertEquals(dishDTO.getId(),dish.getId());
+        assertEquals(dishDTO.getName(),dish.getName());
+        assertEquals(dishDTO.getRecipeUrl(),dish.getRecipeUrl());
+    }
 }

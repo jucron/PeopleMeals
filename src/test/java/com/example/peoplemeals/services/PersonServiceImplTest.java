@@ -25,11 +25,11 @@ class PersonServiceImplTest {
     private PersonService personService;
 
     @Mock
-    PersonRepository personRepository;
+    private PersonRepository personRepository;
     @Mock
-    PersonMapper personMapper;
+    private PersonMapper personMapper;
     @Captor
-    ArgumentCaptor<Person> personArgumentCaptor;
+    private ArgumentCaptor<Person> personArgumentCaptor;
 
     @BeforeEach
     public void setUp(){
