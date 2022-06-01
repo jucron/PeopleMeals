@@ -73,7 +73,7 @@ public class PojoExampleCreation {
                 .withId(100L+ref)
                 .withName("restaurantName_example_"+ref)
                 .withOpeningTime(LocalTime.of(8,0))
-                .withClosingTime(LocalTime.of(20,0))
+                .withClosingTime(LocalTime.of(20,20))
                 .withStaffRestDay(DayOfWeek.SUNDAY)
                 .withDishDTOS((Set.of(createDishDTOExample(ref))));
     }
