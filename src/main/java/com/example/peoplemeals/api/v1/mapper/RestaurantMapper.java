@@ -13,5 +13,7 @@ public interface RestaurantMapper {
 
     @Mapping(source = "dishes", target = "dishDTOS")
     RestaurantDTO restaurantToRestaurantDTO(Restaurant restaurant);
+    @Mapping(source = "dishDTOS", target = "dishes")
+    Restaurant restaurantDTOToRestaurant(RestaurantDTO restaurantDTO);
 
 }

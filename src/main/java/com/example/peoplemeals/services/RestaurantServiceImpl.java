@@ -2,9 +2,12 @@ package com.example.peoplemeals.services;
 
 import com.example.peoplemeals.api.v1.mapper.RestaurantMapper;
 import com.example.peoplemeals.api.v1.model.RestaurantDTO;
+import com.example.peoplemeals.domain.Restaurant;
 import com.example.peoplemeals.repositories.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -14,16 +17,24 @@ public class RestaurantServiceImpl implements RestaurantService {
 
     @Override
     public RestaurantDTO add(RestaurantDTO restaurantDTO) {
-        return null;
+        Restaurant restaurantToBeSaved = restaurantMapper.restaurantDTOToRestaurant(restaurantDTO);
+        restaurantToBeSaved.setId(null); //must remove ID to perform auto-generate
+        restaurantRepository.save(restaurantToBeSaved);
+        return restaurantMapper.restaurantToRestaurantDTO(restaurantToBeSaved);
     }
 
     @Override
     public void remove(Long restaurantId) {
-
+        restaurantRepository.deleteById(restaurantId);
     }
 
     @Override
     public RestaurantDTO update(Long restaurantId, RestaurantDTO restaurantDTO) {
-        return null;
+        Optional<Restaurant> restaurantOptional = restaurantRepository.findById(restaurantId);
+        if (restaurantOptional.isEmpty()) { return null; }
+        Restaurant restaurantUpdated = restaurantMapper.restaurantDTOToRestaurant(restaurantDTO);
+        restaurantUpdated.setId(restaurantOptional.get().getId()); //Set correct ID from DB
+        restaurantRepository.save(restaurantUpdated);
+        return restaurantMapper.restaurantToRestaurantDTO(restaurantUpdated);
     }
 }

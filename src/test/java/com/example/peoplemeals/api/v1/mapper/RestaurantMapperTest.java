@@ -26,4 +26,19 @@ class RestaurantMapperTest {
 
         assertEquals(restaurant.getDishes().size(),restaurantDTO.getDishDTOS().size());
     }
+    @Test
+    void convertRestaurantDTOToRestaurant() {
+        //given
+        RestaurantDTO restaurantDTO = PojoExampleCreation.createRestaurantDTOExample(1);
+        //when
+        Restaurant restaurant = restaurantMapper.restaurantDTOToRestaurant(restaurantDTO);
+        //then
+        assertEquals(restaurantDTO.getId(),restaurant.getId());
+        assertEquals(restaurantDTO.getName(),restaurant.getName());
+        assertEquals(restaurantDTO.getOpeningTime(),restaurant.getOpeningTime());
+        assertEquals(restaurantDTO.getClosingTime(),restaurant.getClosingTime());
+        assertEquals(restaurantDTO.getStaffRestDay(),restaurant.getStaffRestDay());
+
+        assertEquals(restaurantDTO.getDishDTOS().size(),restaurant.getDishes().size());
+    }
 }
