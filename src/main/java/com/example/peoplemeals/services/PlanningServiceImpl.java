@@ -18,4 +18,14 @@ public class PlanningServiceImpl implements PlanningService {
     public PersonDTOList getPersonListByRestaurantAndDay(long restaurantId, String dayOfWeek) {
         return null;
     }
+
+    @Override
+    public PersonDTOList getPersonListByDishAndDay(long dishId, String dayOfWeek) {
+        return null;
+    }
+
+    @Override
+    public PersonDTOList getPersonListWithNoDishByDay(String dayOfWeek) {
+        return null;
+    }
 }

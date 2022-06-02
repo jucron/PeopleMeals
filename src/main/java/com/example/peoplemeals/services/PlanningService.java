@@ -8,4 +8,8 @@ public interface PlanningService {
     PlanningDTO associate(AssociateForm associateForm);
 
     PersonDTOList getPersonListByRestaurantAndDay(long restaurantId, String dayOfWeek);
+
+    PersonDTOList getPersonListByDishAndDay(long dishId, String dayOfWeek);
+
+    PersonDTOList getPersonListWithNoDishByDay(String dayOfWeek);
 }

@@ -20,10 +20,20 @@ public class PlanningController {
     public PlanningDTO associatePersonToDish (@RequestBody AssociateForm associateForm) {
         return planningService.associate(associateForm);
     }
-    @GetMapping({"/getPersonList/{restaurantId}/{dayOfWeek}"})
+    @GetMapping({"/getPersonList/{restaurantId}/{dayOfWeek}/restaurant"})
     @ResponseStatus(HttpStatus.OK)
-    public PersonDTOList getPersonList (@PathVariable long restaurantId,@PathVariable String dayOfWeek) {
+    public PersonDTOList getPersonListByRestaurantAndDay (@PathVariable long restaurantId,@PathVariable String dayOfWeek) {
         return planningService.getPersonListByRestaurantAndDay(restaurantId,dayOfWeek);
+    }
+    @GetMapping({"/getPersonList/{dishId}/{dayOfWeek}/dish"})
+    @ResponseStatus(HttpStatus.OK)
+    public PersonDTOList getPersonListByDishAndDay (@PathVariable long dishId,@PathVariable String dayOfWeek) {
+        return planningService.getPersonListByDishAndDay(dishId,dayOfWeek);
+    }
+    @GetMapping({"/getPersonList/{dayOfWeek}/no_dish"})
+    @ResponseStatus(HttpStatus.OK)
+    public PersonDTOList getPersonListWithNoDishByDay (@PathVariable String dayOfWeek) {
+        return planningService.getPersonListWithNoDishByDay(dayOfWeek);
     }
 
 }
