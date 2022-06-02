@@ -22,19 +22,28 @@ public class RestaurantServiceImpl implements RestaurantService {
         restaurantRepository.save(restaurantToBeSaved);
         return restaurantMapper.restaurantToRestaurantDTO(restaurantToBeSaved);
     }
-
     @Override
     public void remove(Long restaurantId) {
-        restaurantRepository.deleteById(restaurantId);
+        try {
+            restaurantRepository.deleteById(restaurantId);
+        } catch (IllegalArgumentException e) {
+            //todo: How to handle this?
+        }
     }
-
     @Override
     public RestaurantDTO update(Long restaurantId, RestaurantDTO restaurantDTO) {
-        Optional<Restaurant> restaurantOptional = restaurantRepository.findById(restaurantId);
-        if (restaurantOptional.isEmpty()) { return null; }
-        Restaurant restaurantUpdated = restaurantMapper.restaurantDTOToRestaurant(restaurantDTO);
-        restaurantUpdated.setId(restaurantOptional.get().getId()); //Set correct ID from DB
-        restaurantRepository.save(restaurantUpdated);
-        return restaurantMapper.restaurantToRestaurantDTO(restaurantUpdated);
+        try {
+            Optional<Restaurant> restaurantOptional = restaurantRepository.findById(restaurantId);
+            if (restaurantOptional.isEmpty()) {
+                throw new IllegalArgumentException();
+            }
+            Restaurant restaurantUpdated = restaurantMapper.restaurantDTOToRestaurant(restaurantDTO);
+            restaurantUpdated.setId(restaurantOptional.get().getId()); //Set correct ID from DB
+            restaurantRepository.save(restaurantUpdated);
+            return restaurantMapper.restaurantToRestaurantDTO(restaurantUpdated);
+        } catch (IllegalArgumentException e) {
+            //todo: How to handle this?
+        }
+        return null;
     }
 }

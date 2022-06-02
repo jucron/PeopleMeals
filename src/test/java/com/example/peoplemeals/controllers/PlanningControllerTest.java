@@ -51,7 +51,7 @@ class PlanningControllerTest {
         mockMvc = MockMvcBuilders.standaloneSetup(planningController).build();
     }
     @Test
-    void associatePersonToDish() throws Exception {
+    void associateOrRemoveAPersonByDishAndDay() throws Exception {
         //given
         AssociateForm associateForm = new AssociateForm()
                 .withDishId(1L)

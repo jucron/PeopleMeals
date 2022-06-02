@@ -22,22 +22,28 @@ public class DishServiceImpl implements DishService {
         dishRepository.save(dishToBeSaved);
         return dishMapper.dishToDishDTO(dishToBeSaved);
     }
-
     @Override
     public void remove(Long id) {
-        dishRepository.deleteById(id);
-
+        try {
+            dishRepository.deleteById(id);
+        } catch (IllegalArgumentException e) {
+            //todo: How to handle this?
+        }
     }
-
     @Override
     public DishDTO update(Long id, DishDTO dishDTO) {
-        Optional<Dish> dishOptional = dishRepository.findById(id);
-        if (dishOptional.isEmpty()) {
-            return null;
+        try {
+            Optional<Dish> dishOptional = dishRepository.findById(id);
+            if (dishOptional.isEmpty()) {
+                throw new IllegalArgumentException();
+            }
+            Dish dishWithUpdatedData = dishMapper.dishDTOToDish(dishDTO);
+            dishWithUpdatedData.setId(dishOptional.get().getId());
+            dishRepository.save(dishWithUpdatedData);
+            return dishMapper.dishToDishDTO(dishWithUpdatedData);
+        } catch (IllegalArgumentException e) {
+            //todo: How to handle this?
         }
-        Dish dishWithUpdatedData = dishMapper.dishDTOToDish(dishDTO);
-        dishWithUpdatedData.setId(dishOptional.get().getId());
-        dishRepository.save(dishWithUpdatedData);
-        return dishMapper.dishToDishDTO(dishWithUpdatedData);
+        return null;
     }
 }
