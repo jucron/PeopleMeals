@@ -70,8 +70,7 @@ class PlanningControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.dishDTO.id", equalTo((int)associateForm.getDishId())))
                 .andExpect(jsonPath("$.personDTO.id", equalTo((int)associateForm.getPersonId())))
-                .andExpect(jsonPath("$.dayOfWeek", equalTo(associateForm.getDayOfWeek().toString())))
-                ;
+                .andExpect(jsonPath("$.dayOfWeek", equalTo(associateForm.getDayOfWeek().toString())));
         verify(planningService).associate(associateForm);
     }
     @Test
@@ -107,7 +106,6 @@ class PlanningControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.personDTOList", hasSize(2)));
-
         verify(planningService).getPersonListByDishAndDay(dishId, dayOfWeek);
     }
     @Test
@@ -124,7 +122,6 @@ class PlanningControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.personDTOList", hasSize(2)));
-
         verify(planningService).getPersonListWithNoDishByDay(dayOfWeek);
     }
 }
