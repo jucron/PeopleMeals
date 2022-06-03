@@ -17,10 +17,7 @@ import com.example.peoplemeals.repositories.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,6 +29,8 @@ public class PlanningServiceImpl implements PlanningService {
     private final PersonRepository personRepository;
     private final RestaurantRepository restaurantRepository;
     private final PersonMapper personMapper;
+
+    //todo: For all streams on this Class, should replace them with specific Repo's Queries!
 
     @Override
     public PlanningDTO associate(AssociateForm associateForm) {
@@ -46,7 +45,7 @@ public class PlanningServiceImpl implements PlanningService {
         if (associateForm.isRemove()) { //this parameter validates the type of process
             //To remove an association we expect ONE Planning matching the Form, otherwise should return error
             if (filteredPlanningList.size() != 1) {
-                throw new IllegalArgumentException("Cannot update a plan that does not exists in Database");
+                throw new NoSuchElementException("Cannot update a plan that does not exists in Database");
             }
             //If one Planning was found with info given, proceed to the removal in DB
             Planning planningToRemove = filteredPlanningList.get(0);
@@ -63,7 +62,7 @@ public class PlanningServiceImpl implements PlanningService {
             Optional<Person> personOptional = personRepository.findById(associateForm.getPersonId());
             //If no Dish or Person entities exists in DB, or DayOfWeek is null, should return error
             if (dishOptional.isEmpty() || personOptional.isEmpty() || associateForm.getDayOfWeek()==null) {
-                throw new IllegalArgumentException("No Person or Dish was found in Database. Or Day is null.");
+                throw new NoSuchElementException("No Person or Dish was found in Database, or Day is null.");
             }
             //Every validation passed: create a new Planning, persist it and return a DTO of it
             Planning planningToBeSaved = new Planning()
@@ -80,7 +79,7 @@ public class PlanningServiceImpl implements PlanningService {
         //Fetch restaurant by ID
         Optional<Restaurant> restaurantOptional = restaurantRepository.findById(restaurantId);
         if (restaurantOptional.isEmpty()) { //If restaurant not found in DB, should return error
-            throw new IllegalArgumentException("No Restaurant with this ID was found in Database");
+            throw new NoSuchElementException("No Restaurant with this ID was found in Database");
         }
         //Get list of Dishes belonging to this restaurant
         Set<Dish> dishesFromThisRestaurant = restaurantOptional.get().getDishes();
@@ -104,7 +103,7 @@ public class PlanningServiceImpl implements PlanningService {
         //Fetch dish by ID
         Optional<Dish> dishOptional = dishRepository.findById(dishId);
         if (dishOptional.isEmpty()) { //If dish not found in DB, should return error
-            throw new IllegalArgumentException("No Dish with this ID was found in Database");
+            throw new NoSuchElementException("No Dish with this ID was found in Database");
         }
         /**Create a collections of Persons, extracting from the PlanningRepository and filtering each request:
          * @param Dish must match dishId
@@ -130,7 +129,7 @@ public class PlanningServiceImpl implements PlanningService {
                 .collect(Collectors.toList());
 
         if (personListIncludedInDayOfWeek.isEmpty()) { //If no Planning of this DayOfWeek is found in DB, should return error
-            throw new IllegalArgumentException("No Persons were found in Database");
+            throw new NoSuchElementException("No Persons were found in Database");
         }
         /**Create a collections of Persons, extracting from the PersonRepository and filtering each request:
          * @param Person must NOT be included in personListIncludedInDayOfWeek

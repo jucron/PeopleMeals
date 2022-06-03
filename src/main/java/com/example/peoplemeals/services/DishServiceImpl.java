@@ -7,6 +7,7 @@ import com.example.peoplemeals.repositories.DishRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -24,17 +25,22 @@ public class DishServiceImpl implements DishService {
     }
     @Override
     public void remove(Long id) {
-        dishRepository.deleteById(id);
+        Dish dishInDB = checkElementPresence(id);
+        dishRepository.delete(dishInDB);
     }
     @Override
     public DishDTO update(Long id, DishDTO dishDTO) {
-        Optional<Dish> dishOptional = dishRepository.findById(id);
-        if (dishOptional.isEmpty()) {
-            throw new IllegalArgumentException();
-        }
+        Dish dishInDB = checkElementPresence(id);
         Dish dishWithUpdatedData = dishMapper.dishDTOToDish(dishDTO);
-        dishWithUpdatedData.setId(dishOptional.get().getId());
+        dishWithUpdatedData.setId(dishInDB.getId());
         dishRepository.save(dishWithUpdatedData);
         return dishMapper.dishToDishDTO(dishWithUpdatedData);
+    }
+    private Dish checkElementPresence(Long id) {
+        Optional<Dish> dishOptional = dishRepository.findById(id);
+        if (dishOptional.isEmpty()) {
+            throw new NoSuchElementException("No Dish with this ID was found in Database");
+        }
+        return dishOptional.get();
     }
 }

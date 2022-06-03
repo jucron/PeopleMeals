@@ -53,10 +53,12 @@ class PersonServiceImplTest {
     @Test
     void remove() {
         Long personId = 1L;
+        Person personToBeDeleted = PojoExampleCreation.createPersonExample(1);
+        when(personRepository.findById(1L)).thenReturn(Optional.of(personToBeDeleted));
         //when
         personService.remove(personId);
         //then
-        verify(personRepository).deleteById(personId);
+        verify(personRepository).delete(personToBeDeleted);
     }
     @Test
     void update() {

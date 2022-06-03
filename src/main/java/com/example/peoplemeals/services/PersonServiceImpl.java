@@ -24,18 +24,22 @@ public class PersonServiceImpl implements PersonService {
     }
     @Override
     public void remove(Long personId) {
-        personRepository.deleteById(personId);
+        Person personInDB = checkElementPresence(personId);
+        personRepository.delete(personInDB);
     }
-
     @Override
-    public PersonDTO update(Long id, PersonDTO personDTO) {
-        Optional<Person> personOptional = personRepository.findById(id);
+    public PersonDTO update(Long personId, PersonDTO personDTO) {
+        Person personInDB = checkElementPresence(personId);
+        Person personWithUpdatedData = personMapper.personDTOToPerson(personDTO);
+        personWithUpdatedData.setId(personInDB.getId());
+        personRepository.save(personWithUpdatedData);
+        return personMapper.personToPersonDTO(personWithUpdatedData);
+    }
+    private Person checkElementPresence(Long personId) {
+        Optional<Person> personOptional = personRepository.findById(personId);
         if (personOptional.isEmpty()) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("No Person with this ID was found in Database");
         }
-            Person personWithUpdatedData = personMapper.personDTOToPerson(personDTO);
-            personWithUpdatedData.setId(personOptional.get().getId());
-            personRepository.save(personWithUpdatedData);
-            return personMapper.personToPersonDTO(personWithUpdatedData);
+        return personOptional.get();
     }
 }

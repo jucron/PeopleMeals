@@ -24,17 +24,22 @@ public class RestaurantServiceImpl implements RestaurantService {
     }
     @Override
     public void remove(Long restaurantId) {
-        restaurantRepository.deleteById(restaurantId);
+        Restaurant restaurantInDB = checkElementPresence(restaurantId);
+        restaurantRepository.delete(restaurantInDB);
     }
     @Override
     public RestaurantDTO update(Long restaurantId, RestaurantDTO restaurantDTO) {
-        Optional<Restaurant> restaurantOptional = restaurantRepository.findById(restaurantId);
-        if (restaurantOptional.isEmpty()) {
-            throw new IllegalArgumentException();
-        }
+        Restaurant restaurantInDB = checkElementPresence(restaurantId);
         Restaurant restaurantUpdated = restaurantMapper.restaurantDTOToRestaurant(restaurantDTO);
-        restaurantUpdated.setId(restaurantOptional.get().getId()); //Set correct ID from DB
+        restaurantUpdated.setId(restaurantInDB.getId()); //Set correct ID from DB
         restaurantRepository.save(restaurantUpdated);
         return restaurantMapper.restaurantToRestaurantDTO(restaurantUpdated);
+    }
+    private Restaurant checkElementPresence(Long restaurantId) {
+        Optional<Restaurant> restaurantOptional = restaurantRepository.findById(restaurantId);
+        if (restaurantOptional.isEmpty()) {
+            throw new IllegalArgumentException("No Restaurant with this ID was found in Database");
+        }
+        return restaurantOptional.get();
     }
 }

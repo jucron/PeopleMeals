@@ -57,10 +57,12 @@ class DishServiceImplTest {
     void remove() {
         //given data
         Long dishId = 1L;
+        Dish dishToBeDeleted = PojoExampleCreation.createDishExample(1);
+        when(dishRepository.findById(dishId)).thenReturn(Optional.of(dishToBeDeleted));
         //when
         dishService.remove(dishId);
         //then
-        verify(dishRepository).deleteById(dishId);
+        verify(dishRepository).delete(dishToBeDeleted);
     }
     @Test
     void update() {

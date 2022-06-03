@@ -56,10 +56,12 @@ class RestaurantServiceImplTest {
     @Test
     void remove() {
         Long restaurantId = 1L;
+        Restaurant restaurantToBeDeleted = PojoExampleCreation.createRestaurantExample(1);
+        when(restaurantRepository.findById(restaurantId)).thenReturn(Optional.of(restaurantToBeDeleted));
         //when
         restaurantService.remove(restaurantId);
         //then
-        verify(restaurantRepository).deleteById(restaurantId);
+        verify(restaurantRepository).delete(restaurantToBeDeleted);
     }
 
     @Test
