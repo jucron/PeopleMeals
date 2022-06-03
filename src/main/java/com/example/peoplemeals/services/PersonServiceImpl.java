@@ -17,34 +17,25 @@ public class PersonServiceImpl implements PersonService {
 
     @Override
     public PersonDTO add(PersonDTO personDTO) {
-        Person personToBeSaved = personMapper.personDTOToPerson(personDTO);
-        personToBeSaved.setId(null); //must remove ID to perform auto-generate
-        personRepository.save(personToBeSaved);
-        return personMapper.personToPersonDTO(personToBeSaved);
+            Person personToBeSaved = personMapper.personDTOToPerson(personDTO);
+            personToBeSaved.setId(null); //must remove ID to perform auto-generate
+            personRepository.save(personToBeSaved);
+            return personMapper.personToPersonDTO(personToBeSaved);
     }
     @Override
     public void remove(Long personId) {
-        try {
-            personRepository.deleteById(personId);
-        } catch (IllegalArgumentException e) {
-            //todo: How to handle this?
-        }
+        personRepository.deleteById(personId);
     }
 
     @Override
     public PersonDTO update(Long id, PersonDTO personDTO) {
-        try {
-            Optional<Person> personOptional = personRepository.findById(id);
-            if (personOptional.isEmpty()) {
-                throw new IllegalArgumentException();
-            }
+        Optional<Person> personOptional = personRepository.findById(id);
+        if (personOptional.isEmpty()) {
+            throw new IllegalArgumentException();
+        }
             Person personWithUpdatedData = personMapper.personDTOToPerson(personDTO);
             personWithUpdatedData.setId(personOptional.get().getId());
             personRepository.save(personWithUpdatedData);
             return personMapper.personToPersonDTO(personWithUpdatedData);
-        } catch (IllegalArgumentException e) {
-            //todo: How to handle this?
-        }
-        return null;
     }
 }

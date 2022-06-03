@@ -39,8 +39,9 @@ class DishServiceImplTest {
     }
     @Test
     void add() {
-        //given
+        //given data
         DishDTO dishDTO = PojoExampleCreation.createDishDTOExample(1);
+        //given stubbing
         when(dishMapper.dishDTOToDish(dishDTO)).thenReturn(new Dish().withId(50L));
         //when
         DishDTO dishSavedDTO = dishService.add(dishDTO);
@@ -54,6 +55,7 @@ class DishServiceImplTest {
     }
     @Test
     void remove() {
+        //given data
         Long dishId = 1L;
         //when
         dishService.remove(dishId);
@@ -65,6 +67,7 @@ class DishServiceImplTest {
         //given
         Long dishId = 10L;
         DishDTO dishDTO = PojoExampleCreation.createDishDTOExample(1);
+        //given stubbing
         when(dishRepository.findById(dishId)).thenReturn(Optional.of(new Dish().withId(dishId)));
         when(dishMapper.dishDTOToDish(dishDTO)).thenReturn(new Dish().withId(dishDTO.getId()));
         //when
