@@ -17,7 +17,11 @@ import com.example.peoplemeals.repositories.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.time.DayOfWeek;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,12 +38,13 @@ public class PlanningServiceImpl implements PlanningService {
 
     @Override
     public PlanningDTO associate(AssociateForm associateForm) {
+        DayOfWeek dayOfWeekCorrectFormat = validateDayOfWeek(associateForm.getDayOfWeek());
         //Creating a List of Plannings in DB that matches the associateForm given
         List<Planning> filteredPlanningList = planningRepository.findAll()
                 .stream()
                 .filter(planning -> planning.getDish().getId()==associateForm.getDishId())
                 .filter(planning -> planning.getPerson().getId()==associateForm.getPersonId())
-                .filter(planning -> planning.getDayOfWeek()==associateForm.getDayOfWeek())
+                .filter(planning -> planning.getDayOfWeek()==dayOfWeekCorrectFormat)
                 .collect(Collectors.toList());
         /**@First_option: task is to remove association*/
         if (associateForm.isRemove()) { //this parameter validates the type of process
@@ -60,22 +65,22 @@ public class PlanningServiceImpl implements PlanningService {
             }
             Optional<Dish> dishOptional = dishRepository.findById(associateForm.getDishId());
             Optional<Person> personOptional = personRepository.findById(associateForm.getPersonId());
-            //If no Dish or Person entities exists in DB, or DayOfWeek is null, should return error
-            if (dishOptional.isEmpty() || personOptional.isEmpty() || associateForm.getDayOfWeek()==null) {
-                throw new NoSuchElementException("No Person or Dish was found in Database, or Day is null.");
+            //If no Dish or Person entities exists in DB, should return error
+            if (dishOptional.isEmpty() || personOptional.isEmpty()) {
+                throw new NoSuchElementException("No Person or Dish was found in Database");
             }
             //Every validation passed: create a new Planning, persist it and return a DTO of it
             Planning planningToBeSaved = new Planning()
                     .withPerson(personOptional.get())
                     .withDish(dishOptional.get())
-                    .withDayOfWeek(associateForm.getDayOfWeek());
+                    .withDayOfWeek(dayOfWeekCorrectFormat);
             planningRepository.save(planningToBeSaved);
             return planningMapper.planningToPlanningDTO(planningToBeSaved);
         }
     }
-
     @Override
     public PersonDTOList getPersonListByRestaurantAndDay(long restaurantId, String dayOfWeek) {
+        DayOfWeek dayOfWeekCorrectFormat = validateDayOfWeek(dayOfWeek);
         //Fetch restaurant by ID
         Optional<Restaurant> restaurantOptional = restaurantRepository.findById(restaurantId);
         if (restaurantOptional.isEmpty()) { //If restaurant not found in DB, should return error
@@ -89,7 +94,7 @@ public class PlanningServiceImpl implements PlanningService {
          * */
         Set<PersonDTO> personDTOSToBeReturned = planningRepository.findAll()
                 .stream()
-                .filter(planning -> Objects.equals(planning.getDayOfWeek().toString(), dayOfWeek))
+                .filter(planning -> planning.getDayOfWeek()==dayOfWeekCorrectFormat)
                 .filter(planning -> dishesFromThisRestaurant.contains(planning.getDish()))
                 .map(Planning::getPerson)
                 .map(personMapper::personToPersonDTO)
@@ -97,9 +102,9 @@ public class PlanningServiceImpl implements PlanningService {
         System.out.println(personDTOSToBeReturned);
         return new PersonDTOList().withPersonDTOList(personDTOSToBeReturned);
     }
-
     @Override
     public PersonDTOList getPersonListByDishAndDay(long dishId, String dayOfWeek) {
+        DayOfWeek dayOfWeekCorrectFormat = validateDayOfWeek(dayOfWeek);
         //Fetch dish by ID
         Optional<Dish> dishOptional = dishRepository.findById(dishId);
         if (dishOptional.isEmpty()) { //If dish not found in DB, should return error
@@ -111,26 +116,23 @@ public class PlanningServiceImpl implements PlanningService {
          * */
         Set<PersonDTO> personDTOSToBeReturned = planningRepository.findAll()
                         .stream()
-                        .filter(planning -> Objects.equals(planning.getDayOfWeek().toString(), dayOfWeek))
+                        .filter(planning -> planning.getDayOfWeek()==dayOfWeekCorrectFormat)
                         .filter(planning -> planning.getDish().getId()==dishId)
                         .map(Planning::getPerson)
                         .map(personMapper::personToPersonDTO)
                         .collect(Collectors.toSet());
         return new PersonDTOList().withPersonDTOList(personDTOSToBeReturned);
     }
-
     @Override
     public PersonDTOList getPersonListWithNoDishByDay(String dayOfWeek) {
+        DayOfWeek dayOfWeekCorrectFormat = validateDayOfWeek(dayOfWeek);
         //Create a collection of Persons that have a planning for this DayOfWeek
         List<Person> personListIncludedInDayOfWeek = planningRepository.findAll()
                 .stream()
-                .filter(planning -> Objects.equals(planning.getDayOfWeek().toString(), dayOfWeek))
+                .filter(planning -> planning.getDayOfWeek()==dayOfWeekCorrectFormat)
                 .map(Planning::getPerson)
                 .collect(Collectors.toList());
 
-        if (personListIncludedInDayOfWeek.isEmpty()) { //If no Planning of this DayOfWeek is found in DB, should return error
-            throw new NoSuchElementException("No Persons were found in Database");
-        }
         /**Create a collections of Persons, extracting from the PersonRepository and filtering each request:
          * @param Person must NOT be included in personListIncludedInDayOfWeek
          * */
@@ -140,5 +142,12 @@ public class PlanningServiceImpl implements PlanningService {
                 .map(personMapper::personToPersonDTO)
                 .collect(Collectors.toSet());
         return new PersonDTOList().withPersonDTOList(personDTOSToBeReturned);
+    }
+    private DayOfWeek validateDayOfWeek(String dayOfWeek) {
+        try {
+            return DayOfWeek.valueOf(dayOfWeek.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("DayOfWeek is not in valid format");
+        }
     }
 }

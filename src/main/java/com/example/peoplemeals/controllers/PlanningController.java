@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(PlanningController.BASE_URL)
 @RequiredArgsConstructor
 public class PlanningController {
-    public static final String BASE_URL = "/api/v1/planning";
+    public static final String BASE_URL = "/api/v1/plannings";
     private final PlanningService planningService;
 
     @PostMapping({"/associate"})

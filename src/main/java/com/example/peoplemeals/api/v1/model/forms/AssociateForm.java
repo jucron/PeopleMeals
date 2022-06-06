@@ -5,8 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.With;
 
-import java.time.DayOfWeek;
-
 @Data
 @With
 @AllArgsConstructor
@@ -14,6 +12,6 @@ import java.time.DayOfWeek;
 public class AssociateForm {
     private long personId;
     private long dishId;
-    private DayOfWeek dayOfWeek;
+    private String dayOfWeek;
     private boolean remove; //true if the operation is to disassociate between person and dish
 }

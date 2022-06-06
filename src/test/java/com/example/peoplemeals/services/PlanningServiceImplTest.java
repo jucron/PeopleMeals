@@ -63,7 +63,7 @@ class PlanningServiceImplTest {
         AssociateForm associateForm = new AssociateForm()
                 .withPersonId(1L)
                 .withDishId(10L)
-                .withDayOfWeek(DayOfWeek.MONDAY)
+                .withDayOfWeek(DayOfWeek.MONDAY.toString())
                 .withRemove(false);
         //given stubbing
         when(planningRepository.findAll()).thenReturn(new ArrayList<>());
@@ -82,13 +82,13 @@ class PlanningServiceImplTest {
         AssociateForm associateForm = new AssociateForm()
                 .withPersonId(1L)
                 .withDishId(10L)
-                .withDayOfWeek(DayOfWeek.MONDAY)
+                .withDayOfWeek(DayOfWeek.MONDAY.toString())
                 .withRemove(true);
         //given stubbing
         when(planningRepository.findAll()).thenReturn(new ArrayList<>(List.of(new Planning()
                 .withPerson(new Person().withId(associateForm.getPersonId()))
                 .withDish(new Dish().withId(associateForm.getDishId()))
-                .withDayOfWeek(associateForm.getDayOfWeek()))));
+                .withDayOfWeek(DayOfWeek.valueOf(associateForm.getDayOfWeek())))));
          //when
         PlanningDTO planningDTO = planningService.associate(associateForm);
         //then
@@ -145,10 +145,11 @@ class PlanningServiceImplTest {
         Planning planning1 = PojoExampleCreation.createPlanningExample(1);
         planning1.setDayOfWeek(dayOfWeek);
         Person personWithoutDish = PojoExampleCreation.createPersonExample(2);
+        PersonDTO personDTOWithoutDish = PojoExampleCreation.createPersonDTOExample(2);
         //given stubbing
         when(planningRepository.findAll()).thenReturn(new ArrayList<>(List.of(planning1)));
         when(personRepository.findAll()).thenReturn(List.of(planning1.getPerson(),personWithoutDish));
-        when(personMapper.personToPersonDTO(personWithoutDish)).thenReturn(new PersonDTO().withId(personWithoutDish.getId()));
+        when(personMapper.personToPersonDTO(personWithoutDish)).thenReturn(personDTOWithoutDish);
         //when
         PersonDTOList personDTOList = planningService.getPersonListWithNoDishByDay(dayOfWeek.toString());
         //then

@@ -56,12 +56,12 @@ class PlanningControllerTest {
         AssociateForm associateForm = new AssociateForm()
                 .withDishId(1L)
                 .withPersonId(5L)
-                .withDayOfWeek(DayOfWeek.MONDAY)
+                .withDayOfWeek(DayOfWeek.MONDAY.toString())
                 .withRemove(false);
         when(planningService.associate(associateForm)).thenReturn(new PlanningDTO()
                         .withDishDTO(new DishDTO().withId(associateForm.getDishId()))
                         .withPersonDTO(new PersonDTO().withId(associateForm.getPersonId()))
-                        .withDayOfWeek(associateForm.getDayOfWeek()));
+                        .withDayOfWeek(DayOfWeek.valueOf(associateForm.getDayOfWeek())));
         //when
         mockMvc.perform(post(BASE_URL + "/associate")
                         .accept(MediaType.APPLICATION_JSON)
