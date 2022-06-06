@@ -15,7 +15,7 @@ public class JsonConverter {
             ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
             return objectMapper.writeValueAsString(obj);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new IllegalArgumentException(e);
         }
     }
     public static JSONArray localTimeAsJsonArray(final LocalTime localTime) {

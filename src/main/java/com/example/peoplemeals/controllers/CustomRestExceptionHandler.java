@@ -13,42 +13,41 @@ import java.util.NoSuchElementException;
 @ControllerAdvice
 public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler({IllegalArgumentException.class})
-    public ResponseEntity<Object> handleIllegalArgumentException(
-            IllegalArgumentException ex, WebRequest request) {
+    public static String NULL_POINTER_EXCEPTION_MESSAGE = "A method has referenced a null object";
+    public static String GENERIC_EXCEPTION_MESSAGE = "An internal error has occurred, please contact administrator";
+
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Object> handleIllegalArgumentException(IllegalArgumentException ex, WebRequest request) {
         return new ResponseEntity<>(new ExceptionMessage(ex), HttpStatus.BAD_REQUEST);
     }
-    @ExceptionHandler({NullPointerException.class})
-    public void handleNullPointerException() {
-        throw new IllegalArgumentException();
+    @ExceptionHandler(NullPointerException.class)
+    public ResponseEntity<Object> handleNullPointerException(NullPointerException ex, WebRequest request) {
+        return new ResponseEntity<>(new ExceptionMessage(ex, NULL_POINTER_EXCEPTION_MESSAGE), HttpStatus.BAD_REQUEST);
     }
-    @ExceptionHandler({NoSuchElementException.class})
+    @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity<Object> handleNoSuchElementException(
             NoSuchElementException ex, WebRequest request) {
         return new ResponseEntity<>(new ExceptionMessage(ex), HttpStatus.NOT_FOUND);
     }
-    @ExceptionHandler({Exception.class})
+    @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleAnyException(
             Exception ex, WebRequest request) {
-        String customMessage = "An internal error has occurred, please contact administrator";
-        return new ResponseEntity<>(new ExceptionMessage(ex,customMessage), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(new ExceptionMessage(ex,GENERIC_EXCEPTION_MESSAGE), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
 @Data
 class ExceptionMessage {
-    private Exception ex;
     private String message;
     private String cause;
 
     public ExceptionMessage(Exception ex) {
-        this.ex = ex;
         this.message = ex.getMessage();
-        this.cause = String.valueOf(ex.getCause());
+        this.cause = ex.getClass() + "/" + ex.getCause();
     }
     public ExceptionMessage(Exception ex, String message) {
-        this.ex = ex;
         this.message = message;
-        this.cause = String.valueOf(ex.getCause());
+        this.cause = ex.getClass() + "/" + ex.getCause();
     }
 }
 
