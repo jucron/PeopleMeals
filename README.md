@@ -23,7 +23,8 @@ Following relationships were implemented:
 * Planning - one to one - Dish
 * Restaurant - many to many - Dish
 
-<img src="database_schema.png" width=75% height=75%>
+[//]: # (<img src="database_schema.png" width=75% height=75%>)
+![database_schema.png](database_schema.png)
 
 ## Architecture
 It was organized a service-oriented architecture as can be seen below
