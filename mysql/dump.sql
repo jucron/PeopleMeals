@@ -25,7 +25,8 @@ CREATE TABLE `planning` (
   `id` bigint PRIMARY KEY AUTO_INCREMENT,
   `day_of_week` varchar(255) NOT NULL,
   `dish_id` bigint,
-  `person_id` bigint
+  `person_id` bigint,
+  `restaurant_id` bigint
 );
 
 CREATE TABLE `rt_restaurant_dish` (
@@ -37,6 +38,8 @@ CREATE TABLE `rt_restaurant_dish` (
 ALTER TABLE `planning` ADD FOREIGN KEY (`dish_id`) REFERENCES `dish` (`id`);
 
 ALTER TABLE `planning` ADD FOREIGN KEY (`person_id`) REFERENCES `person` (`id`);
+
+ALTER TABLE `planning` ADD FOREIGN KEY (`restaurant_id`) REFERENCES `restaurant` (`id`);
 
 ALTER TABLE `rt_restaurant_dish` ADD FOREIGN KEY (`restaurant_id`) REFERENCES `restaurant` (`id`);
 
