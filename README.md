@@ -23,11 +23,14 @@ Following relationships were implemented:
 * Planning - one to one - Dish
 * Restaurant - many to many - Dish
 
-![img.png](database_schema.png)
+<img src="database_schema.png" width=50% height=50%>
 
 ## Architecture
 It was organized a service-oriented architecture as can be seen below
+
+
 ![img.png](img.png)
+
 
 ## REST APIs
 * Dish Entity
