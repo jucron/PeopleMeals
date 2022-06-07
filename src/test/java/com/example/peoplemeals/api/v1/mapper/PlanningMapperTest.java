@@ -25,5 +25,11 @@ class PlanningMapperTest {
         assertEquals(planning.getDish().getId(),planningDTO.getDishDTO().getId());
         assertEquals(planning.getDish().getName(),planningDTO.getDishDTO().getName());
         assertEquals(planning.getDish().getRecipeUrl(),planningDTO.getDishDTO().getRecipeUrl());
+
+        assertEquals(planning.getRestaurant().getId(),planningDTO.getRestaurantDTO().getId());
+        assertEquals(planning.getRestaurant().getName(),planningDTO.getRestaurantDTO().getName());
+        assertEquals(planning.getRestaurant().getStaffRestDay(),planningDTO.getRestaurantDTO().getStaffRestDay());
+        assertEquals(planning.getRestaurant().getOpeningTime(),planningDTO.getRestaurantDTO().getOpeningTime());
+        assertEquals(planning.getRestaurant().getClosingTime(),planningDTO.getRestaurantDTO().getClosingTime());
     }
 }

@@ -18,5 +18,6 @@ public class PlanningDTO {
     private DayOfWeek dayOfWeek;
     private DishDTO dishDTO;
     private PersonDTO personDTO;
+    private RestaurantDTO restaurantDTO;
 
 }

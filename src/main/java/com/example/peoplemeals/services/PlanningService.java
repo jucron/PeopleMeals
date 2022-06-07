@@ -7,6 +7,8 @@ import com.example.peoplemeals.api.v1.model.forms.AssociateForm;
 public interface PlanningService {
     PlanningDTO associate(AssociateForm associateForm);
 
+    PlanningDTO disassociate(AssociateForm associateForm);
+
     PersonDTOList getPersonListByRestaurantAndDay(long restaurantId, String dayOfWeek);
 
     PersonDTOList getPersonListByDishAndDay(long dishId, String dayOfWeek);

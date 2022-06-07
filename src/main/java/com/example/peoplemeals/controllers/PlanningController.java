@@ -20,6 +20,11 @@ public class PlanningController {
     public PlanningDTO associatePersonToDish (@RequestBody AssociateForm associateForm) {
         return planningService.associate(associateForm);
     }
+    @PostMapping({"/disassociate"})
+    @ResponseStatus(HttpStatus.OK)
+    public PlanningDTO disassociatePersonToDish (@RequestBody AssociateForm associateForm) {
+        return planningService.disassociate(associateForm);
+    }
     @GetMapping({"/getPersonList/{restaurantId}/{dayOfWeek}/restaurant"})
     @ResponseStatus(HttpStatus.OK)
     public PersonDTOList getPersonListByRestaurantAndDay (@PathVariable long restaurantId,@PathVariable String dayOfWeek) {

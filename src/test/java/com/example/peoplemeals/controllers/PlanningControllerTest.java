@@ -51,13 +51,13 @@ class PlanningControllerTest {
         mockMvc = MockMvcBuilders.standaloneSetup(planningController).build();
     }
     @Test
-    void associateOrRemoveAPersonByDishAndDay() throws Exception {
+    void associateAPersonToDishRestaurantAndDay() throws Exception {
         //given
         AssociateForm associateForm = new AssociateForm()
                 .withDishId(1L)
                 .withPersonId(5L)
-                .withDayOfWeek(DayOfWeek.MONDAY.toString())
-                .withRemove(false);
+                .withRestaurantId(10L)
+                .withDayOfWeek(DayOfWeek.MONDAY.toString());
         when(planningService.associate(associateForm)).thenReturn(new PlanningDTO()
                         .withDishDTO(new DishDTO().withId(associateForm.getDishId()))
                         .withPersonDTO(new PersonDTO().withId(associateForm.getPersonId()))
@@ -70,8 +70,33 @@ class PlanningControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.dishDTO.id", equalTo((int)associateForm.getDishId())))
                 .andExpect(jsonPath("$.personDTO.id", equalTo((int)associateForm.getPersonId())))
-                .andExpect(jsonPath("$.dayOfWeek", equalTo(associateForm.getDayOfWeek().toString())));
+                .andExpect(jsonPath("$.dayOfWeek", equalTo(associateForm.getDayOfWeek())));
         verify(planningService).associate(associateForm);
+    }
+    @Test
+    void disassociateAPersonToDishRestaurantAndDay() throws Exception {
+        //given
+        AssociateForm associateForm = new AssociateForm()
+                .withDishId(1L)
+                .withPersonId(5L)
+                .withRestaurantId(10L)
+                .withDayOfWeek(DayOfWeek.MONDAY.toString());
+        when(planningService.disassociate(associateForm)).thenReturn(new PlanningDTO()
+                        .withId(null)
+                        .withDishDTO(new DishDTO().withId(associateForm.getDishId()))
+                        .withPersonDTO(new PersonDTO().withId(associateForm.getPersonId()))
+                        .withDayOfWeek(DayOfWeek.valueOf(associateForm.getDayOfWeek())));
+        //when
+        mockMvc.perform(post(BASE_URL + "/disassociate")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(associateForm)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", equalTo(null)))
+                .andExpect(jsonPath("$.dishDTO.id", equalTo((int)associateForm.getDishId())))
+                .andExpect(jsonPath("$.personDTO.id", equalTo((int)associateForm.getPersonId())))
+                .andExpect(jsonPath("$.dayOfWeek", equalTo(associateForm.getDayOfWeek().toString())));
+        verify(planningService).disassociate(associateForm);
     }
     @Test
     void getPersonDTOListByRestaurantAndDayOfWeek() throws Exception {

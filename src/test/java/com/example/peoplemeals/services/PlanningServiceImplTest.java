@@ -22,7 +22,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.DayOfWeek;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -33,8 +35,8 @@ class PlanningServiceImplTest {
     /* Expected functionalities:
 •	OK: Associate, remove a person to a dish on a specific day (planning/meal)
 •	OK: List people for a restaurant on a specific day (planning day)
-•	Todo: List people for a specific dish on a specific day (planning/meals)
-•	Todo: People who do not have dishes assigned on a specific day
+•	OK: List people for a specific dish on a specific day (planning/meals)
+•	OK: People who do not have dishes assigned on a specific day
      */
     private PlanningService planningService;
 
@@ -58,40 +60,53 @@ class PlanningServiceImplTest {
                 personRepository,restaurantRepository,personMapper);
     }
     @Test
-    void associateAPersonByDishAndDay() {
+    void associateAPersonToDishRestaurantAndDay() {
         //given data
         AssociateForm associateForm = new AssociateForm()
                 .withPersonId(1L)
                 .withDishId(10L)
-                .withDayOfWeek(DayOfWeek.MONDAY.toString())
-                .withRemove(false);
+                .withRestaurantId(5L)
+                .withDayOfWeek(DayOfWeek.MONDAY.toString());
         //given stubbing
         when(planningRepository.findAll()).thenReturn(new ArrayList<>());
         when(dishRepository.findById(associateForm.getDishId())).thenReturn(Optional.of(new Dish()));
         when(personRepository.findById(associateForm.getPersonId())).thenReturn(Optional.of(new Person()));
+        when(restaurantRepository.findById(associateForm.getRestaurantId())).thenReturn(Optional.of(new Restaurant()));
         //when
         PlanningDTO planningDTO = planningService.associate(associateForm);
         //then
-        verify(planningRepository).findAll();
+        verify(dishRepository).findById(associateForm.getDishId());
+        verify(personRepository).findById(associateForm.getPersonId());
+        verify(restaurantRepository).findById(associateForm.getRestaurantId());
+
+        verify(planningRepository, times(2)).findAll(); //two validations need this
         verify(planningRepository).save(any(Planning.class));
         verify(planningMapper).planningToPlanningDTO(any(Planning.class));
     }
     @Test
-    void removeAPersonByDishAndDay() {
+    void disassociateAPersonToDishRestaurantAndDay() {
         //given data
         AssociateForm associateForm = new AssociateForm()
                 .withPersonId(1L)
                 .withDishId(10L)
-                .withDayOfWeek(DayOfWeek.MONDAY.toString())
-                .withRemove(true);
+                .withRestaurantId(15L)
+                .withDayOfWeek(DayOfWeek.MONDAY.toString());
         //given stubbing
         when(planningRepository.findAll()).thenReturn(new ArrayList<>(List.of(new Planning()
                 .withPerson(new Person().withId(associateForm.getPersonId()))
                 .withDish(new Dish().withId(associateForm.getDishId()))
+                .withRestaurant(new Restaurant().withId(associateForm.getRestaurantId()))
                 .withDayOfWeek(DayOfWeek.valueOf(associateForm.getDayOfWeek())))));
-         //when
-        PlanningDTO planningDTO = planningService.associate(associateForm);
+        when(dishRepository.findById(associateForm.getDishId())).thenReturn(Optional.of(new Dish()));
+        when(personRepository.findById(associateForm.getPersonId())).thenReturn(Optional.of(new Person()));
+        when(restaurantRepository.findById(associateForm.getRestaurantId())).thenReturn(Optional.of(new Restaurant()));
+        //when
+        PlanningDTO planningDTO = planningService.disassociate(associateForm);
         //then
+        verify(dishRepository).findById(associateForm.getDishId());
+        verify(personRepository).findById(associateForm.getPersonId());
+        verify(restaurantRepository).findById(associateForm.getRestaurantId());
+
         verify(planningRepository).findAll();
         verify(planningRepository).delete(any(Planning.class));
         verify(planningMapper).planningToPlanningDTO(any(Planning.class));
@@ -101,9 +116,10 @@ class PlanningServiceImplTest {
         //given data - Plannings with Dishes that belongs to a Restaurant
         Restaurant restaurant = PojoExampleCreation.createRestaurantExample(1);
         DayOfWeek dayOfWeek = DayOfWeek.MONDAY;
-        Planning planning1 = PojoExampleCreation.createPlanningExample(2); planning1.setDayOfWeek(dayOfWeek);
-        Planning planning2 = PojoExampleCreation.createPlanningExample(3); planning2.setDayOfWeek(dayOfWeek);
-        restaurant.setDishes(new HashSet<>(Set.of(planning1.getDish(),planning2.getDish())));
+        Planning planning1 = PojoExampleCreation.createPlanningExample(2);
+        planning1.setDayOfWeek(dayOfWeek); planning1.setRestaurant(restaurant);
+        Planning planning2 = PojoExampleCreation.createPlanningExample(3);
+        planning2.setDayOfWeek(dayOfWeek);  planning2.setRestaurant(restaurant);
         //given stubbing
         when(restaurantRepository.findById(restaurant.getId())).thenReturn(Optional.of(restaurant));
         when(planningRepository.findAll()).thenReturn(new ArrayList<>(List.of(planning1,planning2)));

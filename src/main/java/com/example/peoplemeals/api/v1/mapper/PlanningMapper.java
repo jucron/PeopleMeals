@@ -13,6 +13,7 @@ public interface PlanningMapper {
 
     @Mapping(source = "dish", target = "dishDTO")
     @Mapping(source = "person", target = "personDTO")
+    @Mapping(source = "restaurant", target = "restaurantDTO")
     PlanningDTO planningToPlanningDTO (Planning planning);
 
 }

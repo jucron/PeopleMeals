@@ -34,90 +34,133 @@ public class PlanningServiceImpl implements PlanningService {
     private final RestaurantRepository restaurantRepository;
     private final PersonMapper personMapper;
 
-    //todo: For all streams on this Class, should replace them with specific Repo's Queries!
-
     @Override
     public PlanningDTO associate(AssociateForm associateForm) {
+        //Validation 1 - check DayOfWeek format:
         DayOfWeek dayOfWeekCorrectFormat = validateDayOfWeek(associateForm.getDayOfWeek());
-        //Creating a List of Plannings in DB that matches the associateForm given
-        List<Planning> filteredPlanningList = planningRepository.findAll()
-                .stream()
+        // Validation 2 - If DishId, PersonId or RestaurantId are not in DB, return error
+        Dish dishFromRepo = fetchDishFromRepo(associateForm.getDishId());
+        Person personFromRepo = fetchPersonFromRepo(associateForm.getPersonId());
+        Restaurant restaurant = fetchRestaurantFromRepo(associateForm.getRestaurantId());
+        // Validation 3 - If there is already one identical association in DB, should return error (only allow 1 meal/day/person)
+        checkSameAssociationsInDb(associateForm, dayOfWeekCorrectFormat, true);
+        // Validation 4 - If restaurant exceed 15 meals this day, should return error
+        checkIfRestaurantExceededMaximumDishes(dayOfWeekCorrectFormat, restaurant);
+        //If everything passes, proceed to new association:
+        // -> create a new Planning, persist it and return a DTO of it
+        Planning planningToBeSaved = new Planning()
+                .withPerson(personFromRepo)
+                .withDish(dishFromRepo)
+                .withDayOfWeek(dayOfWeekCorrectFormat)
+                .withRestaurant(restaurant);
+        planningRepository.save(planningToBeSaved);
+        return planningMapper.planningToPlanningDTO(planningToBeSaved);
+    }
+    @Override
+    public PlanningDTO disassociate(AssociateForm associateForm) {
+        //Validation 1 - check DayOfWeek format:
+        DayOfWeek dayOfWeekCorrectFormat = validateDayOfWeek(associateForm.getDayOfWeek());
+        // Validation 2 - If DishId, PersonId or RestaurantId are not in DB, return error
+        Dish dishFromRepo = fetchDishFromRepo(associateForm.getDishId());
+        Person personFromRepo = fetchPersonFromRepo(associateForm.getPersonId());
+        Restaurant restaurant = fetchRestaurantFromRepo(associateForm.getRestaurantId());
+        // Validation 3 - If there is already one identical association in DB, should return error (only allow 1 meal/day/person)
+        Planning planningToRemove = checkSameAssociationsInDb(associateForm, dayOfWeekCorrectFormat, false);
+        //If validations passed: proceed to the removal in DB
+        planningRepository.delete(planningToRemove);
+        planningToRemove.setId(null); //returning a planningDTO without ID
+        return planningMapper.planningToPlanningDTO(planningToRemove);
+    }
+    private Restaurant fetchRestaurantFromRepo(long restaurantId) {
+        Optional<Restaurant> restaurantOptional = restaurantRepository.findById(restaurantId);
+        //If no Restaurant entities exists in DB, should return error
+        if (restaurantOptional.isEmpty()) {
+            throw new NoSuchElementException("No Restaurant with this ID was found in Database");
+        }
+        return restaurantOptional.get();
+    }
+    private Person fetchPersonFromRepo(long personId) {
+        Optional<Person> personOptional = personRepository.findById(personId);
+        //If no Person entities exists in DB, should return error
+        if (personOptional.isEmpty()) {
+            throw new NoSuchElementException("No Person with this ID was found in Database");
+        }
+        return personOptional.get();
+    }
+    private Dish fetchDishFromRepo(long dishId) {
+        Optional<Dish> dishOptional = dishRepository.findById(dishId);
+        //If no Person entities exists in DB, should return error
+        if (dishOptional.isEmpty()) {
+            throw new NoSuchElementException("No Dish with this ID was found in Database");
+        }
+        return dishOptional.get();
+
+    }
+    private Planning checkSameAssociationsInDb(AssociateForm associateForm, DayOfWeek dayOfWeekCorrectFormat, boolean isAssociation) {
+        //Fetch a List of Plannings in DB that matches the associateForm given
+        List<Planning> planningListWithSameData = planningRepository.findAll().stream()
                 .filter(planning -> planning.getDish().getId()==associateForm.getDishId())
                 .filter(planning -> planning.getPerson().getId()==associateForm.getPersonId())
+                .filter(planning -> planning.getRestaurant().getId()==associateForm.getRestaurantId())
                 .filter(planning -> planning.getDayOfWeek()==dayOfWeekCorrectFormat)
                 .collect(Collectors.toList());
-        /**@First_option: task is to remove association*/
-        if (associateForm.isRemove()) { //this parameter validates the type of process
-            //To remove an association we expect ONE Planning matching the Form, otherwise should return error
-            if (filteredPlanningList.size() != 1) {
-                throw new NoSuchElementException("Cannot update a plan that does not exists in Database");
-            }
-            //If one Planning was found with info given, proceed to the removal in DB
-            Planning planningToRemove = filteredPlanningList.get(0);
-            planningRepository.delete(planningToRemove);
-            planningToRemove.setId(null); //returning a planningDTO without ID
-            return planningMapper.planningToPlanningDTO(planningToRemove);
-         /**@Second_option: task is to associate person & dish & dayOfWeek */
-        } else {
-            //If there is already one identical association in DB, should return error
-            if (filteredPlanningList.size() > 0) {
+        if (isAssociation) { //For an Association: If there is a match, we can't proceed with association
+            if (planningListWithSameData.size() > 0) {
                 throw new IllegalArgumentException("This planning already exists in Database");
             }
-            Optional<Dish> dishOptional = dishRepository.findById(associateForm.getDishId());
-            Optional<Person> personOptional = personRepository.findById(associateForm.getPersonId());
-            //If no Dish or Person entities exists in DB, should return error
-            if (dishOptional.isEmpty() || personOptional.isEmpty()) {
-                throw new NoSuchElementException("No Person or Dish was found in Database");
+        } else { //Disassociation: To remove an association we expect ONE Planning matching the Form
+            if (planningListWithSameData.size() != 1) {
+                throw new NoSuchElementException("Cannot update a plan that does not exists in Database");
             }
-            //Every validation passed: create a new Planning, persist it and return a DTO of it
-            Planning planningToBeSaved = new Planning()
-                    .withPerson(personOptional.get())
-                    .withDish(dishOptional.get())
-                    .withDayOfWeek(dayOfWeekCorrectFormat);
-            planningRepository.save(planningToBeSaved);
-            return planningMapper.planningToPlanningDTO(planningToBeSaved);
+            return planningListWithSameData.get(0); //In disassociation, we need this Planning
+        }
+        return null;
+    }
+    private void checkIfRestaurantExceededMaximumDishes(DayOfWeek dayOfWeekCorrectFormat, Restaurant restaurant) {
+        //Fetch list of plannings that have same Restaurant and DayOfWeek
+        List<Planning> planningListInThisDayAndRestaurant = planningRepository.findAll()
+                .stream()
+                .filter(planning -> planning.getDayOfWeek()==dayOfWeekCorrectFormat)
+                .filter(planning -> planning.getRestaurant()==restaurant)
+                .collect(Collectors.toList());
+        //If there are at least 15 plannings for this day and Restaurant, it has achieved maximum associations
+        if (planningListInThisDayAndRestaurant.size()>=15) {
+            throw new IllegalArgumentException("This restaurant have already the maximum number of dishes");
         }
     }
     @Override
     public PersonDTOList getPersonListByRestaurantAndDay(long restaurantId, String dayOfWeek) {
+        //Validation 1 - check DayOfWeek format:
         DayOfWeek dayOfWeekCorrectFormat = validateDayOfWeek(dayOfWeek);
-        //Fetch restaurant by ID
-        Optional<Restaurant> restaurantOptional = restaurantRepository.findById(restaurantId);
-        if (restaurantOptional.isEmpty()) { //If restaurant not found in DB, should return error
-            throw new NoSuchElementException("No Restaurant with this ID was found in Database");
-        }
-        //Get list of Dishes belonging to this restaurant
-        Set<Dish> dishesFromThisRestaurant = restaurantOptional.get().getDishes();
-        /**Create a collections of Persons, extracting from the PlanningRepository and filtering each request:
-         * @param Dish must be part of Restaurant's Dishes
+        // Validation 2 - If RestaurantId is not in DB, return error
+        Restaurant restaurant = fetchRestaurantFromRepo(restaurantId);
+        /**Create a collection of Persons, extracting from the PlanningRepository and filtering each request:
+         * @param Restaurant must be with same restaurantId
          * @param dayOfWeek must match dayOfWeek
          * */
         Set<PersonDTO> personDTOSToBeReturned = planningRepository.findAll()
                 .stream()
                 .filter(planning -> planning.getDayOfWeek()==dayOfWeekCorrectFormat)
-                .filter(planning -> dishesFromThisRestaurant.contains(planning.getDish()))
+                .filter(planning -> planning.getRestaurant().getId()==restaurantId)
                 .map(Planning::getPerson)
                 .map(personMapper::personToPersonDTO)
                 .collect(Collectors.toSet());
-        System.out.println(personDTOSToBeReturned);
         return new PersonDTOList().withPersonDTOList(personDTOSToBeReturned);
     }
     @Override
     public PersonDTOList getPersonListByDishAndDay(long dishId, String dayOfWeek) {
+        //Validation 1 - check DayOfWeek format:
         DayOfWeek dayOfWeekCorrectFormat = validateDayOfWeek(dayOfWeek);
-        //Fetch dish by ID
-        Optional<Dish> dishOptional = dishRepository.findById(dishId);
-        if (dishOptional.isEmpty()) { //If dish not found in DB, should return error
-            throw new NoSuchElementException("No Dish with this ID was found in Database");
-        }
-        /**Create a collections of Persons, extracting from the PlanningRepository and filtering each request:
-         * @param Dish must match dishId
+        // Validation 2 - If Dish is not in DB, return error
+        Dish dish = fetchDishFromRepo(dishId);
+        /**Create a collection of Persons, extracting from the PlanningRepository and filtering each request:
+         * @param Dish must be with same dishId
          * @param dayOfWeek must match dayOfWeek
          * */
         Set<PersonDTO> personDTOSToBeReturned = planningRepository.findAll()
                         .stream()
                         .filter(planning -> planning.getDayOfWeek()==dayOfWeekCorrectFormat)
-                        .filter(planning -> planning.getDish().getId()==dishId)
+                        .filter(planning -> planning.getDish()==dish)
                         .map(Planning::getPerson)
                         .map(personMapper::personToPersonDTO)
                         .collect(Collectors.toSet());
@@ -125,20 +168,20 @@ public class PlanningServiceImpl implements PlanningService {
     }
     @Override
     public PersonDTOList getPersonListWithNoDishByDay(String dayOfWeek) {
+        //Validation 1 - check DayOfWeek format:
         DayOfWeek dayOfWeekCorrectFormat = validateDayOfWeek(dayOfWeek);
         //Create a collection of Persons that have a planning for this DayOfWeek
-        List<Person> personListIncludedInDayOfWeek = planningRepository.findAll()
+        List<Person> personsInThisDayOfWeek = planningRepository.findAll()
                 .stream()
                 .filter(planning -> planning.getDayOfWeek()==dayOfWeekCorrectFormat)
                 .map(Planning::getPerson)
                 .collect(Collectors.toList());
-
-        /**Create a collections of Persons, extracting from the PersonRepository and filtering each request:
+        /**Create a collection of Persons, extracting from the PersonRepository and filtering each request:
          * @param Person must NOT be included in personListIncludedInDayOfWeek
          * */
         Set<PersonDTO> personDTOSToBeReturned = personRepository.findAll()
                 .stream()
-                .filter(person -> !personListIncludedInDayOfWeek.contains(person))
+                .filter(person -> !personsInThisDayOfWeek.contains(person))
                 .map(personMapper::personToPersonDTO)
                 .collect(Collectors.toSet());
         return new PersonDTOList().withPersonDTOList(personDTOSToBeReturned);

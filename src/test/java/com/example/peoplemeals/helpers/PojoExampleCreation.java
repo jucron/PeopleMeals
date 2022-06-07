@@ -35,7 +35,8 @@ public class PojoExampleCreation {
                 .withId(50L+ref)
                 .withDayOfWeek(DayOfWeek.MONDAY)
                 .withDish(createDishExample(ref))
-                .withPerson(createPersonExample(ref));
+                .withPerson(createPersonExample(ref))
+                .withRestaurant(createRestaurantExample(ref));
     }
     public static Restaurant createRestaurantExample (int ref) {
         return new Restaurant()

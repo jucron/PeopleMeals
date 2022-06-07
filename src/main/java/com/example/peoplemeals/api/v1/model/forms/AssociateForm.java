@@ -12,6 +12,6 @@ import lombok.With;
 public class AssociateForm {
     private long personId;
     private long dishId;
+    private long restaurantId;
     private String dayOfWeek;
-    private boolean remove; //true if the operation is to disassociate between person and dish
 }
