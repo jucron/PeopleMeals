@@ -22,19 +22,24 @@ public class RestaurantServiceImpl implements RestaurantService {
         restaurantRepository.save(restaurantToBeSaved);
         return restaurantMapper.restaurantToRestaurantDTO(restaurantToBeSaved);
     }
+
     @Override
     public void remove(Long restaurantId) {
         Restaurant restaurantInDB = checkElementPresence(restaurantId);
         restaurantRepository.delete(restaurantInDB);
     }
+
     @Override
     public RestaurantDTO update(Long restaurantId, RestaurantDTO restaurantDTO) {
         Restaurant restaurantInDB = checkElementPresence(restaurantId);
-        Restaurant restaurantUpdated = restaurantMapper.restaurantDTOToRestaurant(restaurantDTO);
-        restaurantUpdated.setId(restaurantInDB.getId()); //Set correct ID from DB
+//        restaurantRepository.findId
+        Restaurant restaurantUpdated = restaurantMapper.restaurantDTOToRestaurant(restaurantDTO);//TODO this operation is not needed
+        restaurantUpdated.setId(restaurantInDB.getId()); //Set correct ID from DB //TODO: do not load the all entity just to get the id
         restaurantRepository.save(restaurantUpdated);
-        return restaurantMapper.restaurantToRestaurantDTO(restaurantUpdated);
+        return restaurantMapper.restaurantToRestaurantDTO(restaurantUpdated);//TODO: again return back and forth from the entity saved
     }
+
+
     private Restaurant checkElementPresence(Long restaurantId) {
         Optional<Restaurant> restaurantOptional = restaurantRepository.findById(restaurantId);
         if (restaurantOptional.isEmpty()) {

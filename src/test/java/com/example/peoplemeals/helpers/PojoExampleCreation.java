@@ -12,12 +12,14 @@ import com.example.peoplemeals.domain.Restaurant;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.Set;
+import java.util.UUID;
 
 public class PojoExampleCreation {
 
     public static Dish createDishExample (int ref) {
         return new Dish()
                 .withId(1L+ref)
+                .withUuid(UUID.randomUUID())
                 .withName("dishName_example_"+ref)
                 .withRecipeUrl("url_example_"+ref);
     }
@@ -49,7 +51,7 @@ public class PojoExampleCreation {
     }
     public static DishDTO createDishDTOExample (int ref) {
         return new DishDTO()
-                .withId(1L+ref)
+                .withUuid(UUID.randomUUID())
                 .withName("dishName_example_"+ref)
                 .withRecipeUrl("url_example_"+ref);
     }

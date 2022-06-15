@@ -18,10 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,20 +31,25 @@ public class PlanningServiceImpl implements PlanningService {
     private final RestaurantRepository restaurantRepository;
     private final PersonMapper personMapper;
 
+    //TODO: Comments here don't add much
     @Override
     public PlanningDTO associate(AssociateForm associateForm) {
         //Validation 1 - check DayOfWeek format:
         DayOfWeek dayOfWeekCorrectFormat = validateDayOfWeek(associateForm.getDayOfWeek());
+
         // Validation 2 - If DishId, PersonId or RestaurantId are not in DB, return error
-        Dish dishFromRepo = fetchDishFromRepo(associateForm.getDishId());
-        Person personFromRepo = fetchPersonFromRepo(associateForm.getPersonId());
-        Restaurant restaurant = fetchRestaurantFromRepo(associateForm.getRestaurantId());
+
+        Dish dishFromRepo = fetchDishFromRepo(associateForm.getPersonId());//TODO: no need to fetch entire entities
+        Person personFromRepo = fetchPersonFromRepo(associateForm.getPersonId());//TODO: no need to fetch entire entities
+        Restaurant restaurant = fetchRestaurantFromRepo(associateForm.getRestaurantId());//TODO: no need to fetch entire entities
         // Validation 3 - If there is already one identical association in DB, should return error (only allow 1 meal/day/person)
         checkSameAssociationsInDb(associateForm, dayOfWeekCorrectFormat, true);
         // Validation 4 - If restaurant exceed 15 meals this day, should return error
         checkIfRestaurantExceededMaximumDishes(dayOfWeekCorrectFormat, restaurant);
         //If everything passes, proceed to new association:
         // -> create a new Planning, persist it and return a DTO of it
+
+        //TODO: Performance issues. Do you need to fetch the entire thing?
         Planning planningToBeSaved = new Planning()
                 .withPerson(personFromRepo)
                 .withDish(dishFromRepo)
@@ -56,12 +58,13 @@ public class PlanningServiceImpl implements PlanningService {
         planningRepository.save(planningToBeSaved);
         return planningMapper.planningToPlanningDTO(planningToBeSaved);
     }
+
     @Override
     public PlanningDTO disassociate(AssociateForm associateForm) {
         //Validation 1 - check DayOfWeek format:
         DayOfWeek dayOfWeekCorrectFormat = validateDayOfWeek(associateForm.getDayOfWeek());
         // Validation 2 - If DishId, PersonId or RestaurantId are not in DB, return error
-        Dish dishFromRepo = fetchDishFromRepo(associateForm.getDishId());
+//        Dish dishFromRepo = fetchDishFromRepo(associateForm.getDishUuid()); //todo: solve this
         Person personFromRepo = fetchPersonFromRepo(associateForm.getPersonId());
         Restaurant restaurant = fetchRestaurantFromRepo(associateForm.getRestaurantId());
         // Validation 3 - If there is already one identical association in DB, should return error (only allow 1 meal/day/person)
@@ -71,6 +74,7 @@ public class PlanningServiceImpl implements PlanningService {
         planningToRemove.setId(null); //returning a planningDTO without ID
         return planningMapper.planningToPlanningDTO(planningToRemove);
     }
+
     private Restaurant fetchRestaurantFromRepo(long restaurantId) {
         Optional<Restaurant> restaurantOptional = restaurantRepository.findById(restaurantId);
         //If no Restaurant entities exists in DB, should return error
@@ -79,6 +83,7 @@ public class PlanningServiceImpl implements PlanningService {
         }
         return restaurantOptional.get();
     }
+
     private Person fetchPersonFromRepo(long personId) {
         Optional<Person> personOptional = personRepository.findById(personId);
         //If no Person entities exists in DB, should return error
@@ -87,6 +92,7 @@ public class PlanningServiceImpl implements PlanningService {
         }
         return personOptional.get();
     }
+
     private Dish fetchDishFromRepo(long dishId) {
         Optional<Dish> dishOptional = dishRepository.findById(dishId);
         //If no Person entities exists in DB, should return error
@@ -96,13 +102,14 @@ public class PlanningServiceImpl implements PlanningService {
         return dishOptional.get();
 
     }
+
     private Planning checkSameAssociationsInDb(AssociateForm associateForm, DayOfWeek dayOfWeekCorrectFormat, boolean isAssociation) {
         //Fetch a List of Plannings in DB that matches the associateForm given
         List<Planning> planningListWithSameData = planningRepository.findAll().stream()
-                .filter(planning -> planning.getDish().getId()==associateForm.getDishId())
-                .filter(planning -> planning.getPerson().getId()==associateForm.getPersonId())
-                .filter(planning -> planning.getRestaurant().getId()==associateForm.getRestaurantId())
-                .filter(planning -> planning.getDayOfWeek()==dayOfWeekCorrectFormat)
+                .filter(planning -> Objects.equals(planning.getDish().getUuid().toString(), associateForm.getDishUuid()))
+                .filter(planning -> planning.getPerson().getId() == associateForm.getPersonId())
+                .filter(planning -> planning.getRestaurant().getId() == associateForm.getRestaurantId())
+                .filter(planning -> planning.getDayOfWeek() == dayOfWeekCorrectFormat)
                 .collect(Collectors.toList());
         if (isAssociation) { //For an Association: If there is a match, we can't proceed with association
             if (planningListWithSameData.size() > 0) {
@@ -116,18 +123,20 @@ public class PlanningServiceImpl implements PlanningService {
         }
         return null;
     }
+
     private void checkIfRestaurantExceededMaximumDishes(DayOfWeek dayOfWeekCorrectFormat, Restaurant restaurant) {
         //Fetch list of plannings that have same Restaurant and DayOfWeek
         List<Planning> planningListInThisDayAndRestaurant = planningRepository.findAll()
                 .stream()
-                .filter(planning -> planning.getDayOfWeek()==dayOfWeekCorrectFormat)
-                .filter(planning -> planning.getRestaurant()==restaurant)
+                .filter(planning -> planning.getDayOfWeek() == dayOfWeekCorrectFormat)
+                .filter(planning -> planning.getRestaurant() == restaurant)
                 .collect(Collectors.toList());
         //If there are at least 15 plannings for this day and Restaurant, it has achieved maximum associations
-        if (planningListInThisDayAndRestaurant.size()>=15) {
+        if (planningListInThisDayAndRestaurant.size() >= 15) {
             throw new IllegalArgumentException("This restaurant have already the maximum number of dishes");
         }
     }
+
     @Override
     public PersonDTOList getPersonListByRestaurantAndDay(long restaurantId, String dayOfWeek) {
         //Validation 1 - check DayOfWeek format:
@@ -140,13 +149,14 @@ public class PlanningServiceImpl implements PlanningService {
          * */
         Set<PersonDTO> personDTOSToBeReturned = planningRepository.findAll()
                 .stream()
-                .filter(planning -> planning.getDayOfWeek()==dayOfWeekCorrectFormat)
-                .filter(planning -> planning.getRestaurant().getId()==restaurantId)
+                .filter(planning -> planning.getDayOfWeek() == dayOfWeekCorrectFormat)
+                .filter(planning -> planning.getRestaurant().getId() == restaurantId)
                 .map(Planning::getPerson)
                 .map(personMapper::personToPersonDTO)
                 .collect(Collectors.toSet());
         return new PersonDTOList().withPersonDTOList(personDTOSToBeReturned);
     }
+
     @Override
     public PersonDTOList getPersonListByDishAndDay(long dishId, String dayOfWeek) {
         //Validation 1 - check DayOfWeek format:
@@ -158,14 +168,15 @@ public class PlanningServiceImpl implements PlanningService {
          * @param dayOfWeek must match dayOfWeek
          * */
         Set<PersonDTO> personDTOSToBeReturned = planningRepository.findAll()
-                        .stream()
-                        .filter(planning -> planning.getDayOfWeek()==dayOfWeekCorrectFormat)
-                        .filter(planning -> planning.getDish()==dish)
-                        .map(Planning::getPerson)
-                        .map(personMapper::personToPersonDTO)
-                        .collect(Collectors.toSet());
+                .stream()
+                .filter(planning -> planning.getDayOfWeek() == dayOfWeekCorrectFormat)
+                .filter(planning -> planning.getDish() == dish)
+                .map(Planning::getPerson)
+                .map(personMapper::personToPersonDTO)
+                .collect(Collectors.toSet());
         return new PersonDTOList().withPersonDTOList(personDTOSToBeReturned);
     }
+
     @Override
     public PersonDTOList getPersonListWithNoDishByDay(String dayOfWeek) {
         //Validation 1 - check DayOfWeek format:
@@ -173,7 +184,7 @@ public class PlanningServiceImpl implements PlanningService {
         //Create a collection of Persons that have a planning for this DayOfWeek
         List<Person> personsInThisDayOfWeek = planningRepository.findAll()
                 .stream()
-                .filter(planning -> planning.getDayOfWeek()==dayOfWeekCorrectFormat)
+                .filter(planning -> planning.getDayOfWeek() == dayOfWeekCorrectFormat)
                 .map(Planning::getPerson)
                 .collect(Collectors.toList());
         /**Create a collection of Persons, extracting from the PersonRepository and filtering each request:
@@ -186,6 +197,7 @@ public class PlanningServiceImpl implements PlanningService {
                 .collect(Collectors.toSet());
         return new PersonDTOList().withPersonDTOList(personDTOSToBeReturned);
     }
+
     private DayOfWeek validateDayOfWeek(String dayOfWeek) {
         try {
             return DayOfWeek.valueOf(dayOfWeek.toUpperCase());

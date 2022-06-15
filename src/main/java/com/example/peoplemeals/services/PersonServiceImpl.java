@@ -17,16 +17,19 @@ public class PersonServiceImpl implements PersonService {
 
     @Override
     public PersonDTO add(PersonDTO personDTO) {
-            Person personToBeSaved = personMapper.personDTOToPerson(personDTO);
-            personToBeSaved.setId(null); //must remove ID to perform auto-generate
-            personRepository.save(personToBeSaved);
-            return personMapper.personToPersonDTO(personToBeSaved);
+        Person personToBeSaved = personMapper.personDTOToPerson(personDTO);
+        personToBeSaved.setId(null); //must remove ID to perform auto-generate
+        personRepository.save(personToBeSaved);
+        return personMapper.personToPersonDTO(personToBeSaved);
     }
+
     @Override
     public void remove(Long personId) {
         Person personInDB = checkElementPresence(personId);
         personRepository.delete(personInDB);
     }
+
+    //TODO: same issue as planning
     @Override
     public PersonDTO update(Long personId, PersonDTO personDTO) {
         Person personInDB = checkElementPresence(personId);
@@ -35,6 +38,7 @@ public class PersonServiceImpl implements PersonService {
         personRepository.save(personWithUpdatedData);
         return personMapper.personToPersonDTO(personWithUpdatedData);
     }
+
     private Person checkElementPresence(Long personId) {
         Optional<Person> personOptional = personRepository.findById(personId);
         if (personOptional.isEmpty()) {

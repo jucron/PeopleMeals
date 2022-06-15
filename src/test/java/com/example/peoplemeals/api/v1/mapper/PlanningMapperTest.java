@@ -22,7 +22,7 @@ class PlanningMapperTest {
         assertEquals(planning.getDayOfWeek(),planningDTO.getDayOfWeek());
         assertEquals(planning.getId(),planningDTO.getId());
 
-        assertEquals(planning.getDish().getId(),planningDTO.getDishDTO().getId());
+        assertEquals(planning.getDish().getUuid(),planningDTO.getDishDTO().getUuid());
         assertEquals(planning.getDish().getName(),planningDTO.getDishDTO().getName());
         assertEquals(planning.getDish().getRecipeUrl(),planningDTO.getDishDTO().getRecipeUrl());
 

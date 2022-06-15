@@ -17,27 +17,31 @@ public class PlanningController {
 
     @PostMapping({"/associate"})
     @ResponseStatus(HttpStatus.OK)
-    public PlanningDTO associatePersonToDish (@RequestBody AssociateForm associateForm) {
+    public PlanningDTO associatePersonToDish(@RequestBody AssociateForm associateForm) {
         return planningService.associate(associateForm);
     }
+
     @PostMapping({"/disassociate"})
     @ResponseStatus(HttpStatus.OK)
-    public PlanningDTO disassociatePersonToDish (@RequestBody AssociateForm associateForm) {
+    public PlanningDTO disassociatePersonToDish(@RequestBody AssociateForm associateForm) {
         return planningService.disassociate(associateForm);
     }
+
     @GetMapping({"/getPersonList/{restaurantId}/{dayOfWeek}/restaurant"})
     @ResponseStatus(HttpStatus.OK)
-    public PersonDTOList getPersonListByRestaurantAndDay (@PathVariable long restaurantId,@PathVariable String dayOfWeek) {
-        return planningService.getPersonListByRestaurantAndDay(restaurantId,dayOfWeek);
+    public PersonDTOList getPersonListByRestaurantAndDay(@PathVariable long restaurantId, @PathVariable String dayOfWeek) {
+        return planningService.getPersonListByRestaurantAndDay(restaurantId, dayOfWeek);
     }
+
     @GetMapping({"/getPersonList/{dishId}/{dayOfWeek}/dish"})
     @ResponseStatus(HttpStatus.OK)
-    public PersonDTOList getPersonListByDishAndDay (@PathVariable long dishId,@PathVariable String dayOfWeek) {
-        return planningService.getPersonListByDishAndDay(dishId,dayOfWeek);
+    public PersonDTOList getPersonListByDishAndDay(@PathVariable long dishId, @PathVariable String dayOfWeek) {
+        return planningService.getPersonListByDishAndDay(dishId, dayOfWeek);
     }
+
     @GetMapping({"/getPersonList/{dayOfWeek}/no_dish"})
     @ResponseStatus(HttpStatus.OK)
-    public PersonDTOList getPersonListWithNoDishByDay (@PathVariable String dayOfWeek) {
+    public PersonDTOList getPersonListWithNoDishByDay(@PathVariable String dayOfWeek) {
         return planningService.getPersonListWithNoDishByDay(dayOfWeek);
     }
 

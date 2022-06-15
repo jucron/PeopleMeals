@@ -7,26 +7,27 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping(DishController.BASE_URL)
+@RequestMapping("/dishes")
 @RequiredArgsConstructor
 public class DishController {
 
-    public static final String BASE_URL = "/api/v1/dishes";
     private final DishService dishService;
 
-    @PostMapping({"/add"})
+    @PostMapping({"/"})
     @ResponseStatus(HttpStatus.CREATED)
     public DishDTO addDish (@RequestBody DishDTO dishDTO) {
         return dishService.add(dishDTO);
     }
-    @DeleteMapping({"/remove/{dishId}"})
+
+    @DeleteMapping({"/{dishUuid}"})
     @ResponseStatus(HttpStatus.OK)
-    public void removeDish (@PathVariable Long dishId) {
-        dishService.remove(dishId);
+    public void removeDish (@PathVariable String dishUuid) {
+        dishService.remove(dishUuid);
     }
-    @PutMapping({"/update/{dishId}"})
+
+    @PutMapping({"/{dishUuid}"})
     @ResponseStatus(HttpStatus.OK)
-    public DishDTO updateDish (@PathVariable Long dishId, @RequestBody DishDTO dishDTO) {
-        return dishService.update(dishId,dishDTO);
+    public DishDTO updateDish (@PathVariable String dishUuid, @RequestBody DishDTO dishDTO) {
+        return dishService.update(dishUuid,dishDTO);
     }
 }

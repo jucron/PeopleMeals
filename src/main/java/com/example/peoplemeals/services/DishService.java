@@ -5,7 +5,7 @@ import com.example.peoplemeals.api.v1.model.DishDTO;
 public interface DishService {
     DishDTO add(DishDTO dishDTO);
 
-    void remove(Long id);
+    void remove(String dishUuid);
 
-    DishDTO update(Long id, DishDTO dishDTO);
+    DishDTO update(String dishUuid, DishDTO dishDTO);
 }

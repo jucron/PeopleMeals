@@ -6,6 +6,7 @@ import com.example.peoplemeals.helpers.PojoExampleCreation;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class DishMapperTest {
 
@@ -18,7 +19,7 @@ class DishMapperTest {
         //when
         DishDTO dishDTO = dishMapper.dishToDishDTO(dish);
         //then
-        assertEquals(dish.getId(),dishDTO.getId());
+        assertEquals(dish.getUuid(),dishDTO.getUuid());
         assertEquals(dish.getName(),dishDTO.getName());
         assertEquals(dish.getRecipeUrl(),dishDTO.getRecipeUrl());
     }
@@ -29,7 +30,8 @@ class DishMapperTest {
         //when
         Dish dish = dishMapper.dishDTOToDish(dishDTO);
         //then
-        assertEquals(dishDTO.getId(),dish.getId());
+        assertNotNull(dishDTO.getUuid());
+        assertEquals(dish.getUuid(),dishDTO.getUuid());
         assertEquals(dishDTO.getName(),dish.getName());
         assertEquals(dishDTO.getRecipeUrl(),dish.getRecipeUrl());
     }

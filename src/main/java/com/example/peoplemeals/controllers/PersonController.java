@@ -16,17 +16,19 @@ public class PersonController {
 
     @PostMapping({"/add"})
     @ResponseStatus(HttpStatus.CREATED)
-    public PersonDTO addPerson (@RequestBody PersonDTO personDTO) {
+    public PersonDTO addPerson(@RequestBody PersonDTO personDTO) {
         return personService.add(personDTO);
     }
+
     @DeleteMapping({"/remove/{personId}"})
     @ResponseStatus(HttpStatus.OK)
-    public void removePerson (@PathVariable Long personId) {
+    public void removePerson(@PathVariable Long personId) {
         personService.remove(personId);
     }
+
     @PutMapping({"/update/{personId}"})
     @ResponseStatus(HttpStatus.OK)
-    public PersonDTO updatePerson (@PathVariable Long personId, @RequestBody PersonDTO personDTO) {
-        return personService.update(personId,personDTO);
+    public PersonDTO updatePerson(@PathVariable Long personId, @RequestBody PersonDTO personDTO) {
+        return personService.update(personId, personDTO);
     }
 }

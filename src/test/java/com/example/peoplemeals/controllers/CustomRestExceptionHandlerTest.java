@@ -35,6 +35,8 @@ class CustomRestExceptionHandlerTest {
 
     private MockMvc mockMvc;
 
+    private final String BASE_URL ="/dishes/";
+
     @BeforeEach
     void setUp() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(dishController)
@@ -44,13 +46,13 @@ class CustomRestExceptionHandlerTest {
     @Test
     void handleIllegalArgumentException() throws Exception {
         //given
-        long dishId = 1L;
+        String dishUuid = "dish-uuid";
         DishDTO dishDTOThatWillResultError = new DishDTO();
         String exceptionCustomMessage = "Custom_message";
-        when(dishService.update(dishId,dishDTOThatWillResultError)).thenThrow(new IllegalArgumentException(
+        when(dishService.update(dishUuid,dishDTOThatWillResultError)).thenThrow(new IllegalArgumentException(
                 exceptionCustomMessage));
         //when and then
-        mockMvc.perform(put(DishController.BASE_URL+"/update/"+dishId)
+        mockMvc.perform(put(BASE_URL+dishUuid)
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(dishDTOThatWillResultError)))
@@ -58,7 +60,7 @@ class CustomRestExceptionHandlerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message", equalTo(exceptionCustomMessage)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.cause", equalTo(IllegalArgumentException.class+"/null")));
-        verify(dishService).update(dishId,dishDTOThatWillResultError);
+        verify(dishService).update(dishUuid,dishDTOThatWillResultError);
     }
     @Test
     void handleNullPointerException() throws Exception {
@@ -67,7 +69,7 @@ class CustomRestExceptionHandlerTest {
         when(dishService.add(dishDTOEmpty)).thenThrow(new NullPointerException(
                 CustomRestExceptionHandler.NULL_POINTER_EXCEPTION_MESSAGE));
         //when and then
-        mockMvc.perform(post(DishController.BASE_URL+"/add")
+        mockMvc.perform(post(BASE_URL)
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(dishDTOEmpty)))
@@ -82,12 +84,12 @@ class CustomRestExceptionHandlerTest {
     @Test
     void handleNoSuchElementException() throws Exception {
         //given
-        long dishIdThatDoesNotExist = 1L;
+        String dishIdThatDoesNotExist = "dish-uuid";
         String exceptionCustomMessage = "Custom_message";
         doThrow(new NoSuchElementException(exceptionCustomMessage))
                 .when(dishService).remove(dishIdThatDoesNotExist);
         //when and then
-        mockMvc.perform(delete(DishController.BASE_URL+"/remove/"+dishIdThatDoesNotExist)
+        mockMvc.perform(delete(BASE_URL+dishIdThatDoesNotExist)
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -100,12 +102,12 @@ class CustomRestExceptionHandlerTest {
     @Test
     void handleAnyException() throws Exception {
         //given
-        long dishId = 1L;
+        String dishId = "dish-uuid";
         DishDTO dishDTOThatWillResultError = new DishDTO();
         when(dishService.update(dishId,dishDTOThatWillResultError)).thenThrow(new RuntimeException(
                 CustomRestExceptionHandler.GENERIC_EXCEPTION_MESSAGE));
         //when and then
-        mockMvc.perform(put(DishController.BASE_URL+"/update/"+dishId)
+        mockMvc.perform(put(BASE_URL+dishId)
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(dishDTOThatWillResultError)))

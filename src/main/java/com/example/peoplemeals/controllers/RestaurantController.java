@@ -16,18 +16,20 @@ public class RestaurantController {
 
     @PostMapping({"/add"})
     @ResponseStatus(HttpStatus.CREATED)
-    public RestaurantDTO addRestaurant (@RequestBody RestaurantDTO restaurantDTO) {
+    public RestaurantDTO addRestaurant(@RequestBody RestaurantDTO restaurantDTO) {
         return restaurantService.add(restaurantDTO);
     }
+
     @DeleteMapping({"/remove/{restaurantId}"})
     @ResponseStatus(HttpStatus.OK)
-    public void removeRestaurant (@PathVariable Long restaurantId) {
+    public void removeRestaurant(@PathVariable Long restaurantId) {
         restaurantService.remove(restaurantId);
     }
+
     @PutMapping({"/update/{restaurantId}"})
     @ResponseStatus(HttpStatus.OK)
-    public RestaurantDTO updateRestaurant (@PathVariable Long restaurantId, @RequestBody RestaurantDTO restaurantDTO) {
-        return restaurantService.update(restaurantId,restaurantDTO);
+    public RestaurantDTO updateRestaurant(@PathVariable Long restaurantId, @RequestBody RestaurantDTO restaurantDTO) {
+        return restaurantService.update(restaurantId, restaurantDTO);
     }
 
 }

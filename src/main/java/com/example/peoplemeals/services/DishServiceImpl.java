@@ -7,8 +7,7 @@ import com.example.peoplemeals.repositories.DishRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -20,27 +19,24 @@ public class DishServiceImpl implements DishService {
     public DishDTO add(DishDTO dishDTO) {
         Dish dishToBeSaved = dishMapper.dishDTOToDish(dishDTO);
         dishToBeSaved.setId(null); //must remove ID to perform auto-generate
-        dishRepository.save(dishToBeSaved);
-        return dishMapper.dishToDishDTO(dishToBeSaved);
+        dishToBeSaved.setUuid(UUID.randomUUID());
+        Dish savedEntity = dishRepository.save(dishToBeSaved);
+        return dishMapper.dishToDishDTO(savedEntity);
     }
+
     @Override
-    public void remove(Long id) {
-        Dish dishInDB = checkElementPresence(id);
+    public void remove(String dishUuid) {
+        Dish dishInDB = dishRepository.findRequiredByUuid(dishUuid);
         dishRepository.delete(dishInDB);
     }
+
     @Override
-    public DishDTO update(Long id, DishDTO dishDTO) {
-        Dish dishInDB = checkElementPresence(id);
+    public DishDTO update(String dishUuid, DishDTO dishDTO) {
+        Dish dishInDB = dishRepository.findRequiredByUuid(dishUuid);
         Dish dishWithUpdatedData = dishMapper.dishDTOToDish(dishDTO);
+        //Set ID from original, to replace existing data when saved
         dishWithUpdatedData.setId(dishInDB.getId());
-        dishRepository.save(dishWithUpdatedData);
-        return dishMapper.dishToDishDTO(dishWithUpdatedData);
-    }
-    private Dish checkElementPresence(Long id) {
-        Optional<Dish> dishOptional = dishRepository.findById(id);
-        if (dishOptional.isEmpty()) {
-            throw new NoSuchElementException("No Dish with this ID was found in Database");
-        }
-        return dishOptional.get();
+        Dish dishSaved = dishRepository.save(dishWithUpdatedData);
+        return dishMapper.dishToDishDTO(dishSaved);
     }
 }
