@@ -7,6 +7,7 @@ import lombok.With;
 
 import javax.persistence.*;
 import java.time.DayOfWeek;
+import java.util.UUID;
 
 @Entity
 @Data
@@ -18,6 +19,8 @@ public class Planning {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    private UUID uuid;
 
     @Column(name = "day_of_week", length = 10)
     private DayOfWeek dayOfWeek;

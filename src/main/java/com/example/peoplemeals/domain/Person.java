@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.With;
 
 import javax.persistence.*;
+import java.util.UUID;
 
 @Entity
 @Data
@@ -17,6 +18,8 @@ public class Person {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    private UUID uuid;
 
     @Column(name = "fullname")
     private String fullName;

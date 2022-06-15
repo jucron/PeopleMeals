@@ -9,6 +9,7 @@ import javax.persistence.*;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.Set;
+import java.util.UUID;
 
 @Entity
 @Data
@@ -19,6 +20,8 @@ public class Restaurant {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    private UUID uuid;
 
     private String name;
 
