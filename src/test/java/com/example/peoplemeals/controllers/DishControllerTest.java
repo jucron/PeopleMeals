@@ -27,8 +27,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(MockitoExtension.class)
 class DishControllerTest {
-    /* Expected endpoints:
+    /** Expected endpoints:
         •	Add, remove, edit dishes (CRUD)
+        •   v2: get, getAll
+        NOTE: Tested in deeper layers: Wrong Format requests; Element Not In DB
      */
     @InjectMocks
     private DishController dishController;
@@ -46,60 +48,77 @@ class DishControllerTest {
 
     @Nested
     class CorrectRequests {
+        //given
+        private final DishDTO DISH_DTO = PojoExampleCreation.createDishDTOExample(1);
+
+        @Test
+        void getAllDishesFromRepo() throws Exception {
+            //when
+            mockMvc.perform(get(BASE_URL)
+                            .accept(MediaType.APPLICATION_JSON)
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk());
+            verify(dishService).getAll();
+        }
+
+        @Test
+        void getADishFromRepo() throws Exception {
+            //when
+            mockMvc.perform(get(BASE_URL + DISH_DTO.getUuid().toString())
+                            .accept(MediaType.APPLICATION_JSON)
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk());
+            verify(dishService).get(DISH_DTO.getUuid().toString());
+
+        }
+
         @Test
         void addADishToRepo() throws Exception {
-            //given
-            DishDTO dishDTO = PojoExampleCreation.createDishDTOExample(1);
-
-            given(dishService.add(dishDTO)).willReturn(dishDTO);
+            given(dishService.add(DISH_DTO)).willReturn(DISH_DTO);
             //when
             mockMvc.perform(post(BASE_URL)
                             .accept(MediaType.APPLICATION_JSON)
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(asJsonString(dishDTO)))
+                            .content(asJsonString(DISH_DTO)))
                     .andExpect(status().isCreated())
-                    .andExpect(jsonPath("$.name", equalTo(dishDTO.getName())))
-                    .andExpect(jsonPath("$.recipeUrl", equalTo(dishDTO.getRecipeUrl())));
+                    .andExpect(jsonPath("$.name", equalTo(DISH_DTO.getName())))
+                    .andExpect(jsonPath("$.recipeUrl", equalTo(DISH_DTO.getRecipeUrl())));
 
-            verify(dishService,times(1)).add(dishDTO);
+            verify(dishService,times(1)).add(DISH_DTO);
         }
 
         @Test
         void removeADishFromRepo() throws Exception {
-            //given
-            DishDTO dishDTO = PojoExampleCreation.createDishDTOExample(1);
             //when
-            mockMvc.perform(delete(BASE_URL + dishDTO.getUuid().toString())
+            mockMvc.perform(delete(BASE_URL + DISH_DTO.getUuid().toString())
                             .accept(MediaType.APPLICATION_JSON)
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk());
-            verify(dishService).remove(dishDTO.getUuid().toString());
+            verify(dishService).remove(DISH_DTO.getUuid().toString());
         }
 
         @Test
         void updateADishFromRepo() throws Exception {
             //given
-            Dish dish = PojoExampleCreation.createDishExample(1);
-            DishDTO dishDTO = PojoExampleCreation.createDishDTOExample(2);
-            given(dishService.update(dish.getUuid().toString(), dishDTO)).willReturn(dishDTO);
-
+            Dish dish = PojoExampleCreation.createDishExample(2);
+            given(dishService.update(dish.getUuid().toString(), DISH_DTO)).willReturn(DISH_DTO);
             //when
             mockMvc.perform(put(BASE_URL + dish.getUuid())
                             .accept(MediaType.APPLICATION_JSON)
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(asJsonString(dishDTO)))
+                            .content(asJsonString(DISH_DTO)))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.name", equalTo(dishDTO.getName())))
-                    .andExpect(jsonPath("$.recipeUrl", equalTo(dishDTO.getRecipeUrl())));
-            verify(dishService).update(dish.getUuid().toString(),dishDTO);
+                    .andExpect(jsonPath("$.name", equalTo(DISH_DTO.getName())))
+                    .andExpect(jsonPath("$.recipeUrl", equalTo(DISH_DTO.getRecipeUrl())));
+            verify(dishService).update(dish.getUuid().toString(),DISH_DTO);
         }
     }
 
     @Nested
     class FailRequests {
-        @Test
-        void emptyBodyAddDish() throws Exception {
 
+        @Test
+        void emptyBody_AddDish() throws Exception {
             //when
             mockMvc.perform(post(BASE_URL)
                             .accept(MediaType.APPLICATION_JSON)
@@ -107,9 +126,9 @@ class DishControllerTest {
                     .andExpect(status().isBadRequest());
             verify(dishService,times(0)).add(any());
         }
-        @Test
-        void emptyUuidDeleteDish() throws Exception {
 
+        @Test
+        void emptyUuid_DeleteDish() throws Exception {
             //when
             mockMvc.perform(delete(BASE_URL)
                             .accept(MediaType.APPLICATION_JSON)
@@ -117,10 +136,11 @@ class DishControllerTest {
                     .andExpect(status().isMethodNotAllowed());
             verify(dishService,times(0)).remove(any());
         }
+
         @Nested
         class FailUpdateDish {
             @Test
-            void emptyBodyAndUuid() throws Exception {
+            void emptyBody_AndUuid() throws Exception {
 
                 //when
                 mockMvc.perform(put(BASE_URL)
@@ -129,6 +149,7 @@ class DishControllerTest {
                         .andExpect(status().isMethodNotAllowed());
                 verify(dishService,times(0)).update(any(), any());
             }
+
             @Test
             void emptyUuid() throws Exception {
 
@@ -140,6 +161,7 @@ class DishControllerTest {
                         .andExpect(status().isMethodNotAllowed());
                 verify(dishService,times(0)).update(any(), any());
             }
+
             @Test
             void emptyBody() throws Exception {
 

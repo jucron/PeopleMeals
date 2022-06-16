@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -18,12 +19,15 @@ public class DishServiceImpl implements DishService {
 
     @Override
     public EntityDTOList<DishDTO> getAll() {
-        return null;
+        return new EntityDTOList<>(dishRepository.findAll().stream()
+                .map(dishMapper::dishToDishDTO)
+                .collect(Collectors.toSet()));
     }
 
     @Override
     public DishDTO get(String dishUuid) {
-        return null;
+        return dishMapper.dishToDishDTO(
+                dishRepository.findRequiredByUuid(dishUuid));
     }
 
     @Override
