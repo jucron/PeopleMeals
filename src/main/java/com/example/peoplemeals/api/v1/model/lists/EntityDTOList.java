@@ -1,4 +1,4 @@
-package com.example.peoplemeals.api.v1.model;
+package com.example.peoplemeals.api.v1.model.lists;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,6 +11,6 @@ import java.util.Set;
 @With
 @AllArgsConstructor
 @NoArgsConstructor
-public class PersonDTOList {
-    private Set<PersonDTO> personDTOList;
+public class EntityDTOList<T>{
+    private Set<T> entityDTOList;
 }

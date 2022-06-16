@@ -3,9 +3,9 @@ package com.example.peoplemeals.services;
 import com.example.peoplemeals.api.v1.mapper.PersonMapper;
 import com.example.peoplemeals.api.v1.mapper.PlanningMapper;
 import com.example.peoplemeals.api.v1.model.PersonDTO;
-import com.example.peoplemeals.api.v1.model.PersonDTOList;
 import com.example.peoplemeals.api.v1.model.PlanningDTO;
 import com.example.peoplemeals.api.v1.model.forms.AssociateForm;
+import com.example.peoplemeals.api.v1.model.lists.EntityDTOList;
 import com.example.peoplemeals.domain.Dish;
 import com.example.peoplemeals.domain.Person;
 import com.example.peoplemeals.domain.Planning;
@@ -138,7 +138,7 @@ public class PlanningServiceImpl implements PlanningService {
     }
 
     @Override
-    public PersonDTOList getPersonListByRestaurantAndDay(long restaurantId, String dayOfWeek) {
+    public EntityDTOList<PersonDTO> getPersonListByRestaurantAndDay(long restaurantId, String dayOfWeek) {
         //Validation 1 - check DayOfWeek format:
         DayOfWeek dayOfWeekCorrectFormat = validateDayOfWeek(dayOfWeek);
         // Validation 2 - If RestaurantId is not in DB, return error
@@ -154,11 +154,11 @@ public class PlanningServiceImpl implements PlanningService {
                 .map(Planning::getPerson)
                 .map(personMapper::personToPersonDTO)
                 .collect(Collectors.toSet());
-        return new PersonDTOList().withPersonDTOList(personDTOSToBeReturned);
+        return new EntityDTOList<PersonDTO>().withEntityDTOList(personDTOSToBeReturned);
     }
 
     @Override
-    public PersonDTOList getPersonListByDishAndDay(long dishId, String dayOfWeek) {
+    public EntityDTOList<PersonDTO> getPersonListByDishAndDay(long dishId, String dayOfWeek) {
         //Validation 1 - check DayOfWeek format:
         DayOfWeek dayOfWeekCorrectFormat = validateDayOfWeek(dayOfWeek);
         // Validation 2 - If Dish is not in DB, return error
@@ -174,11 +174,11 @@ public class PlanningServiceImpl implements PlanningService {
                 .map(Planning::getPerson)
                 .map(personMapper::personToPersonDTO)
                 .collect(Collectors.toSet());
-        return new PersonDTOList().withPersonDTOList(personDTOSToBeReturned);
+        return new EntityDTOList<PersonDTO>().withEntityDTOList(personDTOSToBeReturned);
     }
 
     @Override
-    public PersonDTOList getPersonListWithNoDishByDay(String dayOfWeek) {
+    public EntityDTOList<PersonDTO> getPersonListWithNoDishByDay(String dayOfWeek) {
         //Validation 1 - check DayOfWeek format:
         DayOfWeek dayOfWeekCorrectFormat = validateDayOfWeek(dayOfWeek);
         //Create a collection of Persons that have a planning for this DayOfWeek
@@ -195,7 +195,7 @@ public class PlanningServiceImpl implements PlanningService {
                 .filter(person -> !personsInThisDayOfWeek.contains(person))
                 .map(personMapper::personToPersonDTO)
                 .collect(Collectors.toSet());
-        return new PersonDTOList().withPersonDTOList(personDTOSToBeReturned);
+        return new EntityDTOList<PersonDTO>().withEntityDTOList(personDTOSToBeReturned);
     }
 
     private DayOfWeek validateDayOfWeek(String dayOfWeek) {

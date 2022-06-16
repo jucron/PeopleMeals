@@ -2,6 +2,7 @@ package com.example.peoplemeals.services;
 
 import com.example.peoplemeals.api.v1.mapper.DishMapper;
 import com.example.peoplemeals.api.v1.model.DishDTO;
+import com.example.peoplemeals.api.v1.model.lists.EntityDTOList;
 import com.example.peoplemeals.domain.Dish;
 import com.example.peoplemeals.repositories.DishRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,16 @@ import java.util.UUID;
 public class DishServiceImpl implements DishService {
     private final DishRepository dishRepository;
     private final DishMapper dishMapper;
+
+    @Override
+    public EntityDTOList<DishDTO> getAll() {
+        return null;
+    }
+
+    @Override
+    public DishDTO get(String dishUuid) {
+        return null;
+    }
 
     @Override
     public DishDTO add(DishDTO dishDTO) {
@@ -39,4 +50,6 @@ public class DishServiceImpl implements DishService {
         Dish dishSaved = dishRepository.save(dishWithUpdatedData);
         return dishMapper.dishToDishDTO(dishSaved);
     }
+
+
 }

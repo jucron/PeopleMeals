@@ -1,8 +1,9 @@
 package com.example.peoplemeals.controllers;
 
-import com.example.peoplemeals.api.v1.model.PersonDTOList;
+import com.example.peoplemeals.api.v1.model.PersonDTO;
 import com.example.peoplemeals.api.v1.model.PlanningDTO;
 import com.example.peoplemeals.api.v1.model.forms.AssociateForm;
+import com.example.peoplemeals.api.v1.model.lists.EntityDTOList;
 import com.example.peoplemeals.services.PlanningService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -29,19 +30,19 @@ public class PlanningController {
 
     @GetMapping({"/getPersonList/{restaurantId}/{dayOfWeek}/restaurant"})
     @ResponseStatus(HttpStatus.OK)
-    public PersonDTOList getPersonListByRestaurantAndDay(@PathVariable long restaurantId, @PathVariable String dayOfWeek) {
+    public EntityDTOList<PersonDTO> getPersonListByRestaurantAndDay(@PathVariable long restaurantId, @PathVariable String dayOfWeek) {
         return planningService.getPersonListByRestaurantAndDay(restaurantId, dayOfWeek);
     }
 
     @GetMapping({"/getPersonList/{dishId}/{dayOfWeek}/dish"})
     @ResponseStatus(HttpStatus.OK)
-    public PersonDTOList getPersonListByDishAndDay(@PathVariable long dishId, @PathVariable String dayOfWeek) {
+    public EntityDTOList<PersonDTO> getPersonListByDishAndDay(@PathVariable long dishId, @PathVariable String dayOfWeek) {
         return planningService.getPersonListByDishAndDay(dishId, dayOfWeek);
     }
 
     @GetMapping({"/getPersonList/{dayOfWeek}/no_dish"})
     @ResponseStatus(HttpStatus.OK)
-    public PersonDTOList getPersonListWithNoDishByDay(@PathVariable String dayOfWeek) {
+    public EntityDTOList<PersonDTO> getPersonListWithNoDishByDay(@PathVariable String dayOfWeek) {
         return planningService.getPersonListWithNoDishByDay(dayOfWeek);
     }
 

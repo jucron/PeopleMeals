@@ -3,9 +3,9 @@ package com.example.peoplemeals.services;
 import com.example.peoplemeals.api.v1.mapper.PersonMapper;
 import com.example.peoplemeals.api.v1.mapper.PlanningMapper;
 import com.example.peoplemeals.api.v1.model.PersonDTO;
-import com.example.peoplemeals.api.v1.model.PersonDTOList;
 import com.example.peoplemeals.api.v1.model.PlanningDTO;
 import com.example.peoplemeals.api.v1.model.forms.AssociateForm;
+import com.example.peoplemeals.api.v1.model.lists.EntityDTOList;
 import com.example.peoplemeals.domain.Person;
 import com.example.peoplemeals.domain.Planning;
 import com.example.peoplemeals.domain.Restaurant;
@@ -127,12 +127,12 @@ class PlanningServiceImplTest {
         when(personMapper.personToPersonDTO(planning1.getPerson())).thenReturn(new PersonDTO().withId(planning1.getPerson().getId()));
         when(personMapper.personToPersonDTO(planning2.getPerson())).thenReturn(new PersonDTO().withId(planning2.getPerson().getId()));
         //when
-        PersonDTOList personDTOList = planningService.getPersonListByRestaurantAndDay(restaurant.getId(),dayOfWeek.toString());
+        EntityDTOList<PersonDTO> personDTOList = planningService.getPersonListByRestaurantAndDay(restaurant.getId(),dayOfWeek.toString());
         //then
         verify(planningRepository).findAll();
         verify(restaurantRepository).findById(restaurant.getId());
         verify(personMapper,times(2)).personToPersonDTO(any(Person.class));
-        assertEquals(2,personDTOList.getPersonDTOList().size());
+        assertEquals(2,personDTOList.getEntityDTOList().size());
     }
     @Test
     void getPersonListByDishAndDay() {
@@ -148,12 +148,12 @@ class PlanningServiceImplTest {
         when(planningRepository.findAll()).thenReturn(new ArrayList<>(List.of(planning1,planning2)));
         when(personMapper.personToPersonDTO(planning1.getPerson())).thenReturn(new PersonDTO().withId(planning1.getPerson().getId()));
         //when
-        PersonDTOList personDTOList = planningService.getPersonListByDishAndDay(dishId,dayOfWeek.toString());
+        EntityDTOList<PersonDTO> personDTOList = planningService.getPersonListByDishAndDay(dishId,dayOfWeek.toString());
         //then
         verify(dishRepository).findById(dishId);
         verify(planningRepository).findAll();
         verify(personMapper).personToPersonDTO(any(Person.class));
-        assertEquals(1,personDTOList.getPersonDTOList().size());
+        assertEquals(1,personDTOList.getEntityDTOList().size());
     }
     @Test
     void getPersonListWithNoDishByDay() {
@@ -168,11 +168,11 @@ class PlanningServiceImplTest {
         when(personRepository.findAll()).thenReturn(List.of(planning1.getPerson(),personWithoutDish));
         when(personMapper.personToPersonDTO(personWithoutDish)).thenReturn(personDTOWithoutDish);
         //when
-        PersonDTOList personDTOList = planningService.getPersonListWithNoDishByDay(dayOfWeek.toString());
+        EntityDTOList<PersonDTO> personDTOList = planningService.getPersonListWithNoDishByDay(dayOfWeek.toString());
         //then
         verify(planningRepository).findAll();
         verify(personRepository).findAll();
         verify(personMapper,times(1)).personToPersonDTO(any(Person.class));
-        assertEquals(1,personDTOList.getPersonDTOList().size());
+        assertEquals(1,personDTOList.getEntityDTOList().size());
     }
 }

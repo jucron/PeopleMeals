@@ -2,9 +2,9 @@ package com.example.peoplemeals.controllers;
 
 import com.example.peoplemeals.api.v1.model.DishDTO;
 import com.example.peoplemeals.api.v1.model.PersonDTO;
-import com.example.peoplemeals.api.v1.model.PersonDTOList;
 import com.example.peoplemeals.api.v1.model.PlanningDTO;
 import com.example.peoplemeals.api.v1.model.forms.AssociateForm;
+import com.example.peoplemeals.api.v1.model.lists.EntityDTOList;
 import com.example.peoplemeals.services.PlanningService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -106,7 +106,7 @@ class PlanningControllerTest {
         //given
         long restaurantId = 1L;
         String dayOfWeek = DayOfWeek.MONDAY.toString();
-        PersonDTOList personDTOList = new PersonDTOList().withPersonDTOList(new HashSet<>(Set.of(
+        EntityDTOList<PersonDTO> personDTOList = new EntityDTOList<PersonDTO>().withEntityDTOList(new HashSet<>(Set.of(
                 new PersonDTO().withId(5L), new PersonDTO().withId(10L))));
         when(planningService.getPersonListByRestaurantAndDay(restaurantId, dayOfWeek))
                 .thenReturn(personDTOList);
@@ -124,7 +124,7 @@ class PlanningControllerTest {
         //given
         long dishId = 1L;
         String dayOfWeek = DayOfWeek.MONDAY.toString();
-        PersonDTOList personDTOList = new PersonDTOList().withPersonDTOList(new HashSet<>(Set.of(
+        EntityDTOList<PersonDTO> personDTOList = new EntityDTOList<PersonDTO>().withEntityDTOList(new HashSet<>(Set.of(
                 new PersonDTO().withId(5L), new PersonDTO().withId(10L))));
         when(planningService.getPersonListByDishAndDay(dishId, dayOfWeek))
                 .thenReturn(personDTOList);
@@ -140,7 +140,7 @@ class PlanningControllerTest {
     void getPersonDTOListWithNoDishByDayOfWeek() throws Exception {
         //given
         String dayOfWeek = DayOfWeek.MONDAY.toString();
-        PersonDTOList personDTOList = new PersonDTOList().withPersonDTOList(new HashSet<>(Set.of(
+        EntityDTOList<PersonDTO> personDTOList = new EntityDTOList<PersonDTO>().withEntityDTOList(new HashSet<>(Set.of(
                 new PersonDTO().withId(5L), new PersonDTO().withId(10L))));
         when(planningService.getPersonListWithNoDishByDay(dayOfWeek))
                 .thenReturn(personDTOList);
