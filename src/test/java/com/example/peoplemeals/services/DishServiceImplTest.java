@@ -56,7 +56,7 @@ class DishServiceImplTest {
             verify(dishRepository).delete(any(Dish.class));
         }
         @Nested
-        class TestsWithMoreData {
+        class UploadTestingData {
 
             @BeforeEach
             public void setUpDataAndStubs(){
@@ -109,6 +109,7 @@ class DishServiceImplTest {
     class FailedServices {
         @Test
         void add_remove_update_NullObject() {
+            //given expected behavior
             when(dishRepository.findRequiredByUuid(null)).thenThrow(IllegalArgumentException.class);
             //when-then
             assertThrows(NullPointerException.class,()-> dishService.add(null));
@@ -122,7 +123,7 @@ class DishServiceImplTest {
             private final String nonExistingUuid = "uuid-example";
 
             @BeforeEach
-            void mockingObjets() {
+            void stubbingExpectedBehaviours() {
                 when(dishRepository.findRequiredByUuid(nonExistingUuid)).thenThrow(NoSuchElementException.class);
             }
 

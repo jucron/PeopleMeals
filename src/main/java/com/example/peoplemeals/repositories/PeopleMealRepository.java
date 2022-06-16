@@ -13,17 +13,19 @@ public interface PeopleMealRepository <E, I> extends JpaRepository<E, I> {
 
     Optional<E> findByUuid(UUID uuid);
 
-//    default E findRequiredById(I id) {
-//        return findById(id).orElseThrow(() ->
-//                new NoSuchElementException("No Element with this ID was found in Database"));
-//    }
+    int countByUuid(UUID uuid);
+
     default E findRequiredByUuid(String uuid) {
         return findByUuid(UUID.fromString(uuid)).orElseThrow(() ->
-                new NoSuchElementException("No Element with this UUID was found in Database"));
+                new NoSuchElementException("No Element with UUID: <"+uuid+"> was found in Database"));
+    }
+    default boolean isPresentRequiredByUuid(String uuid) {
+        if (countByUuid(UUID.fromString(uuid))>0) {
+            return true;
+        } else {
+            throw new NoSuchElementException("No Element with UUID: <"+uuid+"> was found in Database");
+        }
     }
 
-//    @Query...
-//    default I findIdRequiredById(I id) {
-//        return (id).orElseThrow(() -> new NoSuchElementException(".."));
-//    }
+
 }
