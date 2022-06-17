@@ -41,16 +41,17 @@ public class PersonServiceImpl implements PersonService {
 
     @Override
     public void remove(String personUuid) {
-        Person personInDB = personRepository.findRequiredByUuid(personUuid);
-        personRepository.delete(personInDB);
+        personRepository.deleteById(personRepository.findIdRequiredByUuid(personUuid));
     }
 
     @Override
     public PersonDTO update(String personUuid, PersonDTO personDTO) {
-        Person personInDB = personRepository.findRequiredByUuid(personUuid);
+        long iDOfPersonInDB = personRepository.findIdRequiredByUuid(personUuid);
+        //Get new Data from DTO; set ID and UUID from original, to replace existing data when saved
         Person personWithUpdatedData = personMapper.personDTOToPerson(personDTO);
-        //Set ID from original, to replace existing data when saved
-        personWithUpdatedData.setId(personInDB.getId());
+        personWithUpdatedData.setId(iDOfPersonInDB); //Set correct ID from DB
+        personWithUpdatedData.setUuid(UUID.fromString(personUuid)); //Set correct UUID (confirmed by ID fetching)
+        //Persist and send back a new DTO
         Person personSaved = personRepository.save(personWithUpdatedData);
         return personMapper.personToPersonDTO(personSaved);
     }

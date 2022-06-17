@@ -131,7 +131,6 @@ class DishControllerTest {
         class FailUpdate {
             @Test
             void emptyBodyAndUuid() throws Exception {
-
                 //when
                 mockMvc.perform(put(BASE_URL)
                                 .accept(MediaType.APPLICATION_JSON)
@@ -142,7 +141,6 @@ class DishControllerTest {
 
             @Test
             void emptyUuid() throws Exception {
-
                 //when
                 mockMvc.perform(put(BASE_URL)
                                 .accept(MediaType.APPLICATION_JSON)
@@ -154,7 +152,6 @@ class DishControllerTest {
 
             @Test
             void emptyBody() throws Exception {
-
                 //when
                 mockMvc.perform(put(BASE_URL+"Some-uuid")
                                 .accept(MediaType.APPLICATION_JSON)

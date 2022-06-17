@@ -9,6 +9,7 @@ import lombok.With;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.Set;
+import java.util.UUID;
 
 @Data
 @With
@@ -16,7 +17,7 @@ import java.util.Set;
 @NoArgsConstructor
 public class RestaurantDTO {
 
-    private Long id;
+    private UUID uuid;
     private String name;
     private LocalTime openingTime;
     private LocalTime closingTime;

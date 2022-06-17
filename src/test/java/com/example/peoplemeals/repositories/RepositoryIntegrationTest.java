@@ -18,7 +18,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @DataJpaTest
 class RepositoryIntegrationTest {
 
-
     @Autowired
     private DishRepository dishRepository;
 
@@ -52,6 +51,7 @@ class RepositoryIntegrationTest {
         }
 
     }
+
     @Nested
     class findRequiredByUuid {
         @Test
@@ -87,6 +87,7 @@ class RepositoryIntegrationTest {
             assertEquals(0,count);
         }
     }
+
     @Nested
     class isPresentRequiredByUuid {
         @Test
@@ -105,4 +106,39 @@ class RepositoryIntegrationTest {
         }
     }
 
+    @Nested
+    class findIdByUuid {
+        @Test
+        void findIdByUuidExists() {
+            Optional<ProjectId> dishIdOptional = dishRepository.findIdByUuid(dishToBeTested.getUuid());
+            assertTrue(dishIdOptional.isPresent());
+            assertEquals(dishToBeTested.getId(), dishIdOptional.get().getId());
+        }
+
+        @Test
+        void findIdByUuidNotInDB() {
+            Optional<ProjectId> dishIdOptional = dishRepository.findIdByUuid(RANDOM_UUID);
+            assertTrue(dishIdOptional.isEmpty());
+        }
+    }
+
+    @Nested
+    class findIdRequiredByUuid {
+        @Test
+        void findIdRequiredByUuidExists() {
+            long dishId = dishRepository.findIdRequiredByUuid(dishToBeTested.getUuid().toString());
+            assertEquals(dishToBeTested.getId(),dishId);
+        }
+
+        @Test
+        void findIdRequiredByUuidNotInDB() {
+            assertThrows(NoSuchElementException.class,()->dishRepository.findIdRequiredByUuid(RANDOM_UUID.toString()));
+        }
+
+        @Test
+        void findIdRequiredByUuidInWrongFormat() {
+            assertThrows(IllegalArgumentException.class,()->UUID.fromString("some_wrong_format")); //nested exception catch by Spring
+            assertThrows(NestedRuntimeException.class,()->dishRepository.findIdRequiredByUuid("some_wrong_format"));
+        }
+    }
 }

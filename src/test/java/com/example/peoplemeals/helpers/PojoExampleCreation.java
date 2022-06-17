@@ -77,8 +77,7 @@ public class PojoExampleCreation {
     }
     public static RestaurantDTO createRestaurantDTOExample (int ref) {
         return new RestaurantDTO()
-                .withId(100L+ref)
-//                .withUuid(UUID.randomUUID())
+                .withUuid(UUID.randomUUID())
                 .withName("restaurantName_example_"+ref)
                 .withOpeningTime(LocalTime.of(8,0))
                 .withClosingTime(LocalTime.of(20,20))

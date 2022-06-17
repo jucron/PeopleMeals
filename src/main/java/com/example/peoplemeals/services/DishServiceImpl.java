@@ -41,19 +41,18 @@ public class DishServiceImpl implements DishService {
 
     @Override
     public void remove(String dishUuid) {
-        Dish dishInDB = dishRepository.findRequiredByUuid(dishUuid);
-        dishRepository.delete(dishInDB);
+        dishRepository.deleteById(dishRepository.findIdRequiredByUuid(dishUuid));
     }
 
     @Override
     public DishDTO update(String dishUuid, DishDTO dishDTO) {
-        Dish dishInDB = dishRepository.findRequiredByUuid(dishUuid);
+        long iDOfDishInDB = dishRepository.findIdRequiredByUuid(dishUuid);
+        //Get new Data from DTO; set ID and UUID from original, to replace existing data when saved
         Dish dishWithUpdatedData = dishMapper.dishDTOToDish(dishDTO);
-        //Set ID from original, to replace existing data when saved
-        dishWithUpdatedData.setId(dishInDB.getId());
+        dishWithUpdatedData.setId(iDOfDishInDB); //Set correct ID from DB
+        dishWithUpdatedData.setUuid(UUID.fromString(dishUuid)); //Set correct UUID (confirmed by ID fetching)
+        //Persist and send back a new DTO
         Dish dishSaved = dishRepository.save(dishWithUpdatedData);
         return dishMapper.dishToDishDTO(dishSaved);
     }
-
-
 }

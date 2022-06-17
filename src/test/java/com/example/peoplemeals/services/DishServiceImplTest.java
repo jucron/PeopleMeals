@@ -17,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -38,49 +39,49 @@ class DishServiceImplTest {
     public void setUpForAll(){
         //Instantiate service class
         dishService = new DishServiceImpl(dishRepository,dishMapper);
-
     }
 
     @Nested
     class SuccessfulServices {
+        private final String DISH_UUID = "Uuid_example";
 
         @Test
-        void getAllElements() {
-            when(dishRepository.findAll()).thenReturn(List.of(new Dish()));
+        void removeAnExistingObject() {
+            //given
+            long idExample = 15L;
+            when(dishRepository.findIdRequiredByUuid(anyString())).thenReturn(idExample);
             //when
-            dishService.getAll();
+            dishService.remove(DISH_UUID);
             //then
-            verify(dishRepository).findAll();
-            verify(dishMapper,times(1)).dishToDishDTO(any(Dish.class));
+            verify(dishRepository).deleteById(idExample);
+            verify(dishRepository).findIdRequiredByUuid(DISH_UUID);
         }
 
         @Nested
-        class GetAndRemoveMethods {
-            private final String DISH_UUID = "dishUuid_example";
-
-            @BeforeEach
-            public void setUpCommonDataAndStubs(){
-                when(dishRepository.findRequiredByUuid(anyString())).thenReturn((new Dish()));
+        class GetAndGetAllMethods {
+            @Test
+            void getElements() {
+                when(dishRepository.findAll()).thenReturn(List.of(new Dish()));
+                //when
+                dishService.getAll();
+                //then
+                verify(dishRepository).findAll();
             }
 
             @Test
             void getASingleElement() {
+                //given
+                when(dishRepository.findRequiredByUuid(anyString())).thenReturn((new Dish()));
                 //when
                 dishService.get(DISH_UUID);
                 //then
-                verify(dishMapper,times(1)).dishToDishDTO(any(Dish.class));
+                verify(dishRepository).findRequiredByUuid(DISH_UUID);
             }
 
-            @Test
-            void removeAnExistingObject() {
-                //when
-                dishService.remove(DISH_UUID);
-                verify(dishRepository).delete(any(Dish.class));
-            }
             @AfterEach
             void checkCommonAsserts() {
                 //then
-                verify(dishRepository).findRequiredByUuid(DISH_UUID);
+                verify(dishMapper,times(1)).dishToDishDTO(any(Dish.class));
             }
         }
 
@@ -114,18 +115,19 @@ class DishServiceImplTest {
             @Test
             void updateAnExistingObjectFromDatabase() {
                 //given
-                String dishUuid = "dishUuid_example";
+                String dishUuid = UUID.randomUUID().toString();
                 long dishIdFromDB = 15L;
-                when(dishRepository.findRequiredByUuid(dishUuid)).thenReturn((
-                        new Dish().withId(dishIdFromDB)));
+                when(dishRepository.findIdRequiredByUuid(dishUuid)).thenReturn((
+                        dishIdFromDB));
                 //when
                 DishDTO dishUpdatedDTO = dishService.update(dishUuid,new DishDTO());
                 //then
-                verify(dishRepository).findRequiredByUuid(dishUuid);       //Entity is fetched by ID
+                verify(dishRepository).findIdRequiredByUuid(dishUuid);       //Entity ID is fetched by UUID
                 verify(dishRepository).save(dishArgumentCaptor.capture());  //Entity is updated
 
                 Dish dishCaptured = dishArgumentCaptor.getValue();      //Capture the object saved
                 assertEquals(dishIdFromDB,dishCaptured.getId());   //Assert that ID was the same as fetched before persisted
+                assertEquals(dishUuid,dishCaptured.getUuid().toString());   //Assert that UUID was the same as fetched before persisted
             }
 
             @AfterEach
@@ -140,9 +142,10 @@ class DishServiceImplTest {
     @Nested
     class FailedServices {
         @Test
-        void anyService_NullObjects() {
+        void anyServiceWithNullObjects() {
             //given expected behavior
             when(dishRepository.findRequiredByUuid(null)).thenThrow(IllegalArgumentException.class);
+            when(dishRepository.findIdRequiredByUuid(null)).thenThrow(IllegalArgumentException.class);
             //when-then
             assertThrows(NullPointerException.class,()-> dishService.add(null));
             assertThrows(IllegalArgumentException.class,()-> dishService.remove(null));
@@ -155,30 +158,33 @@ class DishServiceImplTest {
         class AccessingNonExistingObjectsInDatabase {
             private final String nonExistingUuid = "uuid-example";
 
-            @BeforeEach
-            void stubbingExpectedBehaviours() {
-                when(dishRepository.findRequiredByUuid(nonExistingUuid)).thenThrow(NoSuchElementException.class);
-            }
-
             @Test
             void getNonExistingObject() {
+                //given expected behavior
+                when(dishRepository.findRequiredByUuid(nonExistingUuid)).thenThrow(NoSuchElementException.class);
                 //when
                 assertThrows(NoSuchElementException.class,()-> dishService.get(nonExistingUuid));
             }
 
-            @Test
-            void removeNonExistingObject() {
-                //when
-                assertThrows(NoSuchElementException.class,()-> dishService.remove(nonExistingUuid));
-            }
+            @Nested
+            class removeAndUpdateMethods {
+                @BeforeEach
+                void stubbingExpectedBehaviours() {
+                    when(dishRepository.findIdRequiredByUuid(nonExistingUuid)).thenThrow(NoSuchElementException.class);
+                }
 
-            @Test
-            void updateNonExistingObject() {
-                //when
-                assertThrows(NoSuchElementException.class,()-> dishService.update(nonExistingUuid, new DishDTO()));
+                @Test
+                void removeNonExistingObject() {
+                    //when
+                    assertThrows(NoSuchElementException.class,()-> dishService.remove(nonExistingUuid));
+                }
+
+                @Test
+                void updateNonExistingObject() {
+                    //when
+                    assertThrows(NoSuchElementException.class,()-> dishService.update(nonExistingUuid, new DishDTO()));
+                }
             }
         }
-
-
     }
 }

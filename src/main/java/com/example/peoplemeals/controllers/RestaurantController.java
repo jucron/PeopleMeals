@@ -1,35 +1,48 @@
 package com.example.peoplemeals.controllers;
 
 import com.example.peoplemeals.api.v1.model.RestaurantDTO;
+import com.example.peoplemeals.api.v1.model.lists.EntityDTOList;
 import com.example.peoplemeals.services.RestaurantService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping(RestaurantController.BASE_URL)
+@RequestMapping("/restaurants/")
 @RequiredArgsConstructor
 public class RestaurantController {
 
-    public static final String BASE_URL = "/api/v1/restaurants";
     private final RestaurantService restaurantService;
 
-    @PostMapping({"/add"})
+    @GetMapping({"/"})
+    @ResponseStatus(HttpStatus.OK)
+    public EntityDTOList<RestaurantDTO> getAllRestaurants () {
+        return restaurantService.getAll();
+    }
+
+    @GetMapping({"/{restaurantUuid}"})
+    @ResponseStatus(HttpStatus.OK)
+    public RestaurantDTO getRestaurant (@PathVariable String restaurantUuid) {
+        return restaurantService.get(restaurantUuid);
+    }
+
+
+    @PostMapping({"/"})
     @ResponseStatus(HttpStatus.CREATED)
     public RestaurantDTO addRestaurant(@RequestBody RestaurantDTO restaurantDTO) {
         return restaurantService.add(restaurantDTO);
     }
 
-    @DeleteMapping({"/remove/{restaurantId}"})
+    @DeleteMapping({"/{restaurantUuid}"})
     @ResponseStatus(HttpStatus.OK)
-    public void removeRestaurant(@PathVariable Long restaurantId) {
-        restaurantService.remove(restaurantId);
+    public void removeRestaurant(@PathVariable String restaurantUuid) {
+        restaurantService.remove(restaurantUuid);
     }
 
-    @PutMapping({"/update/{restaurantId}"})
+    @PutMapping({"/{restaurantUuid}"})
     @ResponseStatus(HttpStatus.OK)
-    public RestaurantDTO updateRestaurant(@PathVariable Long restaurantId, @RequestBody RestaurantDTO restaurantDTO) {
-        return restaurantService.update(restaurantId, restaurantDTO);
+    public RestaurantDTO updateRestaurant(@PathVariable String restaurantUuid, @RequestBody RestaurantDTO restaurantDTO) {
+        return restaurantService.update(restaurantUuid, restaurantDTO);
     }
 
 }

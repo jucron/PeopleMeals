@@ -17,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -41,51 +42,49 @@ class PersonServiceImplTest {
 
     @Nested
     class SuccessfulServices {
+        private final String PERSON_UUID = "uuid_example";
 
         @Test
-        void getAllElements() {
-            when(personRepository.findAll()).thenReturn(List.of(new Person()));
+        void removeAnExistingObject() {
+            //given
+            long idExample = 15L;
+            when(personRepository.findIdRequiredByUuid(anyString())).thenReturn(idExample);
             //when
-            personService.getAll();
+            personService.remove(PERSON_UUID);
             //then
-            verify(personRepository).findAll();
-            verify(personMapper,times(1)).personToPersonDTO(any(Person.class));
+            verify(personRepository).deleteById(idExample);
+            verify(personRepository).findIdRequiredByUuid(PERSON_UUID);
         }
 
         @Nested
-        class GetAndRemoveMethods {
-            private final String person_UUID = "personUuid_example";
-
-            @BeforeEach
-            public void setUpCommonDataAndStubs(){
-                when(personRepository.findRequiredByUuid(anyString())).thenReturn((new Person()));
+        class GetAndGetAllMethods {
+            @Test
+            void getAllElements() {
+                when(personRepository.findAll()).thenReturn(List.of(new Person()));
+                //when
+                personService.getAll();
+                //then
+                verify(personRepository).findAll();
             }
 
             @Test
             void getASingleElement() {
+                //given
+                when(personRepository.findRequiredByUuid(anyString())).thenReturn((new Person()));
                 //when
-                personService.get(person_UUID);
+                personService.get(PERSON_UUID);
                 //then
-                verify(personMapper,times(1)).personToPersonDTO(any(Person.class));
+                verify(personRepository).findRequiredByUuid(PERSON_UUID);
             }
-
-            @Test
-            void removeAnExistingObject() {
-                //when
-                personService.remove(person_UUID);
-                verify(personRepository).delete(any(Person.class));
-            }
-
             @AfterEach
             void checkCommonAsserts() {
                 //then
-                verify(personRepository).findRequiredByUuid(person_UUID);
+                verify(personMapper,times(1)).personToPersonDTO(any(Person.class));
             }
         }
 
         @Nested
         class AddAndUpdateMethods {
-
             @BeforeEach
             public void setUpCommonDataAndStubs(){
                 //given data
@@ -113,18 +112,19 @@ class PersonServiceImplTest {
             @Test
             void updateAnExistingObjectFromDatabase() {
                 //given
-                String personUuid = "personUuid_example";
+                String personUuid = UUID.randomUUID().toString();
                 long personIdFromDB = 15L;
-                when(personRepository.findRequiredByUuid(personUuid)).thenReturn((
-                        new Person().withId(personIdFromDB)));
+                when(personRepository.findIdRequiredByUuid(personUuid)).thenReturn((
+                        personIdFromDB));
                 //when
                 PersonDTO personUpdatedDTO = personService.update(personUuid,new PersonDTO());
                 //then
-                verify(personRepository).findRequiredByUuid(personUuid);       //Entity is fetched by ID
+                verify(personRepository).findIdRequiredByUuid(personUuid);       //Entity ID is fetched by UUID
                 verify(personRepository).save(personArgumentCaptor.capture());  //Entity is updated
 
                 Person personCaptured = personArgumentCaptor.getValue();      //Capture the object saved
                 assertEquals(personIdFromDB,personCaptured.getId());   //Assert that ID was the same as fetched before persisted
+                assertEquals(personUuid,personCaptured.getUuid().toString());   //Assert that UUID was the same as fetched before persisted
             }
 
             @AfterEach
@@ -139,9 +139,10 @@ class PersonServiceImplTest {
     @Nested
     class FailedServices {
         @Test
-        void anyService_NullObjects() {
+        void anyServiceWithNullObjects() {
             //given expected behavior
             when(personRepository.findRequiredByUuid(null)).thenThrow(IllegalArgumentException.class);
+            when(personRepository.findIdRequiredByUuid(null)).thenThrow(IllegalArgumentException.class);
             //when-then
             assertThrows(NullPointerException.class,()-> personService.add(null));
             assertThrows(IllegalArgumentException.class,()-> personService.remove(null));
@@ -154,27 +155,31 @@ class PersonServiceImplTest {
         class AccessingNonExistingObjectsInDatabase {
             private final String nonExistingUuid = "uuid-example";
 
-            @BeforeEach
-            void stubbingExpectedBehaviours() {
-                when(personRepository.findRequiredByUuid(nonExistingUuid)).thenThrow(NoSuchElementException.class);
-            }
-
             @Test
             void getNonExistingObject() {
+                //given expected behavior
+                when(personRepository.findRequiredByUuid(nonExistingUuid)).thenThrow(NoSuchElementException.class);
                 //when
                 assertThrows(NoSuchElementException.class,()-> personService.get(nonExistingUuid));
             }
+            @Nested
+            class removeAndUpdateMethods {
+                @BeforeEach
+                void stubbingExpectedBehaviours() {
+                    when(personRepository.findIdRequiredByUuid(nonExistingUuid)).thenThrow(NoSuchElementException.class);
+                }
 
-            @Test
-            void removeNonExistingObject() {
-                //when
-                assertThrows(NoSuchElementException.class,()-> personService.remove(nonExistingUuid));
-            }
+                @Test
+                void removeNonExistingObject() {
+                    //when
+                    assertThrows(NoSuchElementException.class,()-> personService.remove(nonExistingUuid));
+                }
 
-            @Test
-            void updateNonExistingObject() {
-                //when
-                assertThrows(NoSuchElementException.class,()-> personService.update(nonExistingUuid, new PersonDTO()));
+                @Test
+                void updateNonExistingObject() {
+                    //when
+                    assertThrows(NoSuchElementException.class,()-> personService.update(nonExistingUuid, new PersonDTO()));
+                }
             }
         }
     }

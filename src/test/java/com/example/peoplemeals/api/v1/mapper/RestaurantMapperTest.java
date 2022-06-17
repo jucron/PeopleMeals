@@ -18,7 +18,7 @@ class RestaurantMapperTest {
         //when
         RestaurantDTO restaurantDTO = restaurantMapper.restaurantToRestaurantDTO(restaurant);
         //then
-        assertEquals(restaurant.getId(),restaurantDTO.getId());
+        assertEquals(restaurant.getUuid(),restaurantDTO.getUuid());
         assertEquals(restaurant.getName(),restaurantDTO.getName());
         assertEquals(restaurant.getOpeningTime(),restaurantDTO.getOpeningTime());
         assertEquals(restaurant.getClosingTime(),restaurantDTO.getClosingTime());
@@ -33,7 +33,7 @@ class RestaurantMapperTest {
         //when
         Restaurant restaurant = restaurantMapper.restaurantDTOToRestaurant(restaurantDTO);
         //then
-        assertEquals(restaurantDTO.getId(),restaurant.getId());
+        assertEquals(restaurantDTO.getUuid(),restaurant.getUuid());
         assertEquals(restaurantDTO.getName(),restaurant.getName());
         assertEquals(restaurantDTO.getOpeningTime(),restaurant.getOpeningTime());
         assertEquals(restaurantDTO.getClosingTime(),restaurant.getClosingTime());
