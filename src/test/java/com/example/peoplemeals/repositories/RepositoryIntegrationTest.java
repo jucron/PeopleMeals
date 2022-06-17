@@ -1,6 +1,7 @@
 package com.example.peoplemeals.repositories;
 
 import com.example.peoplemeals.domain.Dish;
+import com.example.peoplemeals.domain.Planning;
 import com.example.peoplemeals.helpers.PojoExampleCreation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -21,8 +22,12 @@ class RepositoryIntegrationTest {
     @Autowired
     private DishRepository dishRepository;
 
+    @Autowired
+    private com.example.peoplemeals.repositories.PlanningRepository planningRepository;
+
     private final UUID RANDOM_UUID = UUID.randomUUID();
     private Dish dishToBeTested;
+    private Planning planningToBeTested;
     private boolean bootstrapData = false;
 
     @BeforeEach
@@ -30,6 +35,11 @@ class RepositoryIntegrationTest {
         if (!bootstrapData) {
             dishToBeTested = dishRepository.save(PojoExampleCreation.createDishExample(1));
             dishRepository.save(PojoExampleCreation.createDishExample(2));
+
+            Planning planning = PojoExampleCreation.createPlanningExample(3);
+
+            planningToBeTested =planningRepository.save();
+
             bootstrapData = true;
         }
     }
@@ -74,39 +84,6 @@ class RepositoryIntegrationTest {
     }
 
     @Nested
-    class countByUuid {
-        @Test
-        void countByUuidExists() {
-            int count = dishRepository.countByUuid(dishToBeTested.getUuid());
-            assertEquals(1,count);
-        }
-
-        @Test
-        void countByUuidNotInDB() {
-            int count = dishRepository.countByUuid(RANDOM_UUID);
-            assertEquals(0,count);
-        }
-    }
-
-    @Nested
-    class isPresentRequiredByUuid {
-        @Test
-        void isPresentRequiredByUuidExists() {
-            boolean check = dishRepository.isPresentRequiredByUuid(dishToBeTested.getUuid().toString());
-            assertTrue(check);
-        }
-
-        @Test
-        void isPresentRequiredByUuidNotInDB() {
-            assertThrows(NoSuchElementException.class,()->dishRepository.isPresentRequiredByUuid(RANDOM_UUID.toString()));
-        }
-        @Test
-        void isPresentRequiredByUuiWrongFormat() {
-            assertThrows(NestedRuntimeException.class,()->dishRepository.isPresentRequiredByUuid("some_wrong_format"));
-        }
-    }
-
-    @Nested
     class findIdByUuid {
         @Test
         void findIdByUuidExists() {
@@ -140,5 +117,21 @@ class RepositoryIntegrationTest {
             assertThrows(IllegalArgumentException.class,()->UUID.fromString("some_wrong_format")); //nested exception catch by Spring
             assertThrows(NestedRuntimeException.class,()->dishRepository.findIdRequiredByUuid("some_wrong_format"));
         }
+    }
+    @Nested
+    class PlanningRepository {
+        @Test
+        void findPlanningIdByDishIdPersonIdRestaurantId() {
+            System.out.println(planningToBeTested);
+            long dishId = planningToBeTested.getDish().getId();
+            long personId = planningToBeTested.getPerson().getId();
+            long restaurantId = planningToBeTested.getRestaurant().getId();
+
+            Optional<Long> planningIdFetched = planningRepository.findPlanningIdByDishIdPersonIdRestaurantId(dishId,personId,restaurantId);
+            //then
+            assertTrue(planningIdFetched.isPresent());
+            assertEquals(planningToBeTested.getId(),planningIdFetched.get());
+        }
+
     }
 }

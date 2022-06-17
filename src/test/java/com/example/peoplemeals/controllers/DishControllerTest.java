@@ -66,7 +66,6 @@ class DishControllerTest {
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk());
             verify(dishService).get(DISH_DTO.getUuid().toString());
-
         }
 
         @Test
@@ -106,7 +105,6 @@ class DishControllerTest {
 
     @Nested
     class FailRequests {
-
         @Test
         void emptyBody_Add() throws Exception {
             //when

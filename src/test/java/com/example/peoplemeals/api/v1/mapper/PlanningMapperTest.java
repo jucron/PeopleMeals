@@ -18,9 +18,9 @@ class PlanningMapperTest {
         //when
         PlanningDTO planningDTO = planningMapper.planningToPlanningDTO(planning);
         //then
-        assertEquals(planning.getId(),planningDTO.getId());
+        assertEquals(planning.getUuid(),planningDTO.getUuid());
         assertEquals(planning.getDayOfWeek(),planningDTO.getDayOfWeek());
-        assertEquals(planning.getId(),planningDTO.getId());
+        assertEquals(planning.getUuid(),planningDTO.getUuid());
 
         assertEquals(planning.getDish().getUuid(),planningDTO.getDishDTO().getUuid());
         assertEquals(planning.getDish().getName(),planningDTO.getDishDTO().getName());

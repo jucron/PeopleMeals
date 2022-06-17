@@ -1,22 +1,38 @@
 package com.example.peoplemeals.controllers;
 
+import com.example.peoplemeals.api.v1.model.PlanningDTO;
+import com.example.peoplemeals.api.v1.model.forms.AssociateForm;
+import com.example.peoplemeals.helpers.PojoExampleCreation;
 import com.example.peoplemeals.services.PlanningService;
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-@Disabled
+import static com.example.peoplemeals.helpers.JsonConverter.asJsonString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 @ExtendWith(MockitoExtension.class)
 class PlanningControllerTest {
-    /* Expected functionalities:
-•	OK: Associate, remove a person to a dish on a specific day (planning/meal)
-•	OK: List people for a restaurant on a specific day (planning day)
-•	OK: List people for a specific dish on a specific day (planning/meals)
-•	OK: People who do not have dishes assigned on a specific day
+    /** Expected functionalities:
+    •	Associate, remove a person to a dish on a specific day (planning/meal)
+    •	List people for a restaurant on a specific day (planning day)
+    •	List people for a specific dish on a specific day (planning/meals)
+    •	People who do not have dishes assigned on a specific day
+    •   v2: get, getAll
+     NOTE: Tested in deeper layers: Wrong Format requests; Element Not In DB
      */
+     
     @InjectMocks
     private PlanningController planningController;
     @Mock
@@ -24,110 +40,180 @@ class PlanningControllerTest {
 
     private MockMvc mockMvc;
     private final String BASE_URL = PlanningController.BASE_URL;
-/*
+
     @BeforeEach
     void setUp() {
         mockMvc = MockMvcBuilders.standaloneSetup(planningController).build();
     }
-    @Test
-    void associateAPersonToDishRestaurantAndDay() throws Exception {
-        //given
-        AssociateForm associateForm = new AssociateForm()
-                .withDishUuid("uuid-dish")
-                .withPersonId(5L)
-                .withRestaurantId(10L)
-                .withDayOfWeek(DayOfWeek.MONDAY.toString());
-        when(planningService.associate(associateForm)).thenReturn(new PlanningDTO()
-                        .withDishDTO(new DishDTO().withUuid(UUID.fromString(associateForm.getDishUuid())))
-                        .withPersonDTO(new PersonDTO().withUuid(UUID.fromString(associateForm.getPersonUuid()))
-                        .withDayOfWeek(DayOfWeek.valueOf(associateForm.getDayOfWeek())));
-        //when
-        mockMvc.perform(post(BASE_URL + "/associate")
-                        .accept(MediaType.APPLICATION_JSON)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(asJsonString(associateForm)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.dishDTO.uuid", equalTo(associateForm.getDishUuid())))
-                .andExpect(jsonPath("$.personDTO.id", equalTo((int)associateForm.getPersonId())))
-                .andExpect(jsonPath("$.dayOfWeek", equalTo(associateForm.getDayOfWeek())));
-        verify(planningService).associate(associateForm);
-    }
-    @Test
-    void disassociateAPersonToDishRestaurantAndDay() throws Exception {
-        //given
-        AssociateForm associateForm = new AssociateForm()
-                .withDishUuid("uuid-dish")
-                .withPersonId(5L)
-                .withRestaurantId(10L)
-                .withDayOfWeek(DayOfWeek.MONDAY.toString());
-        when(planningService.disassociate(associateForm)).thenReturn(new PlanningDTO()
-                        .withId(null)
-                        .withDishDTO(new DishDTO().withUuid(UUID.fromString(associateForm.getDishUuid())))
-                        .withPersonDTO(new PersonDTO().withId(associateForm.getPersonId()))
-                        .withDayOfWeek(DayOfWeek.valueOf(associateForm.getDayOfWeek())));
-        //when
-        mockMvc.perform(post(BASE_URL + "/disassociate")
-                        .accept(MediaType.APPLICATION_JSON)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(asJsonString(associateForm)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", equalTo(null)))
-                .andExpect(jsonPath("$.dishDTO.uuid", equalTo((associateForm.getDishUuid()))))
-                .andExpect(jsonPath("$.personDTO.id", equalTo((int)associateForm.getPersonId())))
-                .andExpect(jsonPath("$.dayOfWeek", equalTo(associateForm.getDayOfWeek())));
-        verify(planningService).disassociate(associateForm);
-    }
-    @Test
-    void getPersonDTOListByRestaurantAndDayOfWeek() throws Exception {
-        //given
-        long restaurantId = 1L;
-        String dayOfWeek = DayOfWeek.MONDAY.toString();
-        EntityDTOList<PersonDTO> personDTOList = new EntityDTOList<PersonDTO>().withEntityDTOList(new HashSet<>(Set.of(
-                new PersonDTO().withId(5L), new PersonDTO().withId(10L))));
-        when(planningService.getPersonListByRestaurantAndDay(restaurantId, dayOfWeek))
-                .thenReturn(personDTOList);
-        //when
-        mockMvc.perform(get(BASE_URL + "/getPersonList/"+restaurantId+"/"+dayOfWeek+"/restaurant")
-                        .accept(MediaType.APPLICATION_JSON)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.personDTOList", hasSize(2)));
 
-        verify(planningService).getPersonListByRestaurantAndDay(restaurantId, dayOfWeek);
-    }
-    @Test
-    void getPersonDTOListByDishAndDayOfWeek() throws Exception {
+    @Nested
+    class CorrectRequests {
         //given
-        long dishId = 1L;
-        String dayOfWeek = DayOfWeek.MONDAY.toString();
-        EntityDTOList<PersonDTO> personDTOList = new EntityDTOList<PersonDTO>().withEntityDTOList(new HashSet<>(Set.of(
-                new PersonDTO().withId(5L), new PersonDTO().withId(10L))));
-        when(planningService.getPersonListByDishAndDay(dishId, dayOfWeek))
-                .thenReturn(personDTOList);
-        //when
-        mockMvc.perform(get(BASE_URL + "/getPersonList/"+dishId+"/"+dayOfWeek+"/dish")
-                        .accept(MediaType.APPLICATION_JSON)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.personDTOList", hasSize(2)));
-        verify(planningService).getPersonListByDishAndDay(dishId, dayOfWeek);
-    }
-    @Test
-    void getPersonDTOListWithNoDishByDayOfWeek() throws Exception {
-        //given
-        String dayOfWeek = DayOfWeek.MONDAY.toString();
-        EntityDTOList<PersonDTO> personDTOList = new EntityDTOList<PersonDTO>().withEntityDTOList(new HashSet<>(Set.of(
-                new PersonDTO().withId(5L), new PersonDTO().withId(10L))));
-        when(planningService.getPersonListWithNoDishByDay(dayOfWeek))
-                .thenReturn(personDTOList);
-        //when
-        mockMvc.perform(get(BASE_URL + "/getPersonList/"+dayOfWeek+"/no_dish")
-                        .accept(MediaType.APPLICATION_JSON)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.personDTOList", hasSize(2)));
-        verify(planningService).getPersonListWithNoDishByDay(dayOfWeek);
+        private final PlanningDTO PLANNING_DTO = PojoExampleCreation.createPlanningDTOExample(1);
+
+        @Test
+        void getAllPlanningsFromRepo() throws Exception {
+            //when
+            mockMvc.perform(get(BASE_URL)
+                            .accept(MediaType.APPLICATION_JSON)
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk());
+            verify(planningService).getAll();
+        }
+
+        @Test
+        void getASinglePlanningFromRepo() throws Exception {
+            //when
+            mockMvc.perform(get(BASE_URL + PLANNING_DTO.getUuid().toString())
+                            .accept(MediaType.APPLICATION_JSON)
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk());
+            verify(planningService).get(PLANNING_DTO.getUuid().toString());
+        }
+
+        @Test
+        void associateAPersonToDishAndRestaurantAndDay() throws Exception {
+            //when
+            mockMvc.perform(post(BASE_URL )
+                            .accept(MediaType.APPLICATION_JSON)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(asJsonString(new AssociateForm())))
+                    .andExpect(status().isOk());
+            verify(planningService).associate(any(AssociateForm.class));
+        }
+
+        @Test
+        void disassociateAPersonToDishAndRestaurantAndDay() throws Exception {
+            //when
+            mockMvc.perform(delete(BASE_URL)
+                            .accept(MediaType.APPLICATION_JSON)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(asJsonString(new AssociateForm())))
+                    .andExpect(status().isOk());
+            verify(planningService).disassociate(any(AssociateForm.class));
+        }
+
+        @Nested
+        class GetMethods {
+            private final String EXAMPLE_UUID = "restaurant-uuid";
+            private final String DAY_OF_WEEK = "AnyDayOfWeek";
+
+            @Test
+            void getPersonDTOListByRestaurantAndDayOfWeek() throws Exception {
+                //when
+                mockMvc.perform(get(BASE_URL + "restaurant/" +EXAMPLE_UUID + "/" + DAY_OF_WEEK )
+                                .accept(MediaType.APPLICATION_JSON)
+                                .contentType(MediaType.APPLICATION_JSON))
+                        .andExpect(status().isOk());
+                verify(planningService).getPersonListByRestaurantAndDay(EXAMPLE_UUID, DAY_OF_WEEK);
+            }
+            @Test
+            void getPersonDTOListByDishAndDayOfWeek() throws Exception {
+                //when
+                mockMvc.perform(get(BASE_URL + "dish/" + EXAMPLE_UUID + "/" + DAY_OF_WEEK)
+                                .accept(MediaType.APPLICATION_JSON)
+                                .contentType(MediaType.APPLICATION_JSON))
+                        .andExpect(status().isOk());
+                verify(planningService).getPersonListByDishAndDay(EXAMPLE_UUID, DAY_OF_WEEK);
+            }
+            @Test
+            void getPersonDTOListWithNoDishByDayOfWeek() throws Exception {
+                //when
+                mockMvc.perform(get(BASE_URL + "no_dish/" + DAY_OF_WEEK)
+                                .accept(MediaType.APPLICATION_JSON)
+                                .contentType(MediaType.APPLICATION_JSON))
+                        .andExpect(status().isOk());
+                verify(planningService).getPersonListWithNoDishByDay(DAY_OF_WEEK);
+            }
+        }
     }
 
- */
+    @Nested
+    class FailRequests {
+        @Test
+        void associateAPersonWithEmptyBody() throws Exception {
+            //when
+            mockMvc.perform(post(BASE_URL)
+                            .accept(MediaType.APPLICATION_JSON)
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isBadRequest());
+            verify(planningService, times(0)).associate(any());
+        }
+
+        @Test
+        void disassociateAPersonWithEmptyBody() throws Exception {
+            //when
+            mockMvc.perform(delete(BASE_URL)
+                            .accept(MediaType.APPLICATION_JSON)
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isBadRequest());
+            verify(planningService, times(0)).disassociate(any());
+        }
+
+        @Nested
+        class Fail_getMethods {
+            private final String EXAMPLE_PARAMETER = "example-parameter";
+
+            @Test
+            void Fail_getPersonListWithNoDishByDay_missingParameters() throws Exception {
+                //when
+                mockMvc.perform(get(BASE_URL + "no_dish/")
+                                .accept(MediaType.APPLICATION_JSON)
+                                .contentType(MediaType.APPLICATION_JSON))
+                        .andExpect(status().isOk()); //todo: why respond ok?
+                verify(planningService, times(0))
+                        .getPersonListWithNoDishByDay(any());
+            }
+
+            @Nested
+            class Fail_getPersonDTOListByRestaurantAndDayOfWeek {
+                @Test
+                void missingOneParameter() throws Exception {
+                    //when
+                    mockMvc.perform(get(BASE_URL + "restaurant/" + EXAMPLE_PARAMETER)
+                                    .accept(MediaType.APPLICATION_JSON)
+                                    .contentType(MediaType.APPLICATION_JSON))
+                            .andExpect(status().isNotFound());
+                    verify(planningService, times(0))
+                            .getPersonListByRestaurantAndDay(any(), any());
+                }
+
+                @Test
+                void missingAllParameters() throws Exception {
+                    //when
+                    mockMvc.perform(get(BASE_URL + "restaurant/")
+                                    .accept(MediaType.APPLICATION_JSON)
+                                    .contentType(MediaType.APPLICATION_JSON))
+                            .andExpect(status().isOk()); //todo: why respond ok?
+                    verify(planningService, times(0))
+                            .getPersonListByRestaurantAndDay(any(), any());
+                }
+            }
+
+            @Nested
+            class Fail_getPersonListByDishAndDay {
+                @Test
+                void missingOneParameter() throws Exception {
+                    //when
+                    mockMvc.perform(get(BASE_URL + "dish/" + EXAMPLE_PARAMETER)
+                                    .accept(MediaType.APPLICATION_JSON)
+                                    .contentType(MediaType.APPLICATION_JSON))
+                            .andExpect(status().isNotFound());
+                    verify(planningService, times(0))
+                            .getPersonListByDishAndDay(any(), any());
+                }
+
+                @Test
+                void missingAllParameters() throws Exception {
+                    //when
+                    mockMvc.perform(get(BASE_URL + "dish/")
+                                    .accept(MediaType.APPLICATION_JSON)
+                                    .contentType(MediaType.APPLICATION_JSON))
+                            .andExpect(status().isOk()); //todo: why respond ok?
+                    verify(planningService, times(0))
+                            .getPersonListByDishAndDay(any(), any());
+                }
+            }
+        }
+    }
 }

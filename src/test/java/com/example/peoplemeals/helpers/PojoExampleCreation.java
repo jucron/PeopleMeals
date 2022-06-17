@@ -69,8 +69,7 @@ public class PojoExampleCreation {
     }
     public static PlanningDTO createPlanningDTOExample (int ref) {
         return new PlanningDTO()
-                .withId(50L+ref)
-//                .withUuid(UUID.randomUUID())
+                .withUuid(UUID.randomUUID())
                 .withDayOfWeek(DayOfWeek.MONDAY)
                 .withDishDTO(createDishDTOExample(ref))
                 .withPersonDTO(createPersonDTOExample(ref));

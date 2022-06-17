@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.With;
 
 import java.time.DayOfWeek;
+import java.util.UUID;
 
 @Data
 @With
@@ -14,7 +15,7 @@ import java.time.DayOfWeek;
 @NoArgsConstructor
 public class PlanningDTO {
 
-    private Long id;
+    private UUID uuid;
     private DayOfWeek dayOfWeek;
     private DishDTO dishDTO;
     private PersonDTO personDTO;

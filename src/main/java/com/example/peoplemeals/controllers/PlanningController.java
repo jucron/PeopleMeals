@@ -13,34 +13,46 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(PlanningController.BASE_URL)
 @RequiredArgsConstructor
 public class PlanningController {
-    public static final String BASE_URL = "/api/v1/plannings";
+    public static final String BASE_URL = "/plannings/";
     private final PlanningService planningService;
 
-    @PostMapping({"/associate"})
+    @GetMapping({"/"})
     @ResponseStatus(HttpStatus.OK)
-    public PlanningDTO associatePersonToDish(@RequestBody AssociateForm associateForm) {
+    public EntityDTOList<PlanningDTO> getAllPlannings () {
+        return planningService.getAll();
+    }
+
+    @GetMapping({"/{planningUuid}"})
+    @ResponseStatus(HttpStatus.OK)
+    public PlanningDTO getPlanning (@PathVariable String planningUuid) {
+        return planningService.get(planningUuid);
+    }
+
+    @PostMapping({"/"})
+    @ResponseStatus(HttpStatus.OK)
+    public PlanningDTO associatePerson(@RequestBody AssociateForm associateForm) {
         return planningService.associate(associateForm);
     }
 
-    @PostMapping({"/disassociate"})
+    @DeleteMapping({"/"})
     @ResponseStatus(HttpStatus.OK)
-    public PlanningDTO disassociatePersonToDish(@RequestBody AssociateForm associateForm) {
-        return planningService.disassociate(associateForm);
+    public void disassociatePerson(@RequestBody AssociateForm associateForm) {
+        planningService.disassociate(associateForm);
     }
 
-    @GetMapping({"/getPersonList/{restaurantId}/{dayOfWeek}/restaurant"})
+    @GetMapping({"/restaurant/{restaurantUuid}/{dayOfWeek}"})
     @ResponseStatus(HttpStatus.OK)
-    public EntityDTOList<PersonDTO> getPersonListByRestaurantAndDay(@PathVariable long restaurantId, @PathVariable String dayOfWeek) {
-        return planningService.getPersonListByRestaurantAndDay(restaurantId, dayOfWeek);
+    public EntityDTOList<PersonDTO> getPersonListByRestaurantAndDay(@PathVariable String restaurantUuid, @PathVariable String dayOfWeek) {
+        return planningService.getPersonListByRestaurantAndDay(restaurantUuid, dayOfWeek);
     }
 
-    @GetMapping({"/getPersonList/{dishId}/{dayOfWeek}/dish"})
+    @GetMapping({"/dish/{dishUuid}/{dayOfWeek}"})
     @ResponseStatus(HttpStatus.OK)
-    public EntityDTOList<PersonDTO> getPersonListByDishAndDay(@PathVariable long dishId, @PathVariable String dayOfWeek) {
-        return planningService.getPersonListByDishAndDay(dishId, dayOfWeek);
+    public EntityDTOList<PersonDTO> getPersonListByDishAndDay(@PathVariable String dishUuid, @PathVariable String dayOfWeek) {
+        return planningService.getPersonListByDishAndDay(dishUuid, dayOfWeek);
     }
 
-    @GetMapping({"/getPersonList/{dayOfWeek}/no_dish"})
+    @GetMapping({"/no_dish/{dayOfWeek}"})
     @ResponseStatus(HttpStatus.OK)
     public EntityDTOList<PersonDTO> getPersonListWithNoDishByDay(@PathVariable String dayOfWeek) {
         return planningService.getPersonListWithNoDishByDay(dayOfWeek);

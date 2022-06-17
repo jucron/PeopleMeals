@@ -1,7 +1,27 @@
 package com.example.peoplemeals.services;
 
-/*
-@Disabled
+
+import com.example.peoplemeals.api.v1.mapper.PersonMapper;
+import com.example.peoplemeals.api.v1.mapper.PlanningMapper;
+import com.example.peoplemeals.domain.Planning;
+import com.example.peoplemeals.repositories.DishRepository;
+import com.example.peoplemeals.repositories.PersonRepository;
+import com.example.peoplemeals.repositories.PlanningRepository;
+import com.example.peoplemeals.repositories.RestaurantRepository;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.List;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
+
 @ExtendWith(MockitoExtension.class)
 class PlanningServiceImplTest {
     /* Expected functionalities:
@@ -10,7 +30,8 @@ class PlanningServiceImplTest {
 •	OK: List people for a specific dish on a specific day (planning/meals)
 •	OK: People who do not have dishes assigned on a specific day
      */
-/*
+
+
     private PlanningService planningService;
 
     @Mock
@@ -27,11 +48,45 @@ class PlanningServiceImplTest {
     private PersonMapper personMapper;
 
     @BeforeEach
-    public void setUp(){
+    public void setUpForAll(){
+        //Instantiate service class
         planningService = new PlanningServiceImpl(
                 planningRepository,planningMapper,dishRepository,
                 personRepository,restaurantRepository,personMapper);
     }
+    @Nested
+    class SuccessfulServices {
+        @Nested
+        class GetAndGetAllMethods {
+            @Test
+            void getElements() {
+                when(planningRepository.findAll()).thenReturn(List.of(new Planning()));
+                //when
+                planningService.getAll();
+                //then
+                verify(planningRepository).findAll();
+            }
+
+            @Test
+            void getASingleElement() {
+                //given
+                String someUuid = "example_uuid";
+                when(planningRepository.findRequiredByUuid(anyString())).thenReturn((new Planning()));
+                //when
+                planningService.get(someUuid);
+                //then
+                verify(dishRepository).findRequiredByUuid(someUuid);
+            }
+
+            @AfterEach
+            void checkCommonAsserts() {
+                //then
+                verify(planningMapper,times(1)).planningToPlanningDTO(any(Planning.class));
+            }
+        }
+    }
+
+    /*
     @Test
     void associateAPersonToDishRestaurantAndDay() {
         //given data
@@ -147,6 +202,5 @@ class PlanningServiceImplTest {
         verify(personMapper,times(1)).personToPersonDTO(any(Person.class));
         assertEquals(1,personDTOList.getEntityDTOList().size());
     }
-
-}
 */
+}
