@@ -34,8 +34,6 @@ class DishServiceImplTest {
     @Captor
     private ArgumentCaptor<Dish> dishArgumentCaptor;
 
-    private String parameterForComparison;
-
     @BeforeEach
     public void setUpForAll(){
         //Instantiate service class
@@ -45,6 +43,7 @@ class DishServiceImplTest {
 
     @Nested
     class SuccessfulServices {
+
         @Test
         void getAllElements() {
             when(dishRepository.findAll()).thenReturn(List.of(new Dish()));
@@ -54,6 +53,7 @@ class DishServiceImplTest {
             verify(dishRepository).findAll();
             verify(dishMapper,times(1)).dishToDishDTO(any(Dish.class));
         }
+
         @Nested
         class GetAndRemoveMethods {
             private final String DISH_UUID = "dishUuid_example";
@@ -92,7 +92,7 @@ class DishServiceImplTest {
                 //given data
                 DishDTO dishDTO = PojoExampleCreation.createDishDTOExample(1);
                 Dish dish = PojoExampleCreation.createDishExample(2);
-                dish.setUuid(null);
+                dish.setUuid(null); //setting UUID null, to check if 'add' method assign a value
                 //given stubbing
                 when(dishMapper.dishDTOToDish(any(DishDTO.class))).thenReturn(dish);
                 when(dishMapper.dishToDishDTO(any(Dish.class))).thenReturn(dishDTO);
@@ -104,7 +104,7 @@ class DishServiceImplTest {
                 //when
                 DishDTO dishSavedDTO = dishService.add(new DishDTO());
                 //then
-                verify(dishRepository).save(dishArgumentCaptor.capture());  //Dish is persisted
+                verify(dishRepository).save(dishArgumentCaptor.capture());  //Entity is persisted
 
                 Dish dishCaptured = dishArgumentCaptor.getValue();    //Capture the object saved
                 assertNull(dishCaptured.getId());         //Assert that an ID is null before persisted
@@ -116,13 +116,13 @@ class DishServiceImplTest {
                 //given
                 String dishUuid = "dishUuid_example";
                 long dishIdFromDB = 15L;
-                when(dishRepository.findRequiredByUuid(anyString())).thenReturn((
+                when(dishRepository.findRequiredByUuid(dishUuid)).thenReturn((
                         new Dish().withId(dishIdFromDB)));
                 //when
-                DishDTO dishSavedDTO = dishService.update(dishUuid,new DishDTO());
+                DishDTO dishUpdatedDTO = dishService.update(dishUuid,new DishDTO());
                 //then
-                verify(dishRepository).findRequiredByUuid(dishUuid);       //Dish is fetched by ID
-                verify(dishRepository).save(dishArgumentCaptor.capture());  //Dish is updated
+                verify(dishRepository).findRequiredByUuid(dishUuid);       //Entity is fetched by ID
+                verify(dishRepository).save(dishArgumentCaptor.capture());  //Entity is updated
 
                 Dish dishCaptured = dishArgumentCaptor.getValue();      //Capture the object saved
                 assertEquals(dishIdFromDB,dishCaptured.getId());   //Assert that ID was the same as fetched before persisted
@@ -149,7 +149,6 @@ class DishServiceImplTest {
             assertThrows(IllegalArgumentException.class,()-> dishService.update(null, new DishDTO()));
             assertThrows(NullPointerException.class,()-> dishService.update("some-uuid", null));
             assertThrows(IllegalArgumentException.class,()-> dishService.get(null));
-
         }
 
         @Nested

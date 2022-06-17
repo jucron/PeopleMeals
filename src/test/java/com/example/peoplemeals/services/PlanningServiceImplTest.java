@@ -1,35 +1,6 @@
 package com.example.peoplemeals.services;
 
-import com.example.peoplemeals.api.v1.mapper.PersonMapper;
-import com.example.peoplemeals.api.v1.mapper.PlanningMapper;
-import com.example.peoplemeals.api.v1.model.PersonDTO;
-import com.example.peoplemeals.api.v1.model.PlanningDTO;
-import com.example.peoplemeals.api.v1.model.forms.AssociateForm;
-import com.example.peoplemeals.api.v1.model.lists.EntityDTOList;
-import com.example.peoplemeals.domain.Person;
-import com.example.peoplemeals.domain.Planning;
-import com.example.peoplemeals.domain.Restaurant;
-import com.example.peoplemeals.helpers.PojoExampleCreation;
-import com.example.peoplemeals.repositories.DishRepository;
-import com.example.peoplemeals.repositories.PersonRepository;
-import com.example.peoplemeals.repositories.PlanningRepository;
-import com.example.peoplemeals.repositories.RestaurantRepository;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.time.DayOfWeek;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
+/*
 @Disabled
 @ExtendWith(MockitoExtension.class)
 class PlanningServiceImplTest {
@@ -39,6 +10,7 @@ class PlanningServiceImplTest {
 •	OK: List people for a specific dish on a specific day (planning/meals)
 •	OK: People who do not have dishes assigned on a specific day
      */
+/*
     private PlanningService planningService;
 
     @Mock
@@ -175,4 +147,6 @@ class PlanningServiceImplTest {
         verify(personMapper,times(1)).personToPersonDTO(any(Person.class));
         assertEquals(1,personDTOList.getEntityDTOList().size());
     }
+
 }
+*/

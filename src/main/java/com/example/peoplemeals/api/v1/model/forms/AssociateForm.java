@@ -10,8 +10,8 @@ import lombok.With;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AssociateForm {
-    private long personId;
+    private String personUuid;
     private String dishUuid;
-    private long restaurantId;
+    private String restaurantUuid;
     private String dayOfWeek;
 }

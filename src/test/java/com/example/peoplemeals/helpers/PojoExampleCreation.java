@@ -26,6 +26,7 @@ public class PojoExampleCreation {
     public static Person createPersonExample (int ref) {
         return new Person()
                 .withId(10L+ref)
+                .withUuid(UUID.randomUUID())
                 .withFullName("fullName_example_"+ref)
                 .withUsername("username_example_"+ref)
                 .withMobile("mobile_example_"+ref)
@@ -35,6 +36,7 @@ public class PojoExampleCreation {
     public static Planning createPlanningExample (int ref) {
         return new Planning()
                 .withId(50L+ref)
+                .withUuid(UUID.randomUUID())
                 .withDayOfWeek(DayOfWeek.MONDAY)
                 .withDish(createDishExample(ref))
                 .withPerson(createPersonExample(ref))
@@ -43,6 +45,7 @@ public class PojoExampleCreation {
     public static Restaurant createRestaurantExample (int ref) {
         return new Restaurant()
                 .withId(100L+ref)
+                .withUuid(UUID.randomUUID())
                 .withName("restaurantName_example_"+ref)
                 .withOpeningTime(LocalTime.of(8,0))
                 .withClosingTime(LocalTime.of(20,0))
@@ -57,7 +60,7 @@ public class PojoExampleCreation {
     }
     public static PersonDTO createPersonDTOExample (int ref) {
         return new PersonDTO()
-                .withId(10L)
+                .withUuid(UUID.randomUUID())
                 .withFullName("fullName_example_"+ref)
                 .withUsername("username_example_"+ref)
                 .withMobile("mobile_example_"+ref)
@@ -67,6 +70,7 @@ public class PojoExampleCreation {
     public static PlanningDTO createPlanningDTOExample (int ref) {
         return new PlanningDTO()
                 .withId(50L+ref)
+//                .withUuid(UUID.randomUUID())
                 .withDayOfWeek(DayOfWeek.MONDAY)
                 .withDishDTO(createDishDTOExample(ref))
                 .withPersonDTO(createPersonDTOExample(ref));
@@ -74,6 +78,7 @@ public class PojoExampleCreation {
     public static RestaurantDTO createRestaurantDTOExample (int ref) {
         return new RestaurantDTO()
                 .withId(100L+ref)
+//                .withUuid(UUID.randomUUID())
                 .withName("restaurantName_example_"+ref)
                 .withOpeningTime(LocalTime.of(8,0))
                 .withClosingTime(LocalTime.of(20,20))

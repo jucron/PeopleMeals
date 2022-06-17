@@ -1,26 +1,6 @@
 package com.example.peoplemeals.services;
 
-import com.example.peoplemeals.api.v1.mapper.PersonMapper;
-import com.example.peoplemeals.api.v1.mapper.PlanningMapper;
-import com.example.peoplemeals.api.v1.model.PersonDTO;
-import com.example.peoplemeals.api.v1.model.PlanningDTO;
-import com.example.peoplemeals.api.v1.model.forms.AssociateForm;
-import com.example.peoplemeals.api.v1.model.lists.EntityDTOList;
-import com.example.peoplemeals.domain.Dish;
-import com.example.peoplemeals.domain.Person;
-import com.example.peoplemeals.domain.Planning;
-import com.example.peoplemeals.domain.Restaurant;
-import com.example.peoplemeals.repositories.DishRepository;
-import com.example.peoplemeals.repositories.PersonRepository;
-import com.example.peoplemeals.repositories.PlanningRepository;
-import com.example.peoplemeals.repositories.RestaurantRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
-import java.time.DayOfWeek;
-import java.util.*;
-import java.util.stream.Collectors;
-
+/*
 @Service
 @RequiredArgsConstructor
 public class PlanningServiceImpl implements PlanningService {
@@ -147,6 +127,7 @@ public class PlanningServiceImpl implements PlanningService {
          * @param Restaurant must be with same restaurantId
          * @param dayOfWeek must match dayOfWeek
          * */
+/*
         Set<PersonDTO> personDTOSToBeReturned = planningRepository.findAll()
                 .stream()
                 .filter(planning -> planning.getDayOfWeek() == dayOfWeekCorrectFormat)
@@ -167,6 +148,7 @@ public class PlanningServiceImpl implements PlanningService {
          * @param Dish must be with same dishId
          * @param dayOfWeek must match dayOfWeek
          * */
+/*
         Set<PersonDTO> personDTOSToBeReturned = planningRepository.findAll()
                 .stream()
                 .filter(planning -> planning.getDayOfWeek() == dayOfWeekCorrectFormat)
@@ -190,6 +172,7 @@ public class PlanningServiceImpl implements PlanningService {
         /**Create a collection of Persons, extracting from the PersonRepository and filtering each request:
          * @param Person must NOT be included in personListIncludedInDayOfWeek
          * */
+/*
         Set<PersonDTO> personDTOSToBeReturned = personRepository.findAll()
                 .stream()
                 .filter(person -> !personsInThisDayOfWeek.contains(person))
@@ -205,4 +188,8 @@ public class PlanningServiceImpl implements PlanningService {
             throw new IllegalArgumentException("DayOfWeek is not in valid format");
         }
     }
+
 }
+
+ */
+

@@ -18,13 +18,14 @@ class PersonMapperTest {
          //when
         PersonDTO personDTO = personMapper.personToPersonDTO(person);
         //then
-        assertEquals(person.getId(),personDTO.getId());
+        assertEquals(person.getUuid(),personDTO.getUuid());
         assertEquals(person.getFiscal(),personDTO.getFiscal());
         assertEquals(person.getFullName(),personDTO.getFullName());
         assertEquals(person.getMobile(),personDTO.getMobile());
         assertEquals(person.getTelephone(),personDTO.getTelephone());
         assertEquals(person.getUsername(),personDTO.getUsername());
     }
+
     @Test
     void convertPersonDTOToPerson() {
         //given
@@ -32,7 +33,7 @@ class PersonMapperTest {
         //when
         Person person = personMapper.personDTOToPerson(personDTO);
         //then
-        assertEquals(personDTO.getId(),person.getId());
+        assertEquals(personDTO.getUuid(),person.getUuid());
         assertEquals(personDTO.getFiscal(),person.getFiscal());
         assertEquals(personDTO.getFullName(),person.getFullName());
         assertEquals(personDTO.getMobile(),person.getMobile());

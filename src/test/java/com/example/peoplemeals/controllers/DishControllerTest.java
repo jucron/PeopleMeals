@@ -16,13 +16,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static com.example.peoplemeals.helpers.JsonConverter.asJsonString;
-import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
@@ -74,16 +71,12 @@ class DishControllerTest {
 
         @Test
         void addADishToRepo() throws Exception {
-            given(dishService.add(DISH_DTO)).willReturn(DISH_DTO);
             //when
             mockMvc.perform(post(BASE_URL)
                             .accept(MediaType.APPLICATION_JSON)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(asJsonString(DISH_DTO)))
-                    .andExpect(status().isCreated())
-                    .andExpect(jsonPath("$.name", equalTo(DISH_DTO.getName())))
-                    .andExpect(jsonPath("$.recipeUrl", equalTo(DISH_DTO.getRecipeUrl())));
-
+                    .andExpect(status().isCreated());
             verify(dishService,times(1)).add(DISH_DTO);
         }
 
@@ -101,15 +94,12 @@ class DishControllerTest {
         void updateADishFromRepo() throws Exception {
             //given
             Dish dish = PojoExampleCreation.createDishExample(2);
-            given(dishService.update(dish.getUuid().toString(), DISH_DTO)).willReturn(DISH_DTO);
             //when
             mockMvc.perform(put(BASE_URL + dish.getUuid())
                             .accept(MediaType.APPLICATION_JSON)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(asJsonString(DISH_DTO)))
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.name", equalTo(DISH_DTO.getName())))
-                    .andExpect(jsonPath("$.recipeUrl", equalTo(DISH_DTO.getRecipeUrl())));
+                    .andExpect(status().isOk());
             verify(dishService).update(dish.getUuid().toString(),DISH_DTO);
         }
     }
@@ -118,7 +108,7 @@ class DishControllerTest {
     class FailRequests {
 
         @Test
-        void emptyBody_AddDish() throws Exception {
+        void emptyBody_Add() throws Exception {
             //when
             mockMvc.perform(post(BASE_URL)
                             .accept(MediaType.APPLICATION_JSON)
@@ -128,7 +118,7 @@ class DishControllerTest {
         }
 
         @Test
-        void emptyUuid_DeleteDish() throws Exception {
+        void emptyUuid_Delete() throws Exception {
             //when
             mockMvc.perform(delete(BASE_URL)
                             .accept(MediaType.APPLICATION_JSON)
@@ -138,9 +128,9 @@ class DishControllerTest {
         }
 
         @Nested
-        class FailUpdateDish {
+        class FailUpdate {
             @Test
-            void emptyBody_AndUuid() throws Exception {
+            void emptyBodyAndUuid() throws Exception {
 
                 //when
                 mockMvc.perform(put(BASE_URL)
@@ -173,8 +163,5 @@ class DishControllerTest {
                 verify(dishService,times(0)).update(any(), any());
             }
         }
-
     }
-
-
 }

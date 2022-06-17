@@ -35,8 +35,8 @@ public class DishServiceImpl implements DishService {
         Dish dishToBeSaved = dishMapper.dishDTOToDish(dishDTO);
         dishToBeSaved.setId(null); //must remove ID to perform auto-generate
         dishToBeSaved.setUuid(UUID.randomUUID());
-        Dish savedEntity = dishRepository.save(dishToBeSaved);
-        return dishMapper.dishToDishDTO(savedEntity);
+        Dish dishSaved = dishRepository.save(dishToBeSaved);
+        return dishMapper.dishToDishDTO(dishSaved);
     }
 
     @Override
