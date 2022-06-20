@@ -266,24 +266,65 @@ class RepositoryIntegrationTest {
                     repoSize++;
                 }
                 //then
-                assertEquals(15,planningRepository.findAll().size());
-                assertThrows(RuntimeException.class,()->planningRepository.validateLessThan15RestaurantsInDayOfWeek(restaurantId,dayOfWeek));
+                assertEquals(15, planningRepository.findAll().size());
+                assertThrows(RuntimeException.class, () -> planningRepository.validateLessThan15RestaurantsInDayOfWeek(restaurantId, dayOfWeek));
             }
         }
+
         @Nested
         class findPersonsByRestaurantAndDayOfWeek {
-            //then
-//            List<Person> personList = findPersonsByRestaurantAndDayOfWeek(restaurantId,dayOfWeek);
+            @Test
+            void exists() {
+                //then
+                assertEquals(1,
+                        planningRepository.findPersonsByRestaurantAndDayOfWeek(restaurantId, dayOfWeek).size());
+            }
+
+            @Test
+            void notInDb() {
+                //then
+                assertEquals(0,
+                        planningRepository.findPersonsByRestaurantAndDayOfWeek(restaurantId + 10, dayOfWeek).size());
+                assertEquals(0,
+                        planningRepository.findPersonsByRestaurantAndDayOfWeek(restaurantId, DayOfWeek.SUNDAY).size());
+
+            }
         }
 
         @Nested
         class findPersonsByDishAndDayOfWeek {
+            @Test
+            void exists() {
+                //then
+                assertEquals(1,
+                        planningRepository.findPersonsByDishAndDayOfWeek(dishId, dayOfWeek).size());
+            }
 
+            @Test
+            void notInDb() {
+                //then
+                assertEquals(0,
+                        planningRepository.findPersonsByDishAndDayOfWeek(dishId + 10, dayOfWeek).size());
+                assertEquals(0,
+                        planningRepository.findPersonsByDishAndDayOfWeek(dishId, DayOfWeek.SUNDAY).size());
+            }
         }
 
         @Nested
         class findPersonIDsByDayOfWeek {
+            @Test
+            void match() {
+                //then
+                assertEquals(1,
+                        planningRepository.findPersonIDsByDayOfWeek(dayOfWeek).size());
+            }
 
+            @Test
+            void notAMatch() {
+                //then
+                assertEquals(0,
+                        planningRepository.findPersonIDsByDayOfWeek(DayOfWeek.SUNDAY).size());
+            }
         }
     }
 }
