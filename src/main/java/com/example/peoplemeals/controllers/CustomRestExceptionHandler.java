@@ -30,22 +30,20 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleAnyException(
             Exception ex, WebRequest request) {
-        return new ResponseEntity<>(new ExceptionMessage(ex,GENERIC_EXCEPTION_MESSAGE), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(new ExceptionMessage(GENERIC_EXCEPTION_MESSAGE), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
 
 @Data
 class ExceptionMessage {
     private String message;
-    private String cause;
 
     public ExceptionMessage(Exception ex) {
         this.message = ex.getMessage();
-        this.cause = ex.getClass().toString();
     }
-    public ExceptionMessage(Exception ex, String message) {
+
+    public ExceptionMessage(String message) {
         this.message = message;
-        this.cause = ex.getClass().toString();
     }
 }
 

@@ -59,15 +59,14 @@ class CustomRestExceptionHandlerTest {
             when(dishService.update(dishUuid,dishDTOThatWillResultError)).thenThrow(new IllegalArgumentException(
                     exceptionCustomMessage));
             //when and then
-            mockMvc.perform(put(BASE_URL+dishUuid)
+            mockMvc.perform(put(BASE_URL + dishUuid)
                             .accept(MediaType.APPLICATION_JSON)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(asJsonString(dishDTOThatWillResultError)))
 //                .andDo(print())
                     .andExpect(status().isBadRequest())
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.message", equalTo(exceptionCustomMessage)))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.cause", equalTo(IllegalArgumentException.class.toString())));
-            verify(dishService).update(dishUuid,dishDTOThatWillResultError);
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.message", equalTo(exceptionCustomMessage)));
+            verify(dishService).update(dishUuid, dishDTOThatWillResultError);
         }
 
         @Test
@@ -81,8 +80,7 @@ class CustomRestExceptionHandlerTest {
                             .content(asJsonString(dishDTOThatWillResultError)))
 //                .andDo(print())
                     .andExpect(status().isInternalServerError())
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.message", equalTo(CustomRestExceptionHandler.GENERIC_EXCEPTION_MESSAGE)))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.cause", equalTo(NullPointerException.class.toString())));
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.message", equalTo(CustomRestExceptionHandler.GENERIC_EXCEPTION_MESSAGE)));
             verify(dishService).add(dishDTOThatWillResultError);
 
         }
@@ -98,8 +96,7 @@ class CustomRestExceptionHandlerTest {
                             .contentType(MediaType.APPLICATION_JSON))
                     .andDo(print())
                     .andExpect(status().isNotFound())
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.message", equalTo(exceptionCustomMessage)))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.cause", equalTo(NoSuchElementException.class.toString())));
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.message", equalTo(exceptionCustomMessage)));
             verify(dishService).remove(dishUuid);
         }
 
@@ -115,8 +112,7 @@ class CustomRestExceptionHandlerTest {
                             .content(asJsonString(dishDTOThatWillResultError)))
 //                .andDo(print())
                     .andExpect(status().isInternalServerError())
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.message", equalTo(CustomRestExceptionHandler.GENERIC_EXCEPTION_MESSAGE)))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.cause", equalTo(RuntimeException.class.toString())));
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.message", equalTo(CustomRestExceptionHandler.GENERIC_EXCEPTION_MESSAGE)));
             verify(dishService).update(dishUuid, dishDTOThatWillResultError);
         }
     }
