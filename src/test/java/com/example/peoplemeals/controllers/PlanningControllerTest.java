@@ -184,7 +184,7 @@ class PlanningControllerTest {
                     mockMvc.perform(get(BASE_URL + "restaurant/")
                                     .accept(MediaType.APPLICATION_JSON)
                                     .contentType(MediaType.APPLICATION_JSON))
-                            .andExpect(status().isOk()); //todo: why respond ok?
+                            .andExpect(status().isOk()); //todo: why responded ok?
                     verify(planningService, times(0))
                             .getPersonListByRestaurantAndDay(any(), any());
                 }
@@ -209,7 +209,7 @@ class PlanningControllerTest {
                     mockMvc.perform(get(BASE_URL + "dish/")
                                     .accept(MediaType.APPLICATION_JSON)
                                     .contentType(MediaType.APPLICATION_JSON))
-                            .andExpect(status().isOk()); //todo: why respond ok?
+                            .andExpect(status().isOk()); //todo: why responded ok?
                     verify(planningService, times(0))
                             .getPersonListByDishAndDay(any(), any());
                 }

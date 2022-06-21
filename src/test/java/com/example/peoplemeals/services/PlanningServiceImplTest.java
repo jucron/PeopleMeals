@@ -3,24 +3,35 @@ package com.example.peoplemeals.services;
 
 import com.example.peoplemeals.api.v1.mapper.PersonMapper;
 import com.example.peoplemeals.api.v1.mapper.PlanningMapper;
+import com.example.peoplemeals.api.v1.model.forms.AssociateForm;
+import com.example.peoplemeals.domain.Person;
 import com.example.peoplemeals.domain.Planning;
+import com.example.peoplemeals.helpers.DayOfWeekHelper;
 import com.example.peoplemeals.repositories.DishRepository;
 import com.example.peoplemeals.repositories.PersonRepository;
 import com.example.peoplemeals.repositories.PlanningRepository;
 import com.example.peoplemeals.repositories.RestaurantRepository;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.DayOfWeek;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-@Disabled
 class PlanningServiceImplTest {
     /* Expected functionalities:
 •	OK: Associate, remove a person to a dish on a specific day (planning/meal)
@@ -28,7 +39,6 @@ class PlanningServiceImplTest {
 •	OK: List people for a specific dish on a specific day (planning/meals)
 •	OK: People who do not have dishes assigned on a specific day
      */
-
 
     private PlanningService planningService;
 
@@ -44,14 +54,17 @@ class PlanningServiceImplTest {
     private RestaurantRepository restaurantRepository;
     @Mock
     private PersonMapper personMapper;
+    @Captor
+    private ArgumentCaptor<Planning> planningCaptor;
 
     @BeforeEach
-    public void setUpForAll(){
+    public void setUpForAll() {
         //Instantiate service class
         planningService = new PlanningServiceImpl(
-                planningRepository,planningMapper,dishRepository,
-                personRepository,restaurantRepository,personMapper);
+                planningRepository, planningMapper, dishRepository,
+                personRepository, restaurantRepository, personMapper);
     }
+
     @Nested
     class SuccessfulServices {
         @Nested
@@ -69,136 +82,327 @@ class PlanningServiceImplTest {
             void getASingleElement() {
                 //given
                 String someUuid = "example_uuid";
-                when(planningRepository.findRequiredByUuid(anyString())).thenReturn((new Planning()));
+                when(planningRepository.findRequiredByUuid(someUuid)).thenReturn((new Planning()));
                 //when
                 planningService.get(someUuid);
                 //then
-                verify(dishRepository).findRequiredByUuid(someUuid);
+                verify(planningRepository).findRequiredByUuid(someUuid);
             }
 
             @AfterEach
             void checkCommonAsserts() {
                 //then
-                verify(planningMapper,times(1)).planningToPlanningDTO(any(Planning.class));
+                verify(planningMapper, times(1)).planningToPlanningDTO(any(Planning.class));
+            }
+        }
+
+        @Nested
+        class AssociateAndDisassociate {
+            //given common data
+            long dishId = 1L;
+            long personId = 10L;
+            long restaurantId = 50L;
+            AssociateForm form = new AssociateForm()
+                    .withDishUuid("dish_uuid")
+                    .withPersonUuid("person_uuid")
+                    .withRestaurantUuid("restaurant_uuid")
+                    .withDayOfWeek(DayOfWeek.MONDAY.toString());
+            DayOfWeek dayOfWeekFormat = DayOfWeekHelper.validateDayOfWeek(form.getDayOfWeek()); //todo: test
+
+            @BeforeEach
+            void commonStubs() {
+                //given stubbing
+                when(dishRepository.findIdRequiredByUuid(form.getDishUuid())).thenReturn((dishId));
+                when(personRepository.findIdRequiredByUuid(form.getPersonUuid())).thenReturn((personId));
+                when(restaurantRepository.findIdRequiredByUuid(form.getRestaurantUuid())).thenReturn((restaurantId));
+            }
+
+            @Test
+            void associateAPersonToDishPersonRestaurantAndDay() {
+                when(dishRepository.findIdRequiredByUuid(form.getDishUuid())).thenReturn((dishId));
+                when(personRepository.findIdRequiredByUuid(form.getPersonUuid())).thenReturn((personId));
+                when(restaurantRepository.findIdRequiredByUuid(form.getRestaurantUuid())).thenReturn((restaurantId));
+                //when
+                planningService.associate(form);
+                //then
+                verify(dishRepository).findIdRequiredByUuid(form.getDishUuid());
+                verify(personRepository).findIdRequiredByUuid(form.getPersonUuid());
+                verify(restaurantRepository).findIdRequiredByUuid(form.getRestaurantUuid());
+                verify(planningRepository).validateNoPlanForThisPersonInDayOfWeek(personId, dayOfWeekFormat);
+                verify(planningRepository).validateLessThan15RestaurantsInDayOfWeek(restaurantId, dayOfWeekFormat);
+                verify(planningMapper).planningToPlanningDTO(any());
+                verify(planningRepository).save(planningCaptor.capture());
+                //checking if all values were passed to the Planning saved:
+                Planning planningSaved = planningCaptor.getValue();
+                assertEquals(dishId, planningSaved.getDish().getId());
+                assertEquals(personId, planningSaved.getPerson().getId());
+                assertEquals(restaurantId, planningSaved.getRestaurant().getId());
+                assertEquals(dayOfWeekFormat, planningSaved.getDayOfWeek());
+            }
+
+            @Test
+            void disassociateAPersonFromPlanningRepo() {
+                //given stub
+                long planningId = 75L;
+                when(planningRepository.findPlanningIdRequiredByFields(dishId, personId, restaurantId, dayOfWeekFormat))
+                        .thenReturn(planningId); //must check if this ID will be used to delete
+                //when
+                planningService.disassociate(form);
+                //then
+                verify(dishRepository).findIdRequiredByUuid(form.getDishUuid());
+                verify(personRepository).findIdRequiredByUuid(form.getPersonUuid());
+                verify(restaurantRepository).findIdRequiredByUuid(form.getRestaurantUuid());
+
+                verify(planningRepository).findPlanningIdRequiredByFields(dishId, personId, restaurantId, dayOfWeekFormat);
+                verify(planningRepository).deleteById(planningId);
+            }
+        }
+
+        @Nested
+        class GetPersonLists {
+            //given common data
+            long dishId = 1L;
+            long personId = 10L;
+            long restaurantId = 50L;
+            String dishUuid = "dish_uuid";
+            String restaurantUuid = "restaurant_uuid";
+            DayOfWeek dayOfWeekFormat = DayOfWeek.MONDAY;
+            String dayOfWeek = dayOfWeekFormat.toString();
+
+            @Test
+            void getPersonListByRestaurantAndDay() {
+                //given
+                when(restaurantRepository.findIdRequiredByUuid(restaurantUuid)).thenReturn((restaurantId));
+                when(planningRepository.findPersonsByRestaurantAndDayOfWeek(restaurantId, dayOfWeekFormat))
+                        .thenReturn(new ArrayList<>(List.of(new Person())));
+                //when
+                planningService.getPersonListByRestaurantAndDay(restaurantUuid, dayOfWeek);
+                //then
+                verify(restaurantRepository).findIdRequiredByUuid(restaurantUuid);
+                verify(planningRepository).findPersonsByRestaurantAndDayOfWeek(restaurantId, dayOfWeekFormat);
+            }
+
+            @Test
+            void getPersonListByDishAndDay() {
+                //given
+                when(dishRepository.findIdRequiredByUuid(dishUuid)).thenReturn((dishId));
+                when(planningRepository.findPersonsByDishAndDayOfWeek(dishId, dayOfWeekFormat))
+                        .thenReturn(new ArrayList<>(List.of(new Person())));
+                //when
+                planningService.getPersonListByDishAndDay(dishUuid, dayOfWeek);
+                //then
+                verify(dishRepository).findIdRequiredByUuid(dishUuid);
+                verify(planningRepository).findPersonsByDishAndDayOfWeek(dishId, dayOfWeekFormat);
+            }
+
+            @Test
+            void getPersonListWithNoDishByDay() {
+                //given
+                List<Long> personsIDs = new ArrayList<>(List.of(personId));
+                when(planningRepository.findPersonIDsByDayOfWeek(dayOfWeekFormat))
+                        .thenReturn(personsIDs);
+                when(personRepository.findAllNotInList(personsIDs))
+                        .thenReturn(new ArrayList<>(List.of(new Person())));
+                //when
+                planningService.getPersonListWithNoDishByDay(dayOfWeek);
+                //then
+                verify(planningRepository).findPersonIDsByDayOfWeek(dayOfWeekFormat);
+                verify(personRepository).findAllNotInList(personsIDs);
+            }
+
+            @AfterEach
+            void commonChecks() {
+                verify(personMapper).personToPersonDTO(any(Person.class));
+            }
+
+        }
+
+    }
+
+    @Nested
+    class FailedServices {
+        @Test
+        void anyServiceWithNullObjects() {
+            //given expected behavior
+            String someParameter = "some_parameter";
+            when(planningRepository.findRequiredByUuid(null)).thenThrow(IllegalArgumentException.class);
+
+            //when-then
+            assertThrows(IllegalArgumentException.class, () -> planningService.get(null));
+            assertThrows(NullPointerException.class, () -> planningService.associate(null));
+            assertThrows(NullPointerException.class, () -> planningService.disassociate(null));
+
+            assertThrows(IllegalArgumentException.class, () -> planningService.getPersonListByRestaurantAndDay(null, null));
+            assertThrows(IllegalArgumentException.class, () -> planningService.getPersonListByRestaurantAndDay(someParameter, null));
+            assertThrows(IllegalArgumentException.class, () -> planningService.getPersonListByRestaurantAndDay(null, someParameter));
+
+            assertThrows(IllegalArgumentException.class, () -> planningService.getPersonListByDishAndDay(null, null));
+            assertThrows(IllegalArgumentException.class, () -> planningService.getPersonListByDishAndDay(someParameter, null));
+            assertThrows(IllegalArgumentException.class, () -> planningService.getPersonListByDishAndDay(null, someParameter));
+
+            assertThrows(IllegalArgumentException.class, () -> planningService.getPersonListWithNoDishByDay(null));
+        }
+
+        @Nested
+        class AssociationValidationsNotPassing {
+            private final DayOfWeek dayOfWeekFormat = DayOfWeek.MONDAY;
+
+            @Test
+            void validateNoPlanForThisPersonInDayOfWeek() {
+                //given expected behavior
+                long personId = 1L;
+                String personUuid = "person_uuid";
+                when(planningRepository.validateNoPlanForThisPersonInDayOfWeek(personId, dayOfWeekFormat))
+                        .thenThrow(RuntimeException.class);
+                when(personRepository.findIdRequiredByUuid(personUuid)).thenReturn(personId);
+                //when and then
+                assertThrows(RuntimeException.class, () -> {
+                    planningService.associate(new AssociateForm()
+                            .withPersonUuid(personUuid)
+                            .withDayOfWeek(dayOfWeekFormat.toString()));
+                });
+            }
+
+            @Test
+            void validateLessThan15RestaurantsInDayOfWeek() {
+                //given expected behavior
+                long restaurantId = 1L;
+                String restaurantUuid = "restaurant_uuid";
+                when(planningRepository.validateLessThan15RestaurantsInDayOfWeek(restaurantId, dayOfWeekFormat))
+                        .thenThrow(RuntimeException.class);
+                when(restaurantRepository.findIdRequiredByUuid(restaurantUuid)).thenReturn(restaurantId);
+                //when and then
+                assertThrows(RuntimeException.class, () -> {
+                    planningService.associate(new AssociateForm()
+                            .withRestaurantUuid(restaurantUuid)
+                            .withDayOfWeek(dayOfWeekFormat.toString()));
+                });
+            }
+
+        }
+
+        @Nested
+        class AccessingNonExistingObjectsInDatabase {
+            private final String nonExistingUuid = "uuid-example";
+            private final String dayOfWeek = DayOfWeek.MONDAY.toString();
+
+            @Test
+            void getNonExistingObject() {
+                //given expected behavior
+                when(planningRepository.findRequiredByUuid(nonExistingUuid)).thenThrow(NoSuchElementException.class);
+                //when
+                assertThrows(NoSuchElementException.class, () -> planningService.get(nonExistingUuid));
+            }
+
+            @Nested
+            class associateMethod {
+                @Test
+                void nonExistingDish() {
+                    //given expected behavior
+                    when(dishRepository.findIdRequiredByUuid(nonExistingUuid)).thenThrow(NoSuchElementException.class);
+                    //when
+                    assertThrows(NoSuchElementException.class, () -> planningService.associate(
+                            new AssociateForm().withDishUuid(nonExistingUuid).withDayOfWeek(dayOfWeek)));
+                }
+
+                @Test
+                void nonExistingPerson() {
+                    //given expected behavior
+                    when(personRepository.findIdRequiredByUuid(nonExistingUuid)).thenThrow(NoSuchElementException.class);
+                    //when
+                    assertThrows(NoSuchElementException.class, () -> planningService.associate(
+                            new AssociateForm().withPersonUuid(nonExistingUuid).withDayOfWeek(dayOfWeek)));
+                }
+
+                @Test
+                void nonExistingRestaurant() {
+                    //given expected behavior
+                    when(restaurantRepository.findIdRequiredByUuid(nonExistingUuid)).thenThrow(NoSuchElementException.class);
+                    //when
+                    assertThrows(NoSuchElementException.class, () -> planningService.associate(
+                            new AssociateForm().withRestaurantUuid(nonExistingUuid).withDayOfWeek(dayOfWeek)));
+                }
+            }
+
+            @Nested
+            class disassociateMethod {
+                @Test
+                void nonExistingDish() {
+                    //given expected behavior
+                    when(dishRepository.findIdRequiredByUuid(nonExistingUuid)).thenThrow(NoSuchElementException.class);
+                    //when
+                    assertThrows(NoSuchElementException.class, () -> planningService.disassociate(
+                            new AssociateForm().withDishUuid(nonExistingUuid).withDayOfWeek(dayOfWeek)));
+                }
+
+                @Test
+                void nonExistingPerson() {
+                    //given expected behavior
+                    when(personRepository.findIdRequiredByUuid(nonExistingUuid)).thenThrow(NoSuchElementException.class);
+                    //when
+                    assertThrows(NoSuchElementException.class, () -> planningService.disassociate(
+                            new AssociateForm().withPersonUuid(nonExistingUuid).withDayOfWeek(dayOfWeek)));
+                }
+
+                @Test
+                void nonExistingRestaurant() {
+                    //given expected behavior
+                    when(restaurantRepository.findIdRequiredByUuid(nonExistingUuid)).thenThrow(NoSuchElementException.class);
+                    //when
+                    assertThrows(NoSuchElementException.class, () -> planningService.disassociate(
+                            new AssociateForm().withRestaurantUuid(nonExistingUuid).withDayOfWeek(dayOfWeek)));
+                }
+
+                @Test
+                void nonExistingPlanning() {
+                    //given expected behavior
+                    String dishUuid = "dish_uuid";
+                    String personUuid = "person_uuid";
+                    String restaurantUuid = "restaurant_uuid";
+                    long dishId = 1L;
+                    long personId = 10L;
+                    long restaurantId = 50L;
+                    when(dishRepository.findIdRequiredByUuid(dishUuid)).thenReturn(dishId);
+                    when(personRepository.findIdRequiredByUuid(personUuid)).thenReturn(personId);
+                    when(restaurantRepository.findIdRequiredByUuid(restaurantUuid)).thenReturn(restaurantId);
+                    when(planningRepository.findPlanningIdRequiredByFields(
+                            dishId, personId, restaurantId, DayOfWeek.valueOf(dayOfWeek)))
+                            .thenThrow(NoSuchElementException.class);
+                    //when
+                    assertThrows(NoSuchElementException.class, () -> planningService.disassociate(
+                            new AssociateForm()
+                                    .withDishUuid(dishUuid)
+                                    .withPersonUuid(personUuid)
+                                    .withRestaurantUuid(restaurantUuid)
+                                    .withDayOfWeek(dayOfWeek)));
+                }
+            }
+
+            @Nested
+            class getPersonListByRestaurantAndDay {
+                @Test
+                void nonExistingRestaurant() {
+                    //given
+                    String restaurantUuid = "restaurant_uuid";
+                    when(restaurantRepository.findIdRequiredByUuid(restaurantUuid)).thenThrow(NoSuchElementException.class);
+                    //when
+                    assertThrows(NoSuchElementException.class, () -> planningService.
+                            getPersonListByRestaurantAndDay(restaurantUuid, dayOfWeek));
+                }
+            }
+
+            @Nested
+            class getPersonListByDishAndDay {
+                @Test
+                void nonExistingDish() {
+                    //given
+                    String dishId = "dish_uuid";
+                    when(dishRepository.findIdRequiredByUuid(dishId)).thenThrow(NoSuchElementException.class);
+                    //when
+                    assertThrows(NoSuchElementException.class, () -> planningService.
+                            getPersonListByDishAndDay(dishId, dayOfWeek));
+                }
             }
         }
     }
-
-    /*
-    @Test
-    void associateAPersonToDishRestaurantAndDay() {
-        //given data
-        AssociateForm associateForm = new AssociateForm()
-                .withPersonId(1L)
-//                .withDishId(10L)
-                .withRestaurantId(5L)
-                .withDayOfWeek(DayOfWeek.MONDAY.toString());
-        //given stubbing
-        when(planningRepository.findAll()).thenReturn(new ArrayList<>());
-//        when(dishRepository.findById(associateForm.getDishId())).thenReturn(Optional.of(new Dish()));
-        when(personRepository.findById(associateForm.getPersonId())).thenReturn(Optional.of(new Person()));
-        when(restaurantRepository.findById(associateForm.getRestaurantId())).thenReturn(Optional.of(new Restaurant()));
-        //when
-        PlanningDTO planningDTO = planningService.associate(associateForm);
-        //then
-//        verify(dishRepository).findById(associateForm.getDishId());
-        verify(personRepository).findById(associateForm.getPersonId());
-        verify(restaurantRepository).findById(associateForm.getRestaurantId());
-
-        verify(planningRepository, times(2)).findAll(); //two validations need this
-        verify(planningRepository).save(any(Planning.class));
-        verify(planningMapper).planningToPlanningDTO(any(Planning.class));
-    }
-    @Test
-    void disassociateAPersonToDishRestaurantAndDay() {
-        //given data
-        AssociateForm associateForm = new AssociateForm()
-                .withPersonId(1L)
-//                .withDishId(10L)
-                .withRestaurantId(15L)
-                .withDayOfWeek(DayOfWeek.MONDAY.toString());
-        //given stubbing
-        when(planningRepository.findAll()).thenReturn(new ArrayList<>(List.of(new Planning()
-                .withPerson(new Person().withId(associateForm.getPersonId()))
-//                .withDish(new Dish().withId(associateForm.getDishId()))
-                .withRestaurant(new Restaurant().withId(associateForm.getRestaurantId()))
-                .withDayOfWeek(DayOfWeek.valueOf(associateForm.getDayOfWeek())))));
-//        when(dishRepository.findById(associateForm.getDishId())).thenReturn(Optional.of(new Dish()));
-        when(personRepository.findById(associateForm.getPersonId())).thenReturn(Optional.of(new Person()));
-        when(restaurantRepository.findById(associateForm.getRestaurantId())).thenReturn(Optional.of(new Restaurant()));
-        //when
-        PlanningDTO planningDTO = planningService.disassociate(associateForm);
-        //then
-//        verify(dishRepository).findById(associateForm.getDishId());
-        verify(personRepository).findById(associateForm.getPersonId());
-        verify(restaurantRepository).findById(associateForm.getRestaurantId());
-
-        verify(planningRepository).findAll();
-        verify(planningRepository).delete(any(Planning.class));
-        verify(planningMapper).planningToPlanningDTO(any(Planning.class));
-    }
-    @Test
-    void getPersonListByRestaurantAndDay() {
-        //given data - Plannings with Dishes that belongs to a Restaurant
-        Restaurant restaurant = PojoExampleCreation.createRestaurantExample(1);
-        DayOfWeek dayOfWeek = DayOfWeek.MONDAY;
-        Planning planning1 = PojoExampleCreation.createPlanningExample(2);
-        planning1.setDayOfWeek(dayOfWeek); planning1.setRestaurant(restaurant);
-        Planning planning2 = PojoExampleCreation.createPlanningExample(3);
-        planning2.setDayOfWeek(dayOfWeek);  planning2.setRestaurant(restaurant);
-        //given stubbing
-        when(restaurantRepository.findById(restaurant.getId())).thenReturn(Optional.of(restaurant));
-        when(planningRepository.findAll()).thenReturn(new ArrayList<>(List.of(planning1,planning2)));
-        when(personMapper.personToPersonDTO(planning1.getPerson())).thenReturn(new PersonDTO().withId(planning1.getPerson().getId()));
-        when(personMapper.personToPersonDTO(planning2.getPerson())).thenReturn(new PersonDTO().withId(planning2.getPerson().getId()));
-        //when
-        EntityDTOList<PersonDTO> personDTOList = planningService.getPersonListByRestaurantAndDay(restaurant.getId(),dayOfWeek.toString());
-        //then
-        verify(planningRepository).findAll();
-        verify(restaurantRepository).findById(restaurant.getId());
-        verify(personMapper,times(2)).personToPersonDTO(any(Person.class));
-        assertEquals(2,personDTOList.getEntityDTOList().size());
-    }
-    @Test
-    void getPersonListByDishAndDay() {
-        //given data - Plannings with same Dishes
-        DayOfWeek dayOfWeek = DayOfWeek.MONDAY;
-        Planning planning1 = PojoExampleCreation.createPlanningExample(1);
-        planning1.setDayOfWeek(dayOfWeek);
-        Planning planning2 = PojoExampleCreation.createPlanningExample(2);
-        planning2.setDayOfWeek(dayOfWeek);
-        long dishId = planning1.getDish().getId();
-        //given stubbing
-        when(dishRepository.findById(dishId)).thenReturn(Optional.of(planning1.getDish()));
-        when(planningRepository.findAll()).thenReturn(new ArrayList<>(List.of(planning1,planning2)));
-        when(personMapper.personToPersonDTO(planning1.getPerson())).thenReturn(new PersonDTO().withId(planning1.getPerson().getId()));
-        //when
-        EntityDTOList<PersonDTO> personDTOList = planningService.getPersonListByDishAndDay(dishId,dayOfWeek.toString());
-        //then
-        verify(dishRepository).findById(dishId);
-        verify(planningRepository).findAll();
-        verify(personMapper).personToPersonDTO(any(Person.class));
-        assertEquals(1,personDTOList.getEntityDTOList().size());
-    }
-    @Test
-    void getPersonListWithNoDishByDay() {
-        //given data - Two Persons, one is without Planning for this Day
-        DayOfWeek dayOfWeek = DayOfWeek.MONDAY;
-        Planning planning1 = PojoExampleCreation.createPlanningExample(1);
-        planning1.setDayOfWeek(dayOfWeek);
-        Person personWithoutDish = PojoExampleCreation.createPersonExample(2);
-        PersonDTO personDTOWithoutDish = PojoExampleCreation.createPersonDTOExample(2);
-        //given stubbing
-        when(planningRepository.findAll()).thenReturn(new ArrayList<>(List.of(planning1)));
-        when(personRepository.findAll()).thenReturn(List.of(planning1.getPerson(),personWithoutDish));
-        when(personMapper.personToPersonDTO(personWithoutDish)).thenReturn(personDTOWithoutDish);
-        //when
-        EntityDTOList<PersonDTO> personDTOList = planningService.getPersonListWithNoDishByDay(dayOfWeek.toString());
-        //then
-        verify(planningRepository).findAll();
-        verify(personRepository).findAll();
-        verify(personMapper,times(1)).personToPersonDTO(any(Person.class));
-        assertEquals(1,personDTOList.getEntityDTOList().size());
-    }
-*/
 }
