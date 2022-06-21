@@ -1,5 +1,6 @@
 package com.example.peoplemeals.controllers;
 
+import com.example.peoplemeals.helpers.ValidationFailedException;
 import lombok.Data;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +26,12 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> handleNoSuchElementException(
             NoSuchElementException ex, WebRequest request) {
         return new ResponseEntity<>(new ExceptionMessage(ex), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(ValidationFailedException.class)
+    public ResponseEntity<Object> handleValidationFailedException(
+            ValidationFailedException ex, WebRequest request) {
+        return new ResponseEntity<>(new ExceptionMessage(ex), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(Exception.class)

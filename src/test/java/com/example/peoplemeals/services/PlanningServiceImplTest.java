@@ -4,8 +4,10 @@ package com.example.peoplemeals.services;
 import com.example.peoplemeals.api.v1.mapper.PersonMapper;
 import com.example.peoplemeals.api.v1.mapper.PlanningMapper;
 import com.example.peoplemeals.api.v1.model.forms.AssociateForm;
+import com.example.peoplemeals.domain.Dish;
 import com.example.peoplemeals.domain.Person;
 import com.example.peoplemeals.domain.Planning;
+import com.example.peoplemeals.domain.Restaurant;
 import com.example.peoplemeals.helpers.DayOfWeekHelper;
 import com.example.peoplemeals.repositories.DishRepository;
 import com.example.peoplemeals.repositories.PersonRepository;
@@ -26,8 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -107,7 +108,7 @@ class PlanningServiceImplTest {
                     .withPersonUuid("person_uuid")
                     .withRestaurantUuid("restaurant_uuid")
                     .withDayOfWeek(DayOfWeek.MONDAY.toString());
-            DayOfWeek dayOfWeekFormat = DayOfWeekHelper.validateDayOfWeek(form.getDayOfWeek()); //todo: test
+            DayOfWeek dayOfWeekFormat = DayOfWeekHelper.validateDayOfWeek(form.getDayOfWeek());
 
             @BeforeEach
             void commonStubs() {
@@ -119,9 +120,9 @@ class PlanningServiceImplTest {
 
             @Test
             void associateAPersonToDishPersonRestaurantAndDay() {
-                when(dishRepository.findIdRequiredByUuid(form.getDishUuid())).thenReturn((dishId));
-                when(personRepository.findIdRequiredByUuid(form.getPersonUuid())).thenReturn((personId));
-                when(restaurantRepository.findIdRequiredByUuid(form.getRestaurantUuid())).thenReturn((restaurantId));
+                when(dishRepository.getById(dishId)).thenReturn(new Dish().withId(dishId));
+                when(personRepository.getById(personId)).thenReturn(new Person().withId((personId)));
+                when(restaurantRepository.getById(restaurantId)).thenReturn(new Restaurant().withId((restaurantId)));
                 //when
                 planningService.associate(form);
                 //then
@@ -132,8 +133,13 @@ class PlanningServiceImplTest {
                 verify(planningRepository).validateLessThan15RestaurantsInDayOfWeek(restaurantId, dayOfWeekFormat);
                 verify(planningMapper).planningToPlanningDTO(any());
                 verify(planningRepository).save(planningCaptor.capture());
+
+                verify(dishRepository).getById(dishId);
+                verify(personRepository).getById(personId);
+                verify(restaurantRepository).getById(restaurantId);
                 //checking if all values were passed to the Planning saved:
                 Planning planningSaved = planningCaptor.getValue();
+                assertNotNull(planningSaved.getUuid());
                 assertEquals(dishId, planningSaved.getDish().getId());
                 assertEquals(personId, planningSaved.getPerson().getId());
                 assertEquals(restaurantId, planningSaved.getRestaurant().getId());

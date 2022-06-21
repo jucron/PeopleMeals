@@ -5,6 +5,7 @@ import com.example.peoplemeals.domain.Person;
 import com.example.peoplemeals.domain.Planning;
 import com.example.peoplemeals.domain.Restaurant;
 import com.example.peoplemeals.helpers.PojoExampleCreation;
+import com.example.peoplemeals.helpers.ValidationFailedException;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -227,7 +228,7 @@ class RepositoryIntegrationTest {
             @Test
             void isNotValid() {
                 //then
-                assertThrows(RuntimeException.class,()->planningRepository.validateNoPlanForThisPersonInDayOfWeek(personId,dayOfWeek));
+                assertThrows(ValidationFailedException.class, () -> planningRepository.validateNoPlanForThisPersonInDayOfWeek(personId, dayOfWeek));
             }
         }
 
@@ -267,7 +268,7 @@ class RepositoryIntegrationTest {
                 }
                 //then
                 assertEquals(15, planningRepository.findAll().size());
-                assertThrows(RuntimeException.class, () -> planningRepository.validateLessThan15RestaurantsInDayOfWeek(restaurantId, dayOfWeek));
+                assertThrows(ValidationFailedException.class, () -> planningRepository.validateLessThan15RestaurantsInDayOfWeek(restaurantId, dayOfWeek));
             }
         }
 

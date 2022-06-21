@@ -7,10 +7,7 @@ import com.example.peoplemeals.api.v1.model.PersonDTO;
 import com.example.peoplemeals.api.v1.model.PlanningDTO;
 import com.example.peoplemeals.api.v1.model.forms.AssociateForm;
 import com.example.peoplemeals.api.v1.model.lists.EntityDTOList;
-import com.example.peoplemeals.domain.Dish;
-import com.example.peoplemeals.domain.Person;
 import com.example.peoplemeals.domain.Planning;
-import com.example.peoplemeals.domain.Restaurant;
 import com.example.peoplemeals.repositories.DishRepository;
 import com.example.peoplemeals.repositories.PersonRepository;
 import com.example.peoplemeals.repositories.PlanningRepository;
@@ -20,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.example.peoplemeals.helpers.DayOfWeekHelper.validateDayOfWeek;
@@ -58,9 +56,10 @@ public class PlanningServiceImpl implements PlanningService {
         //Validations passed: create a new Planning with association, persist it and return a DTO of it
         return planningMapper.planningToPlanningDTO(
                 planningRepository.save(new Planning()
-                        .withDish(new Dish().withId(dishIdFromRepo))
-                        .withPerson(new Person().withId(personIdFromRepo))
-                        .withRestaurant(new Restaurant().withId(restaurantIdFromRepo))
+                        .withUuid(UUID.randomUUID())
+                        .withDish(dishRepository.getById(dishIdFromRepo))
+                        .withPerson(personRepository.getById(personIdFromRepo))
+                        .withRestaurant(restaurantRepository.getById(restaurantIdFromRepo))
                         .withDayOfWeek(dayOfWeekCorrectFormat)));
     }
 

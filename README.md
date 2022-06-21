@@ -18,71 +18,91 @@ http://localhost:8088/
 
 ## Database schema plan
 Following relationships were implemented:
-* Person - one to many - Planning
-* Restaurant - one to many - Planning
-* Planning - one to one - Dish
-* Restaurant - many to many - Dish
 
 [//]: # (<img src="database_schema.png" width=75% height=75%>)
 ![database_schema.png](database_schema.png)
 
 ## Architecture
-It was organized a service-oriented architecture as can be seen below
 
+It was organized a service-oriented architecture as can be seen below
 
 ![img.png](img.png)
 
-
 ## REST APIs
+
 * Dish Entity
 
+`get a Dish entity from repository`
+get: /api/v1/dishes/{dishUuid}
+
+`get all Dishes entity from repository`
+get: /api/v1/dishes/
+
 `add a Dish entity to repository`
-http://localhost:8080/api/v1/dishes/add (DishDTO body) 
+post: /api/v1/dishes/add (DishDTO body)
 
 `remove a Dish entity from repository`
-http://localhost:8080/api/v1/dishes/remove/{dishId}
+delete: /api/v1/dishes/{dishUuid}
 
 `update a Dish entity from repository`
-http://localhost:8080/api/v1/dishes/update/{dishId} (DishDTO body)
+update: /api/v1/dishes/{dishUuid} (DishDTO body)
 
 * Person Entity
 
+`get a Person entity from repository`
+get: /api/v1/persons/{personUuid}
+
+`get all Persones entity from repository`
+get: /api/v1/persons/
+
 `add a Person entity to repository`
-http://localhost:8080/api/v1/persons/add (PersonDTO body)
+post: /api/v1/persons/add (PersonDTO body)
 
 `remove a Person entity from repository`
-http://localhost:8080/api/v1/persons/remove/{personId}
+delete: /api/v1/persons/{personUuid}
 
 `update a Person entity from repository`
-http://localhost:8080/api/v1/persons/update/{personId} (PersonDTO body) 
+update: /api/v1/persons/{personUuid} (PersonDTO body)
 
 * Restaurant Entity
 
-`add a Restaurant entity to repository:`
-http://localhost:8080/api/v1/restaurants/add (restaurantDTO body)
+`get a Restaurant entity from repository`
+get: /api/v1/restaurants/{restaurantUuid}
+
+`get all Restaurantes entity from repository`
+get: /api/v1/restaurants/
+
+`add a Restaurant entity to repository`
+post: /api/v1/restaurants/add (RestaurantDTO body)
 
 `remove a Restaurant entity from repository`
-http://localhost:8080/api/v1/restaurants/remove/{restaurantId}
+delete: /api/v1/restaurants/{restaurantUuid}
 
 `update a Restaurant entity from repository`
-http://localhost:8080/api/v1/restaurants/update/{restaurantId} (DishDTO body)
+update: /api/v1/restaurants/{restaurantUuid} (RestaurantDTO body)
 
 * Planning Entity
 
+`get a Planning entity from repository`
+get: /api/v1/plannings/{restaurantUuid}
+
+`get all Planning entity from repository`
+get: /api/v1/plannings/
+
 `create a planning by associating Dish, Person, Restaurant and DayOfWeek`
-http://localhost:8080/api/v1/plannings/associate (AssociateForm body)
+post: /api/v1/plannings/ (AssociateForm body)
 
 `remove an existing Planning (previous association)`
-http://localhost:8080/api/v1/plannings/disassociate (AssociateForm body)
+remove: /api/v1/plannings/ (AssociateForm body)
 
 `get a List of Persons in a specific Restaurant and DayOfWeek`
-http://localhost:8080/api/v1/plannings/getPersonList/{restaurantId}/{dayOfWeek}/restaurant
+get: /api/v1/plannings/restaurant/{restaurantUuid}/{dayOfWeek}
 
 `get a List of Persons with a specific Dish and DayOfWeek`
-http://localhost:8080/api/v1/plannings/getPersonList/{dishId}/{dayOfWeek}/dish
+get: /api/v1/plannings/dish/{dishUuid}/{dayOfWeek}
 
 `get a List of Persons that have no Dish in a DayOfWeek`
-http://localhost:8080/api/v1/plannings/getPersonList/{dayOfWeek}/no_dish
+get: /api/v1/plannings/no_dish/{dayOfWeek}
 
 ## Testing
 * There are Unit Tests for each method

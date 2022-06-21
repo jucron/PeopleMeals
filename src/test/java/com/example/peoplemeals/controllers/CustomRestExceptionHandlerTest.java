@@ -1,6 +1,7 @@
 package com.example.peoplemeals.controllers;
 
 import com.example.peoplemeals.api.v1.model.DishDTO;
+import com.example.peoplemeals.helpers.ValidationFailedException;
 import com.example.peoplemeals.services.DishServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -101,10 +102,24 @@ class CustomRestExceptionHandlerTest {
         }
 
         @Test
+        void handleValidationFailedException() throws Exception {
+            //given
+            doThrow(new ValidationFailedException(exceptionCustomMessage))
+                    .when(dishService).remove(dishUuid);
+            //when and then
+            mockMvc.perform(delete(BASE_URL + dishUuid)
+                            .accept(MediaType.APPLICATION_JSON)
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andDo(print())
+                    .andExpect(status().isBadRequest())
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.message", equalTo(exceptionCustomMessage)));
+            verify(dishService).remove(dishUuid);
+        }
+
+        @Test
         void handleAnyOtherException() throws Exception {
             //given
-            when(dishService.update(dishUuid, dishDTOThatWillResultError)).thenThrow(new RuntimeException(
-                    CustomRestExceptionHandler.GENERIC_EXCEPTION_MESSAGE));
+            when(dishService.update(dishUuid, dishDTOThatWillResultError)).thenThrow(new RuntimeException());
             //when and then
             mockMvc.perform(put(BASE_URL + dishUuid)
                             .accept(MediaType.APPLICATION_JSON)

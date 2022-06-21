@@ -2,6 +2,7 @@ package com.example.peoplemeals.repositories;
 
 import com.example.peoplemeals.domain.Person;
 import com.example.peoplemeals.domain.Planning;
+import com.example.peoplemeals.helpers.ValidationFailedException;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -27,7 +28,7 @@ public interface PlanningRepository extends PeopleMealRepository<Planning, Long>
     default boolean validateNoPlanForThisPersonInDayOfWeek(Long personId, DayOfWeek dayOfWeek) {
         //Only 1 meal per day per person
         if (countPlanningByPersonIdAndDayOfWeek(personId, dayOfWeek) > 0) {
-            throw new RuntimeException("This Person already have a Planning for this DayOfWeek");
+            throw new ValidationFailedException("This Person already have a Planning for this DayOfWeek");
         }
         return true;
     }
@@ -39,7 +40,7 @@ public interface PlanningRepository extends PeopleMealRepository<Planning, Long>
         if (countPlanningByRestaurantIdAndDayOfWeek(restaurantId, dayOfWeek) < 15) {
             return true;
         } else {
-            throw new RuntimeException("This restaurant have already the maximum number of dishes");
+            throw new ValidationFailedException("This restaurant have already the maximum number of dishes");
         }
     }
 
