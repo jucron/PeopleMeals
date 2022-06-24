@@ -3,7 +3,6 @@ package com.example.peoplemeals.services;
 import com.example.peoplemeals.api.v1.mapper.DishMapper;
 import com.example.peoplemeals.api.v1.model.DishDTO;
 import com.example.peoplemeals.domain.Dish;
-import com.example.peoplemeals.helpers.PojoExampleCreation;
 import com.example.peoplemeals.repositories.DishRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,6 +13,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import testUtils.PojoExampleCreation;
 
 import java.util.List;
 import java.util.NoSuchElementException;

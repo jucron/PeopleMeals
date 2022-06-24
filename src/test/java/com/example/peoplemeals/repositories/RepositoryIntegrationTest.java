@@ -4,12 +4,12 @@ import com.example.peoplemeals.domain.Dish;
 import com.example.peoplemeals.domain.Person;
 import com.example.peoplemeals.domain.Planning;
 import com.example.peoplemeals.domain.Restaurant;
-import com.example.peoplemeals.helpers.PojoExampleCreation;
 import com.example.peoplemeals.helpers.ValidationFailedException;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.core.NestedRuntimeException;
+import testUtils.PojoExampleCreation;
 
 import javax.transaction.Transactional;
 import java.time.DayOfWeek;

@@ -1,4 +1,4 @@
-package com.example.peoplemeals.helpers;
+package testUtils;
 
 import com.example.peoplemeals.api.v1.model.DishDTO;
 import com.example.peoplemeals.api.v1.model.PersonDTO;
@@ -28,7 +28,6 @@ public class PojoExampleCreation {
                 .withId(10L+ref)
                 .withUuid(UUID.randomUUID())
                 .withFullName("fullName_example_"+ref)
-                .withUsername("username_example_"+ref)
                 .withMobile("mobile_example_"+ref)
                 .withTelephone("telephone_example_"+ref)
                 .withFiscal("fiscal_example_"+ref);
@@ -62,7 +61,6 @@ public class PojoExampleCreation {
         return new PersonDTO()
                 .withUuid(UUID.randomUUID())
                 .withFullName("fullName_example_"+ref)
-                .withUsername("username_example_"+ref)
                 .withMobile("mobile_example_"+ref)
                 .withTelephone("telephone_example_"+ref)
                 .withFiscal("fiscal_example_"+ref);

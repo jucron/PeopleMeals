@@ -16,11 +16,21 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
 
     public static String GENERIC_EXCEPTION_MESSAGE = "An internal error has occurred, please contact administrator";
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<Object> handleIllegalArgumentException(
-            IllegalArgumentException ex, WebRequest request) {
-        return new ResponseEntity<>(new ExceptionMessage(ex), HttpStatus.BAD_REQUEST);
-    }
+//    @ExceptionHandler(IllegalArgumentException.class)
+//    public ResponseEntity<Object> handleIllegalArgumentException(
+//            IllegalArgumentException ex, WebRequest request) {
+//        return new ResponseEntity<>(new ExceptionMessage(ex), HttpStatus.BAD_REQUEST);
+//    }
+//    @ExceptionHandler(ValidationFailedException.class)
+//    public ResponseEntity<Object> handleValidationFailedException(
+//            ValidationFailedException ex, WebRequest request) {
+//        return new ResponseEntity<>(new ExceptionMessage(ex), HttpStatus.BAD_REQUEST);
+//    }
+@ExceptionHandler({ValidationFailedException.class, IllegalArgumentException.class})
+public ResponseEntity<Object> handleValidationFailedAndIllegalArgumentExceptions(
+        RuntimeException ex, WebRequest request) {
+    return new ResponseEntity<>(new ExceptionMessage(ex), HttpStatus.BAD_REQUEST);
+}
 
     @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity<Object> handleNoSuchElementException(
@@ -28,10 +38,11 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(new ExceptionMessage(ex), HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(ValidationFailedException.class)
-    public ResponseEntity<Object> handleValidationFailedException(
-            ValidationFailedException ex, WebRequest request) {
-        return new ResponseEntity<>(new ExceptionMessage(ex), HttpStatus.BAD_REQUEST);
+    @ExceptionHandler(SecurityException.class)
+    public ResponseEntity<Object> handleSecurityException(
+            SecurityException ex, WebRequest request) {
+        return new ResponseEntity<>(new ExceptionMessage(ex),
+                ex.getCause() != null ? HttpStatus.OK : HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(Exception.class)

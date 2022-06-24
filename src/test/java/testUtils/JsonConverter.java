@@ -1,4 +1,4 @@
-package com.example.peoplemeals.helpers;
+package testUtils;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;

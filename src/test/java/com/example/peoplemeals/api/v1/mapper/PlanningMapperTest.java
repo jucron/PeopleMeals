@@ -2,8 +2,8 @@ package com.example.peoplemeals.api.v1.mapper;
 
 import com.example.peoplemeals.api.v1.model.PlanningDTO;
 import com.example.peoplemeals.domain.Planning;
-import com.example.peoplemeals.helpers.PojoExampleCreation;
 import org.junit.jupiter.api.Test;
+import testUtils.PojoExampleCreation;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

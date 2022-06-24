@@ -2,8 +2,8 @@ package com.example.peoplemeals.api.v1.mapper;
 
 import com.example.peoplemeals.api.v1.model.PersonDTO;
 import com.example.peoplemeals.domain.Person;
-import com.example.peoplemeals.helpers.PojoExampleCreation;
 import org.junit.jupiter.api.Test;
+import testUtils.PojoExampleCreation;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -23,7 +23,6 @@ class PersonMapperTest {
         assertEquals(person.getFullName(),personDTO.getFullName());
         assertEquals(person.getMobile(),personDTO.getMobile());
         assertEquals(person.getTelephone(),personDTO.getTelephone());
-        assertEquals(person.getUsername(),personDTO.getUsername());
     }
 
     @Test
@@ -38,6 +37,5 @@ class PersonMapperTest {
         assertEquals(personDTO.getFullName(),person.getFullName());
         assertEquals(personDTO.getMobile(),person.getMobile());
         assertEquals(personDTO.getTelephone(),person.getTelephone());
-        assertEquals(personDTO.getUsername(),person.getUsername());
     }
 }

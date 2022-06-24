@@ -6,6 +6,4 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface DishRepository extends PeopleMealRepository<Dish, Long> {
 
-//    @Query("SELECT COUNT(id) from Dish where id = :id")
-//    Long countById()
 }

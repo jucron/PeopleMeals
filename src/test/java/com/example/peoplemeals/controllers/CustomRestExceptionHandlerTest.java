@@ -17,12 +17,12 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.NoSuchElementException;
 
-import static com.example.peoplemeals.helpers.JsonConverter.asJsonString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static testUtils.JsonConverter.asJsonString;
 
 @ExtendWith(MockitoExtension.class)
 class CustomRestExceptionHandlerTest {

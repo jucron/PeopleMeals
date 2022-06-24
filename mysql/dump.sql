@@ -35,6 +35,14 @@ CREATE TABLE `rt_restaurant_dish` (
   `dish_id` bigint
 );
 
+CREATE TABLE `credentials` (
+  `id` bigint PRIMARY KEY AUTO_INCREMENT,
+  `username` varchar(255) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `deactivation_date` varchar(255),
+  `person_id` bigint
+);
+
 ALTER TABLE `planning` ADD FOREIGN KEY (`dish_id`) REFERENCES `dish` (`id`);
 
 ALTER TABLE `planning` ADD FOREIGN KEY (`person_id`) REFERENCES `person` (`id`);
@@ -44,3 +52,5 @@ ALTER TABLE `planning` ADD FOREIGN KEY (`restaurant_id`) REFERENCES `restaurant`
 ALTER TABLE `rt_restaurant_dish` ADD FOREIGN KEY (`restaurant_id`) REFERENCES `restaurant` (`id`);
 
 ALTER TABLE `rt_restaurant_dish` ADD FOREIGN KEY (`dish_id`) REFERENCES `dish` (`id`);
+
+ALTER TABLE `credentials` ADD FOREIGN KEY (`person_id`) REFERENCES `person` (`id`);
