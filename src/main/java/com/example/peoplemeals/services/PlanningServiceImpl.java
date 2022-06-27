@@ -72,9 +72,14 @@ public class PlanningServiceImpl implements PlanningService {
         long personIdFromRepo = personRepository.findIdRequiredByUuid(associateForm.getPersonUuid());
         long restaurantIdFromRepo = restaurantRepository.findIdRequiredByUuid(associateForm.getRestaurantUuid());
         long planningIdToRemove = planningRepository.findPlanningIdRequiredByFields(
-                dishIdFromRepo,personIdFromRepo,restaurantIdFromRepo,dayOfWeekCorrectFormat);
+                dishIdFromRepo, personIdFromRepo, restaurantIdFromRepo, dayOfWeekCorrectFormat);
         //If validations passed: proceed to the removal in DB
         planningRepository.deleteById(planningIdToRemove);
+    }
+
+    @Override
+    public void remove(String planningUuid) {
+        planningRepository.deleteById(planningRepository.findIdRequiredByUuid(planningUuid));
     }
 
     @Override

@@ -167,6 +167,18 @@ class PlanningServiceImplTest {
             }
         }
 
+        @Test
+        void removeAPlanningByUuid() {
+            long idExample = 15L;
+            String uuidExample = "uuid-example";
+            when(planningRepository.findIdRequiredByUuid(uuidExample)).thenReturn(idExample);
+            //when
+            planningService.remove(uuidExample);
+            //then
+            verify(planningRepository).deleteById(idExample);
+            verify(planningRepository).findIdRequiredByUuid(uuidExample);
+        }
+
         @Nested
         class GetPersonLists {
             //given common data
@@ -235,11 +247,13 @@ class PlanningServiceImplTest {
             //given expected behavior
             String someParameter = "some_parameter";
             when(planningRepository.findRequiredByUuid(null)).thenThrow(IllegalArgumentException.class);
+            when(planningRepository.findIdRequiredByUuid(null)).thenThrow(IllegalArgumentException.class);
 
             //when-then
             assertThrows(IllegalArgumentException.class, () -> planningService.get(null));
             assertThrows(NullPointerException.class, () -> planningService.associate(null));
             assertThrows(NullPointerException.class, () -> planningService.disassociate(null));
+            assertThrows(IllegalArgumentException.class, () -> planningService.remove(null));
 
             assertThrows(IllegalArgumentException.class, () -> planningService.getPersonListByRestaurantAndDay(null, null));
             assertThrows(IllegalArgumentException.class, () -> planningService.getPersonListByRestaurantAndDay(someParameter, null));
@@ -300,6 +314,14 @@ class PlanningServiceImplTest {
                 when(planningRepository.findRequiredByUuid(nonExistingUuid)).thenThrow(NoSuchElementException.class);
                 //when
                 assertThrows(NoSuchElementException.class, () -> planningService.get(nonExistingUuid));
+            }
+
+            @Test
+            void removeNonExistingObject() {
+                //given expected behavior
+                when(planningRepository.findIdRequiredByUuid(nonExistingUuid)).thenThrow(NoSuchElementException.class);
+                //when
+                assertThrows(NoSuchElementException.class, () -> planningService.remove(nonExistingUuid));
             }
 
             @Nested

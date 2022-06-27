@@ -40,6 +40,12 @@ public class PlanningController {
         planningService.disassociate(associateForm);
     }
 
+    @DeleteMapping({"/{planningUuid}"})
+    @ResponseStatus(HttpStatus.OK)
+    public void disassociatePerson(@PathVariable String planningUuid) {
+        planningService.remove(planningUuid);
+    }
+
     @GetMapping({"/restaurant/{restaurantUuid}/{dayOfWeek}"})
     @ResponseStatus(HttpStatus.OK)
     public EntityDTOList<PersonDTO> getPersonListByRestaurantAndDay(@PathVariable String restaurantUuid, @PathVariable String dayOfWeek) {

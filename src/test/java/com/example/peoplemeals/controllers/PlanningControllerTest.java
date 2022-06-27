@@ -93,6 +93,16 @@ class PlanningControllerTest {
             verify(planningService).disassociate(any(AssociateForm.class));
         }
 
+        @Test
+        void removeAPlanningWithUuid() throws Exception {
+            //when
+            mockMvc.perform(delete(BASE_URL + PLANNING_DTO.getUuid().toString())
+                            .accept(MediaType.APPLICATION_JSON)
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk());
+            verify(planningService).remove(PLANNING_DTO.getUuid().toString());
+        }
+
         @Nested
         class GetMethods {
             private final String EXAMPLE_UUID = "restaurant-uuid";
@@ -101,7 +111,7 @@ class PlanningControllerTest {
             @Test
             void getPersonDTOListByRestaurantAndDayOfWeek() throws Exception {
                 //when
-                mockMvc.perform(get(BASE_URL + "restaurant/" +EXAMPLE_UUID + "/" + DAY_OF_WEEK )
+                mockMvc.perform(get(BASE_URL + "restaurant/" + EXAMPLE_UUID + "/" + DAY_OF_WEEK)
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON))
                         .andExpect(status().isOk());

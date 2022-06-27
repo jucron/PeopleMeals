@@ -15,6 +15,8 @@ public interface PlanningService {
 
     void disassociate(AssociateForm associateForm);
 
+    void remove(String planningUuid);
+
     EntityDTOList<PersonDTO> getPersonListByRestaurantAndDay(String restaurantUuid, String dayOfWeek);
 
     EntityDTOList<PersonDTO> getPersonListByDishAndDay(String dishUuid, String dayOfWeek);
