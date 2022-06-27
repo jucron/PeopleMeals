@@ -2,7 +2,6 @@ package com.example.peoplemeals.repositories;
 
 import com.example.peoplemeals.domain.Person;
 import com.example.peoplemeals.domain.Planning;
-import com.example.peoplemeals.helpers.ValidationFailedException;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -25,24 +24,8 @@ public interface PlanningRepository extends PeopleMealRepository<Planning, Long>
     @Query("SELECT COUNT(p.id) FROM Planning p WHERE p.person.id = :personId and p.dayOfWeek = :dayOfWeek")
     int countPlanningByPersonIdAndDayOfWeek(Long personId, DayOfWeek dayOfWeek);
 
-    default boolean validateNoPlanForThisPersonInDayOfWeek(Long personId, DayOfWeek dayOfWeek) {
-        //Only 1 meal per day per person
-        if (countPlanningByPersonIdAndDayOfWeek(personId, dayOfWeek) > 0) {
-            throw new ValidationFailedException("This Person already have a Planning for this DayOfWeek");
-        }
-        return true;
-    }
-
     @Query("SELECT COUNT(p.id) FROM Planning p WHERE p.restaurant.id = :restaurantId and p.dayOfWeek = :dayOfWeek")
     int countPlanningByRestaurantIdAndDayOfWeek(Long restaurantId, DayOfWeek dayOfWeek);
-
-    default boolean validateLessThan15RestaurantsInDayOfWeek(Long restaurantId, DayOfWeek dayOfWeek) {
-        if (countPlanningByRestaurantIdAndDayOfWeek(restaurantId, dayOfWeek) < 15) {
-            return true;
-        } else {
-            throw new ValidationFailedException("This restaurant have already the maximum number of dishes");
-        }
-    }
 
     @Query("SELECT p.person FROM Planning p WHERE p.restaurant.id = :restaurantId and p.dayOfWeek = :dayOfWeek")
     List<Person> findPersonsByRestaurantAndDayOfWeek(Long restaurantId, DayOfWeek dayOfWeek);

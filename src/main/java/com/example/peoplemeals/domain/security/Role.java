@@ -2,7 +2,8 @@ package com.example.peoplemeals.domain.security;
 
 public enum Role {
     USER("user"),
-    ADMIN("admin");
+    ADMIN("admin"),
+    DEACTIVATED("deactivated");
 
     public final String role;
 

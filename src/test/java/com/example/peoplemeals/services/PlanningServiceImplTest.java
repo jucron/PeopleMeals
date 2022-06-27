@@ -13,6 +13,7 @@ import com.example.peoplemeals.repositories.DishRepository;
 import com.example.peoplemeals.repositories.PersonRepository;
 import com.example.peoplemeals.repositories.PlanningRepository;
 import com.example.peoplemeals.repositories.RestaurantRepository;
+import com.example.peoplemeals.repositories.validations.PlanningValidation;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -55,6 +56,8 @@ class PlanningServiceImplTest {
     private RestaurantRepository restaurantRepository;
     @Mock
     private PersonMapper personMapper;
+    @Mock
+    private PlanningValidation planningValidation;
     @Captor
     private ArgumentCaptor<Planning> planningCaptor;
 
@@ -62,7 +65,7 @@ class PlanningServiceImplTest {
     public void setUpForAll() {
         //Instantiate service class
         planningService = new PlanningServiceImpl(
-                planningRepository, planningMapper, dishRepository,
+                planningRepository, planningMapper, planningValidation, dishRepository,
                 personRepository, restaurantRepository, personMapper);
     }
 
@@ -129,8 +132,8 @@ class PlanningServiceImplTest {
                 verify(dishRepository).findIdRequiredByUuid(form.getDishUuid());
                 verify(personRepository).findIdRequiredByUuid(form.getPersonUuid());
                 verify(restaurantRepository).findIdRequiredByUuid(form.getRestaurantUuid());
-                verify(planningRepository).validateNoPlanForThisPersonInDayOfWeek(personId, dayOfWeekFormat);
-                verify(planningRepository).validateLessThan15RestaurantsInDayOfWeek(restaurantId, dayOfWeekFormat);
+                verify(planningValidation).validateNoPlanForThisPersonInDayOfWeek(personId, dayOfWeekFormat);
+                verify(planningValidation).validateLessThan15RestaurantsInDayOfWeek(restaurantId, dayOfWeekFormat);
                 verify(planningMapper).planningToPlanningDTO(any());
                 verify(planningRepository).save(planningCaptor.capture());
 
@@ -258,7 +261,7 @@ class PlanningServiceImplTest {
                 //given expected behavior
                 long personId = 1L;
                 String personUuid = "person_uuid";
-                when(planningRepository.validateNoPlanForThisPersonInDayOfWeek(personId, dayOfWeekFormat))
+                when(planningValidation.validateNoPlanForThisPersonInDayOfWeek(personId, dayOfWeekFormat))
                         .thenThrow(RuntimeException.class);
                 when(personRepository.findIdRequiredByUuid(personUuid)).thenReturn(personId);
                 //when and then
@@ -274,7 +277,7 @@ class PlanningServiceImplTest {
                 //given expected behavior
                 long restaurantId = 1L;
                 String restaurantUuid = "restaurant_uuid";
-                when(planningRepository.validateLessThan15RestaurantsInDayOfWeek(restaurantId, dayOfWeekFormat))
+                when(planningValidation.validateLessThan15RestaurantsInDayOfWeek(restaurantId, dayOfWeekFormat))
                         .thenThrow(RuntimeException.class);
                 when(restaurantRepository.findIdRequiredByUuid(restaurantUuid)).thenReturn(restaurantId);
                 //when and then
@@ -284,7 +287,6 @@ class PlanningServiceImplTest {
                             .withDayOfWeek(dayOfWeekFormat.toString()));
                 });
             }
-
         }
 
         @Nested

@@ -1,7 +1,7 @@
 package com.example.peoplemeals.controllers;
 
 import com.example.peoplemeals.api.v1.model.DishDTO;
-import com.example.peoplemeals.helpers.ValidationFailedException;
+import com.example.peoplemeals.repositories.validations.ValidationFailedException;
 import com.example.peoplemeals.services.DishServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;

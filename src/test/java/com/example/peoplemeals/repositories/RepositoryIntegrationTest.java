@@ -4,14 +4,15 @@ import com.example.peoplemeals.domain.Dish;
 import com.example.peoplemeals.domain.Person;
 import com.example.peoplemeals.domain.Planning;
 import com.example.peoplemeals.domain.Restaurant;
-import com.example.peoplemeals.helpers.ValidationFailedException;
+import com.example.peoplemeals.domain.security.Credentials;
+import com.example.peoplemeals.domain.security.Role;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.core.NestedRuntimeException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import testUtils.PojoExampleCreation;
 
-import javax.transaction.Transactional;
 import java.time.DayOfWeek;
 import java.util.*;
 
@@ -29,6 +30,8 @@ class RepositoryIntegrationTest {
     private com.example.peoplemeals.repositories.PersonRepository personRepository;
     @Autowired
     private com.example.peoplemeals.repositories.RestaurantRepository restaurantRepository;
+    @Autowired
+    private com.example.peoplemeals.repositories.CredentialsRepository credentialsRepository;
 
     private final UUID RANDOM_UUID = UUID.randomUUID();
     private Dish dishToBeTested;
@@ -37,21 +40,26 @@ class RepositoryIntegrationTest {
 
     @BeforeAll
     void setUpDataInRepo() {
-            int count = 1;
-            //Populate Dishes repo:
-            dishToBeTested = dishRepository.save(PojoExampleCreation.createDishExample(count++));
-            Dish dish2 = dishRepository.save(PojoExampleCreation.createDishExample(count++));
-            //Populate Persons repo:
-            personToBeTested = personRepository.save(PojoExampleCreation.createPersonExample(count++));
-            personRepository.save(PojoExampleCreation.createPersonExample(count++));
-            //Populate Restaurant repo:
-            Restaurant restaurant = PojoExampleCreation.createRestaurantExample(count++);
-            restaurant.setDishes(Set.of(dishToBeTested,dish2));
-            restaurant = restaurantRepository.save(restaurant);
-            //Populate Planning repo:
-            Planning planning = PojoExampleCreation.createPlanningExample(count);
-            planning.setDish(dishToBeTested); planning.setPerson(personToBeTested); planning.setRestaurant(restaurant);
-            planningToBeTested = planningRepository.save(planning);
+        int count = 1;
+        //Populate Dishes repo:
+        dishToBeTested = dishRepository.save(PojoExampleCreation.createDishExample(count++));
+        Dish dish2 = dishRepository.save(PojoExampleCreation.createDishExample(count++));
+        //Populate Persons repo:
+        personToBeTested = personRepository.save(PojoExampleCreation.createPersonExample(count++));
+        personRepository.save(PojoExampleCreation.createPersonExample(count++));
+        //Populate Restaurant repo:
+        Restaurant restaurant = PojoExampleCreation.createRestaurantExample(count++);
+        restaurant.setDishes(Set.of(dishToBeTested, dish2));
+        restaurant = restaurantRepository.save(restaurant);
+        //Populate Planning repo:
+        Planning planning = PojoExampleCreation.createPlanningExample(count);
+        planning.setDish(dishToBeTested);
+        planning.setPerson(personToBeTested);
+        planning.setRestaurant(restaurant);
+        planningToBeTested = planningRepository.save(planning);
+        //Populate Credentials repo:
+        credentialsRepository.save(
+                new Credentials().withUsername("username").withPassword("password").withRole(Role.USER));
     }
 
     @Nested
@@ -218,21 +226,6 @@ class RepositoryIntegrationTest {
         }
 
         @Nested
-        class validateNoPlanForThisPersonInDayOfWeek {
-            @Test
-            void isValid() {
-                //then
-                assertTrue(planningRepository.validateNoPlanForThisPersonInDayOfWeek(personId+10,dayOfWeek));
-            }
-
-            @Test
-            void isNotValid() {
-                //then
-                assertThrows(ValidationFailedException.class, () -> planningRepository.validateNoPlanForThisPersonInDayOfWeek(personId, dayOfWeek));
-            }
-        }
-
-        @Nested
         class countPlanningByRestaurantIdAndDayOfWeek {
             @Test
             void exists() {
@@ -245,30 +238,6 @@ class RepositoryIntegrationTest {
                 //then
                 assertEquals(0,planningRepository.countPlanningByRestaurantIdAndDayOfWeek(restaurantId+10,dayOfWeek));
                 assertEquals(0,planningRepository.countPlanningByRestaurantIdAndDayOfWeek(restaurantId,DayOfWeek.SUNDAY));
-            }
-        }
-
-        @Nested
-        class validateLessThan15RestaurantsInDayOfWeek {
-            @Test
-            void isValid() {
-                //then
-                assertTrue(planningRepository.validateLessThan15RestaurantsInDayOfWeek(restaurantId,dayOfWeek));
-            }
-
-            @Test
-            @Transactional
-            void isNotValid() {
-                //given
-                Restaurant restaurant = restaurantRepository.getById(restaurantId);
-                int repoSize = restaurantRepository.findAll().size();
-                while (repoSize<15) {
-                    planningRepository.save(new Planning().withRestaurant(restaurant).withDayOfWeek(dayOfWeek));
-                    repoSize++;
-                }
-                //then
-                assertEquals(15, planningRepository.findAll().size());
-                assertThrows(ValidationFailedException.class, () -> planningRepository.validateLessThan15RestaurantsInDayOfWeek(restaurantId, dayOfWeek));
             }
         }
 
@@ -288,7 +257,6 @@ class RepositoryIntegrationTest {
                         planningRepository.findPersonsByRestaurantAndDayOfWeek(restaurantId + 10, dayOfWeek).size());
                 assertEquals(0,
                         planningRepository.findPersonsByRestaurantAndDayOfWeek(restaurantId, DayOfWeek.SUNDAY).size());
-
             }
         }
 
@@ -325,6 +293,38 @@ class RepositoryIntegrationTest {
                 //then
                 assertEquals(0,
                         planningRepository.findPersonIDsByDayOfWeek(DayOfWeek.SUNDAY).size());
+            }
+        }
+    }
+
+    @Nested
+    class CredentialsRepository {
+        String existingUsername = "username";
+        String nonExistingUsername = "nonExistingUsername";
+
+        @Nested
+        class findByUsername {
+            @Test
+            void exists() {
+                assertTrue(credentialsRepository.findByUsername(existingUsername).isPresent());
+            }
+
+            @Test
+            void notInDb() {
+                assertTrue(credentialsRepository.findByUsername(nonExistingUsername).isEmpty());
+            }
+        }
+
+        @Nested
+        class findRequiredByUsername {
+            @Test
+            void exists() {
+                assertDoesNotThrow(() -> credentialsRepository.findRequiredByUsername(existingUsername));
+            }
+
+            @Test
+            void notInDb() {
+                assertThrows(UsernameNotFoundException.class, () -> credentialsRepository.findRequiredByUsername(nonExistingUsername));
             }
         }
     }

@@ -12,6 +12,7 @@ import com.example.peoplemeals.repositories.DishRepository;
 import com.example.peoplemeals.repositories.PersonRepository;
 import com.example.peoplemeals.repositories.PlanningRepository;
 import com.example.peoplemeals.repositories.RestaurantRepository;
+import com.example.peoplemeals.repositories.validations.PlanningValidation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +28,7 @@ import static com.example.peoplemeals.helpers.DayOfWeekHelper.validateDayOfWeek;
 public class PlanningServiceImpl implements PlanningService {
     private final PlanningRepository planningRepository;
     private final PlanningMapper planningMapper;
+    private final PlanningValidation planningValidation;
     private final DishRepository dishRepository;
     private final PersonRepository personRepository;
     private final RestaurantRepository restaurantRepository;
@@ -51,8 +53,8 @@ public class PlanningServiceImpl implements PlanningService {
         long dishIdFromRepo = dishRepository.findIdRequiredByUuid(associateForm.getDishUuid());
         long personIdFromRepo = personRepository.findIdRequiredByUuid(associateForm.getPersonUuid());
         long restaurantIdFromRepo = restaurantRepository.findIdRequiredByUuid(associateForm.getRestaurantUuid());
-        planningRepository.validateNoPlanForThisPersonInDayOfWeek(personIdFromRepo, dayOfWeekCorrectFormat);
-        planningRepository.validateLessThan15RestaurantsInDayOfWeek(restaurantIdFromRepo, dayOfWeekCorrectFormat);
+        planningValidation.validateNoPlanForThisPersonInDayOfWeek(personIdFromRepo, dayOfWeekCorrectFormat);
+        planningValidation.validateLessThan15RestaurantsInDayOfWeek(restaurantIdFromRepo, dayOfWeekCorrectFormat);
         //Validations passed: create a new Planning with association, persist it and return a DTO of it
         return planningMapper.planningToPlanningDTO(
                 planningRepository.save(new Planning()

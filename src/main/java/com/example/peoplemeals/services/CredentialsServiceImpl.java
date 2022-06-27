@@ -5,6 +5,7 @@ import com.example.peoplemeals.api.v1.model.lists.EntityDTOList;
 import com.example.peoplemeals.domain.security.Credentials;
 import com.example.peoplemeals.repositories.CredentialsRepository;
 import com.example.peoplemeals.repositories.PersonRepository;
+import com.example.peoplemeals.repositories.validations.CredentialsValidation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -25,20 +26,20 @@ import java.util.stream.Collectors;
 public class CredentialsServiceImpl implements CredentialsService, UserDetailsService {
 
     private final CredentialsRepository credentialsRepository;
+    private final CredentialsValidation credentialsValidation;
     private final PersonRepository personRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Override
     public void createUser(UserForm form) {
-        credentialsRepository.validateNoSameUsernameInDatabase(form.getUsername());
+        credentialsValidation.validateNoSameUsernameInDatabase(form.getUsername());
         credentialsRepository.save(new Credentials()
                 .withUsername(form.getUsername())
                 .withPassword(passwordEncoder.encode(form.getPassword()))
                 .withRole(form.getRole())
                 //If personUuid is null, save a User without association to any Person
                 .withPerson(form.getPersonUuid() == null ?
-                        null : personRepository.findRequiredByUuid(form.getPersonUuid()))
-        );
+                        null : personRepository.findRequiredByUuid(form.getPersonUuid())));
     }
 
     @Override
@@ -58,9 +59,10 @@ public class CredentialsServiceImpl implements CredentialsService, UserDetailsSe
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Credentials userInRepo = credentialsRepository.findRequiredByUsername(username);
+        String roleOfThisUser = credentialsValidation.validateCredentialsActive(userInRepo);
 
         Collection<SimpleGrantedAuthority> authorities = new ArrayList<>(List.of(
-                new SimpleGrantedAuthority(userInRepo.getRole().role)));
+                new SimpleGrantedAuthority(roleOfThisUser)));
 
         return new User(userInRepo.getUsername(), userInRepo.getPassword(), authorities);
     }
