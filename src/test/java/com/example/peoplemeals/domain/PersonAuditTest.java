@@ -1,34 +1,52 @@
 package com.example.peoplemeals.domain;
 
-import com.example.peoplemeals.domain.security.Credentials;
-import com.example.peoplemeals.repositories.CredentialsRepository;
+import com.example.peoplemeals.config.PersistenceConfig;
 import com.example.peoplemeals.repositories.PersonRepository;
+import com.example.peoplemeals.repositories.RestaurantRepository;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.context.annotation.Import;
+import org.springframework.security.test.context.support.WithMockUser;
 
 import java.util.UUID;
 
-@ExtendWith(SpringExtension.class)
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 @DataJpaTest
+@Import(PersistenceConfig.class)
+@WithMockUser(username = "username_example")
 class PersonAuditTest {
 
-    @Autowired
-    private CredentialsRepository credentialsRepository;
+    UUID uuid = UUID.randomUUID();
     @Autowired
     private PersonRepository personRepository;
+    @Autowired
+    private RestaurantRepository restaurantRepository;
 
-    @Test
-    void auditFields() {
-        Person person = personRepository.save(new Person().withUuid(UUID.randomUUID()));
+    @Nested
+    class auditFieldsInPerson {
+        @Test
+        void creatingEntity() {
+            Person person = personRepository.save(new Person().withUuid(uuid));
 
-        Credentials credentials = credentialsRepository.save(new Credentials()
-                        .withUsername("john")
-                        .withPassword("123"))
-                .withPerson(person);
-        System.out.println(personRepository.findByUuid(person.getUuid()));
+            assertNotNull(person.getCreatedDate());
+            assertNotNull(person.getCreatorUsername());
+            assertNotNull(person.getLastModifiedDate());
+            assertNotNull(person.getLastModifierUsername());
+        }
     }
 
+    @Nested
+    class auditFieldsInRestaurant {
+        @Test
+        void creatingEntity() {
+            Restaurant restaurant = restaurantRepository.save(new Restaurant().withUuid(UUID.randomUUID()));
+            assertNotNull(restaurant.getCreatedDate());
+            assertNotNull(restaurant.getCreatorUsername());
+            assertNotNull(restaurant.getLastModifiedDate());
+            assertNotNull(restaurant.getLastModifierUsername());
+        }
+    }
 }
