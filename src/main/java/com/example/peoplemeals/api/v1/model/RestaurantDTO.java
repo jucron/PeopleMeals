@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.With;
 
 import java.time.DayOfWeek;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Set;
 import java.util.UUID;
@@ -23,4 +24,9 @@ public class RestaurantDTO {
     private LocalTime closingTime;
     private DayOfWeek staffRestDay;
     private Set<DishDTO> dishDTOS;
+
+    private String creatorUsername;
+    private String lastModifierUsername;
+    private LocalDateTime createdDate;
+    private LocalDateTime lastModifiedDate;
 }
