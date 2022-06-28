@@ -132,7 +132,7 @@ class PlanningServiceImplTest {
                 verify(dishRepository).findIdRequiredByUuid(form.getDishUuid());
                 verify(personRepository).findIdRequiredByUuid(form.getPersonUuid());
                 verify(restaurantRepository).findIdRequiredByUuid(form.getRestaurantUuid());
-                verify(planningValidation).validateNoPlanForThisPersonInDayOfWeek(personId, dayOfWeekFormat);
+                verify(planningValidation).validateLessThan3PlansForThisPersonInDayOfWeek(personId, dayOfWeekFormat);
                 verify(planningValidation).validateLessThan15RestaurantsInDayOfWeek(restaurantId, dayOfWeekFormat);
                 verify(planningMapper).planningToPlanningDTO(any());
                 verify(planningRepository).save(planningCaptor.capture());
@@ -275,7 +275,7 @@ class PlanningServiceImplTest {
                 //given expected behavior
                 long personId = 1L;
                 String personUuid = "person_uuid";
-                when(planningValidation.validateNoPlanForThisPersonInDayOfWeek(personId, dayOfWeekFormat))
+                when(planningValidation.validateLessThan3PlansForThisPersonInDayOfWeek(personId, dayOfWeekFormat))
                         .thenThrow(RuntimeException.class);
                 when(personRepository.findIdRequiredByUuid(personUuid)).thenReturn(personId);
                 //when and then

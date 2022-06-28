@@ -28,23 +28,31 @@ class PlanningValidationImplTest {
     }
 
     @Nested
-    class validateNoPlanForThisPersonInDayOfWeek {
+    class validateLessThan3PlansForThisPersonInDayOfWeek {
         long personId = 1L;
 
         @Test
         void isValid() {
             //given
             given(planningRepository.countPlanningByPersonIdAndDayOfWeek(personId, dayOfWeek)).willReturn(0);
+            given(planningRepository.countPlanningByPersonIdAndDayOfWeek(personId + 1, dayOfWeek)).willReturn(1);
+            given(planningRepository.countPlanningByPersonIdAndDayOfWeek(personId + 2, dayOfWeek)).willReturn(2);
             //then
-            assertTrue(planningValidation.validateNoPlanForThisPersonInDayOfWeek(personId, dayOfWeek));
+            assertTrue(planningValidation.validateLessThan3PlansForThisPersonInDayOfWeek(personId, dayOfWeek));
+            assertTrue(planningValidation.validateLessThan3PlansForThisPersonInDayOfWeek(personId + 1, dayOfWeek));
+            assertTrue(planningValidation.validateLessThan3PlansForThisPersonInDayOfWeek(personId + 2, dayOfWeek));
         }
 
         @Test
         void isNotValid() {
             //given
-            given(planningRepository.countPlanningByPersonIdAndDayOfWeek(personId, dayOfWeek)).willReturn(1);
+            given(planningRepository.countPlanningByPersonIdAndDayOfWeek(personId, dayOfWeek)).willReturn(3);
+            given(planningRepository.countPlanningByPersonIdAndDayOfWeek(personId + 1, dayOfWeek)).willReturn(4);
+            given(planningRepository.countPlanningByPersonIdAndDayOfWeek(personId + 2, dayOfWeek)).willReturn(20);
             //then
-            assertThrows(ValidationFailedException.class, () -> planningValidation.validateNoPlanForThisPersonInDayOfWeek(personId, dayOfWeek));
+            assertThrows(ValidationFailedException.class, () -> planningValidation.validateLessThan3PlansForThisPersonInDayOfWeek(personId, dayOfWeek));
+            assertThrows(ValidationFailedException.class, () -> planningValidation.validateLessThan3PlansForThisPersonInDayOfWeek(personId + 1, dayOfWeek));
+            assertThrows(ValidationFailedException.class, () -> planningValidation.validateLessThan3PlansForThisPersonInDayOfWeek(personId + 2, dayOfWeek));
         }
     }
 

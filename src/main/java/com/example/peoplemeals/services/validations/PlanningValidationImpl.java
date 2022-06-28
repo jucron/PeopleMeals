@@ -12,10 +12,10 @@ public class PlanningValidationImpl implements PlanningValidation {
     private final PlanningRepository planningRepository;
 
     @Override
-    public boolean validateNoPlanForThisPersonInDayOfWeek(Long personId, DayOfWeek dayOfWeek) {
-        //Only 1 meal per day per person
-        if (planningRepository.countPlanningByPersonIdAndDayOfWeek(personId, dayOfWeek) > 0) {
-            throw new ValidationFailedException("This Person already have a Planning for this DayOfWeek");
+    public boolean validateLessThan3PlansForThisPersonInDayOfWeek(Long personId, DayOfWeek dayOfWeek) {
+        //Maximum of 3 meals per day per person
+        if (planningRepository.countPlanningByPersonIdAndDayOfWeek(personId, dayOfWeek) >= 3) {
+            throw new ValidationFailedException("This Person already have the maximum Plannings for this DayOfWeek");
         }
         return true;
     }
