@@ -13,7 +13,7 @@ import com.example.peoplemeals.repositories.DishRepository;
 import com.example.peoplemeals.repositories.PersonRepository;
 import com.example.peoplemeals.repositories.PlanningRepository;
 import com.example.peoplemeals.repositories.RestaurantRepository;
-import com.example.peoplemeals.repositories.validations.PlanningValidation;
+import com.example.peoplemeals.services.validations.PlanningValidation;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;

@@ -5,7 +5,7 @@ import com.example.peoplemeals.api.v1.model.lists.EntityDTOList;
 import com.example.peoplemeals.domain.security.Credentials;
 import com.example.peoplemeals.repositories.CredentialsRepository;
 import com.example.peoplemeals.repositories.PersonRepository;
-import com.example.peoplemeals.repositories.validations.CredentialsValidation;
+import com.example.peoplemeals.services.validations.CredentialsValidation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;

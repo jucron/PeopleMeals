@@ -1,4 +1,4 @@
-package com.example.peoplemeals.repositories.validations;
+package com.example.peoplemeals.services.validations;
 
 import com.example.peoplemeals.domain.security.Credentials;
 import com.example.peoplemeals.domain.security.Role;

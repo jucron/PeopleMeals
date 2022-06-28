@@ -6,7 +6,7 @@ import com.example.peoplemeals.domain.Person;
 import com.example.peoplemeals.domain.security.Credentials;
 import com.example.peoplemeals.repositories.CredentialsRepository;
 import com.example.peoplemeals.repositories.PersonRepository;
-import com.example.peoplemeals.repositories.validations.CredentialsValidation;
+import com.example.peoplemeals.services.validations.CredentialsValidation;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;

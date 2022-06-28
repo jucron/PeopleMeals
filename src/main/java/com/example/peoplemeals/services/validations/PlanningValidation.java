@@ -1,4 +1,4 @@
-package com.example.peoplemeals.repositories.validations;
+package com.example.peoplemeals.services.validations;
 
 import java.time.DayOfWeek;
 

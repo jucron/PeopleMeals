@@ -1,6 +1,6 @@
 package com.example.peoplemeals.controllers;
 
-import com.example.peoplemeals.repositories.validations.ValidationFailedException;
+import com.example.peoplemeals.services.validations.ValidationFailedException;
 import lombok.Data;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
