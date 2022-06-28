@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.With;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.util.UUID;
 
 @Entity
@@ -20,6 +21,7 @@ public class Dish {
 
     private UUID uuid;
 
+    @NotBlank
     private String name;
 
     @Column(name = "recipe_url")

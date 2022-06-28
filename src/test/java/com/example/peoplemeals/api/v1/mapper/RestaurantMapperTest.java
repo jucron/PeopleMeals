@@ -22,7 +22,8 @@ class RestaurantMapperTest {
         assertEquals(restaurant.getName(),restaurantDTO.getName());
         assertEquals(restaurant.getOpeningTime(),restaurantDTO.getOpeningTime());
         assertEquals(restaurant.getClosingTime(),restaurantDTO.getClosingTime());
-        assertEquals(restaurant.getStaffRestDay(),restaurantDTO.getStaffRestDay());
+        assertEquals(restaurant.getStaffRestDay(), restaurantDTO.getStaffRestDay());
+        assertEquals(restaurant.getMaxNumberOfMealsPerDay(), restaurantDTO.getMaxNumberOfMealsPerDay());
 
         assertEquals(restaurant.getDishes().size(),restaurantDTO.getDishDTOS().size());
     }
@@ -37,7 +38,8 @@ class RestaurantMapperTest {
         assertEquals(restaurantDTO.getName(),restaurant.getName());
         assertEquals(restaurantDTO.getOpeningTime(),restaurant.getOpeningTime());
         assertEquals(restaurantDTO.getClosingTime(),restaurant.getClosingTime());
-        assertEquals(restaurantDTO.getStaffRestDay(),restaurant.getStaffRestDay());
+        assertEquals(restaurantDTO.getStaffRestDay(), restaurant.getStaffRestDay());
+        assertEquals(restaurant.getMaxNumberOfMealsPerDay(), restaurantDTO.getMaxNumberOfMealsPerDay());
 
         assertEquals(restaurantDTO.getDishDTOS().size(),restaurant.getDishes().size());
     }

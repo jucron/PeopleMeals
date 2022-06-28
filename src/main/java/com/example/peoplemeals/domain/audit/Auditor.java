@@ -20,12 +20,13 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class Auditor {
 
-    @Column(name = "creator_username", updatable = false)
     @CreatedBy
+    @Column(name = "creator_username")
     private String creatorUsername;
 
-    @Column(name = "creator_date", updatable = false)
+
     @CreatedDate
+    @Column(name = "creator_date")
     private LocalDateTime createdDate;
 
     @Column(name = "last_modifier_username")

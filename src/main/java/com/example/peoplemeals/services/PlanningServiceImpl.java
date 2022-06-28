@@ -54,7 +54,7 @@ public class PlanningServiceImpl implements PlanningService {
         long personIdFromRepo = personRepository.findIdRequiredByUuid(associateForm.getPersonUuid());
         long restaurantIdFromRepo = restaurantRepository.findIdRequiredByUuid(associateForm.getRestaurantUuid());
         planningValidation.validateLessThan3PlansForThisPersonInDayOfWeek(personIdFromRepo, dayOfWeekCorrectFormat);
-        planningValidation.validateLessThan15RestaurantsInDayOfWeek(restaurantIdFromRepo, dayOfWeekCorrectFormat);
+        planningValidation.validateLessThanMaxNumberOfMealsPerDayInRestaurant(restaurantIdFromRepo, dayOfWeekCorrectFormat);
         //Validations passed: create a new Planning with association, persist it and return a DTO of it
         return planningMapper.planningToPlanningDTO(
                 planningRepository.save(new Planning()

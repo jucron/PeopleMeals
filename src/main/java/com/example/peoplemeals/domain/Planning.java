@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.With;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.time.DayOfWeek;
 import java.util.UUID;
 
@@ -22,6 +23,7 @@ public class Planning {
 
     private UUID uuid;
 
+    @NotNull
     @Column(name = "day_of_week", length = 10)
     private DayOfWeek dayOfWeek;
 

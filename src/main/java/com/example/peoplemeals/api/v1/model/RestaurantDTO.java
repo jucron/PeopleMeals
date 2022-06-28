@@ -24,6 +24,7 @@ public class RestaurantDTO {
     private LocalTime closingTime;
     private DayOfWeek staffRestDay;
     private Set<DishDTO> dishDTOS;
+    private int maxNumberOfMealsPerDay;
 
     private String creatorUsername;
     private String lastModifierUsername;

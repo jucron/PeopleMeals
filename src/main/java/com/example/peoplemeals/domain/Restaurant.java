@@ -8,6 +8,9 @@ import lombok.With;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.Set;
@@ -26,6 +29,7 @@ public class Restaurant extends Auditor {
 
     private UUID uuid;
 
+    @NotBlank
     private String name;
 
     @Column(name = "opening_time")
@@ -42,4 +46,8 @@ public class Restaurant extends Auditor {
             joinColumns = @JoinColumn(name = "restaurant_id"),
             inverseJoinColumns = @JoinColumn(name = "dish_id"))
     private Set<Dish> dishes;
+
+    @Min(value = 1, message = "Restaurants should have at least one Meal per day")
+    @Max(value = 200, message = "Restaurants should have less than 200 Meal per day")
+    private int maxNumberOfMealsPerDay;
 }

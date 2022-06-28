@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import javax.validation.ConstraintViolationException;
 import java.util.NoSuchElementException;
 
 @ControllerAdvice
@@ -16,21 +17,11 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
 
     public static String GENERIC_EXCEPTION_MESSAGE = "An internal error has occurred, please contact administrator";
 
-//    @ExceptionHandler(IllegalArgumentException.class)
-//    public ResponseEntity<Object> handleIllegalArgumentException(
-//            IllegalArgumentException ex, WebRequest request) {
-//        return new ResponseEntity<>(new ExceptionMessage(ex), HttpStatus.BAD_REQUEST);
-//    }
-//    @ExceptionHandler(ValidationFailedException.class)
-//    public ResponseEntity<Object> handleValidationFailedException(
-//            ValidationFailedException ex, WebRequest request) {
-//        return new ResponseEntity<>(new ExceptionMessage(ex), HttpStatus.BAD_REQUEST);
-//    }
-@ExceptionHandler({ValidationFailedException.class, IllegalArgumentException.class})
-public ResponseEntity<Object> handleValidationFailedAndIllegalArgumentExceptions(
-        RuntimeException ex, WebRequest request) {
-    return new ResponseEntity<>(new ExceptionMessage(ex), HttpStatus.BAD_REQUEST);
-}
+    @ExceptionHandler({ValidationFailedException.class, IllegalArgumentException.class})
+    public ResponseEntity<Object> handleValidationFailedAndIllegalArgumentExceptions(
+            RuntimeException ex, WebRequest request) {
+        return new ResponseEntity<>(new ExceptionMessage(ex), HttpStatus.BAD_REQUEST);
+    }
 
     @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity<Object> handleNoSuchElementException(
@@ -43,6 +34,12 @@ public ResponseEntity<Object> handleValidationFailedAndIllegalArgumentExceptions
             SecurityException ex, WebRequest request) {
         return new ResponseEntity<>(new ExceptionMessage(ex),
                 ex.getCause() != null ? HttpStatus.OK : HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<Object> handleConstraintViolationException(
+            ConstraintViolationException ex, WebRequest request) {
+        return new ResponseEntity<>(new ExceptionMessage(ex), HttpStatus.NOT_ACCEPTABLE);
     }
 
     @ExceptionHandler(Exception.class)

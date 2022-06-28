@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.With;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Entity
@@ -19,7 +21,10 @@ public class Credentials {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank
     private String username;
+
+    @NotBlank
     private String password;
 
     @Column(name = "deactivation_date")
@@ -29,6 +34,7 @@ public class Credentials {
     @JoinColumn(name = "person_id")
     private Person person;
 
+    @NotNull
     @Enumerated(EnumType.STRING)
     private Role role;
 }

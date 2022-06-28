@@ -8,6 +8,7 @@ import lombok.With;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.util.UUID;
 
 @Entity
@@ -24,6 +25,7 @@ public class Person extends Auditor {
 
     private UUID uuid;
 
+    @NotBlank
     @Column(name = "fullname")
     private String fullName;
 

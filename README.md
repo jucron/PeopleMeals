@@ -20,7 +20,7 @@ http://localhost:8088/
 Following relationships were implemented:
 
 [//]: # (<img src="database_schema.png" width=75% height=75%>)
-![img_1.png](database_schema.png)
+![img_1.png](img_1.png)
 
 ## Architecture
 

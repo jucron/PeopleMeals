@@ -43,13 +43,14 @@ public class PojoExampleCreation {
     }
     public static Restaurant createRestaurantExample (int ref) {
         return new Restaurant()
-                .withId(100L+ref)
+                .withId(100L + ref)
                 .withUuid(UUID.randomUUID())
-                .withName("restaurantName_example_"+ref)
-                .withOpeningTime(LocalTime.of(8,0))
-                .withClosingTime(LocalTime.of(20,0))
+                .withName("restaurantName_example_" + ref)
+                .withOpeningTime(LocalTime.of(8, 0))
+                .withClosingTime(LocalTime.of(20, 0))
                 .withStaffRestDay(DayOfWeek.SUNDAY)
-                .withDishes(Set.of(createDishExample(ref)));
+                .withDishes(Set.of(createDishExample(ref)))
+                .withMaxNumberOfMealsPerDay(10);
     }
     public static DishDTO createDishDTOExample (int ref) {
         return new DishDTO()
@@ -75,10 +76,11 @@ public class PojoExampleCreation {
     public static RestaurantDTO createRestaurantDTOExample (int ref) {
         return new RestaurantDTO()
                 .withUuid(UUID.randomUUID())
-                .withName("restaurantName_example_"+ref)
-                .withOpeningTime(LocalTime.of(8,0))
-                .withClosingTime(LocalTime.of(20,20))
+                .withName("restaurantName_example_" + ref)
+                .withOpeningTime(LocalTime.of(8, 0))
+                .withClosingTime(LocalTime.of(20, 20))
                 .withStaffRestDay(DayOfWeek.SUNDAY)
-                .withDishDTOS((Set.of(createDishDTOExample(ref))));
+                .withDishDTOS((Set.of(createDishDTOExample(ref))))
+                .withMaxNumberOfMealsPerDay(10);
     }
 }

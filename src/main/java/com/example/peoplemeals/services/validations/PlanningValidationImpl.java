@@ -1,6 +1,7 @@
 package com.example.peoplemeals.services.validations;
 
 import com.example.peoplemeals.repositories.PlanningRepository;
+import com.example.peoplemeals.repositories.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -10,6 +11,7 @@ import java.time.DayOfWeek;
 @RequiredArgsConstructor
 public class PlanningValidationImpl implements PlanningValidation {
     private final PlanningRepository planningRepository;
+    private final RestaurantRepository restaurantRepository;
 
     @Override
     public boolean validateLessThan3PlansForThisPersonInDayOfWeek(Long personId, DayOfWeek dayOfWeek) {
@@ -21,8 +23,9 @@ public class PlanningValidationImpl implements PlanningValidation {
     }
 
     @Override
-    public boolean validateLessThan15RestaurantsInDayOfWeek(Long restaurantId, DayOfWeek dayOfWeek) {
-        if (planningRepository.countPlanningByRestaurantIdAndDayOfWeek(restaurantId, dayOfWeek) < 15) {
+    public boolean validateLessThanMaxNumberOfMealsPerDayInRestaurant(Long restaurantId, DayOfWeek dayOfWeek) {
+        if (planningRepository.countPlanningByRestaurantIdAndDayOfWeek(restaurantId, dayOfWeek) <
+                restaurantRepository.findMaxNumberOfMealsPerDayRequiredByRestaurantId(restaurantId)) {
             return true;
         } else {
             throw new ValidationFailedException("This restaurant have already the maximum number of dishes");

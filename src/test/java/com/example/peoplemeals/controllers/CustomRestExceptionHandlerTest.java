@@ -15,12 +15,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import javax.validation.ConstraintViolationException;
+import java.util.HashSet;
 import java.util.NoSuchElementException;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static testUtils.JsonConverter.asJsonString;
 
@@ -95,7 +96,7 @@ class CustomRestExceptionHandlerTest {
             mockMvc.perform(delete(BASE_URL + dishUuid)
                             .accept(MediaType.APPLICATION_JSON)
                             .contentType(MediaType.APPLICATION_JSON))
-                    .andDo(print())
+//                    .andDo(print())
                     .andExpect(status().isNotFound())
                     .andExpect(MockMvcResultMatchers.jsonPath("$.message", equalTo(exceptionCustomMessage)));
             verify(dishService).remove(dishUuid);
@@ -110,8 +111,23 @@ class CustomRestExceptionHandlerTest {
             mockMvc.perform(delete(BASE_URL + dishUuid)
                             .accept(MediaType.APPLICATION_JSON)
                             .contentType(MediaType.APPLICATION_JSON))
-                    .andDo(print())
+//                    .andDo(print())
                     .andExpect(status().isBadRequest())
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.message", equalTo(exceptionCustomMessage)));
+            verify(dishService).remove(dishUuid);
+        }
+
+        @Test
+        void handleConstraintViolationException() throws Exception {
+            //given
+            doThrow(new ConstraintViolationException(exceptionCustomMessage, new HashSet<>()))
+                    .when(dishService).remove(dishUuid);
+            //when and then
+            mockMvc.perform(delete(BASE_URL + dishUuid)
+                            .accept(MediaType.APPLICATION_JSON)
+                            .contentType(MediaType.APPLICATION_JSON))
+//                    .andDo(print())
+                    .andExpect(status().isNotAcceptable())
                     .andExpect(MockMvcResultMatchers.jsonPath("$.message", equalTo(exceptionCustomMessage)));
             verify(dishService).remove(dishUuid);
         }

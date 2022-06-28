@@ -1,5 +1,6 @@
 package com.example.peoplemeals.repositories;
 
+import com.example.peoplemeals.config.PersistenceConfig;
 import com.example.peoplemeals.domain.Dish;
 import com.example.peoplemeals.domain.Person;
 import com.example.peoplemeals.domain.Planning;
@@ -9,16 +10,21 @@ import com.example.peoplemeals.domain.security.Role;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.NestedRuntimeException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.test.context.support.WithMockUser;
 import testUtils.PojoExampleCreation;
 
+import javax.validation.ConstraintViolationException;
 import java.time.DayOfWeek;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
+@Import(PersistenceConfig.class)
+@WithMockUser(username = "username_example")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class RepositoryIntegrationTest {
 
@@ -325,6 +331,136 @@ class RepositoryIntegrationTest {
             @Test
             void notInDb() {
                 assertThrows(UsernameNotFoundException.class, () -> credentialsRepository.findRequiredByUsername(nonExistingUsername));
+            }
+        }
+    }
+
+    @Nested
+    class RestaurantRepository {
+        long existingRestaurantId = planningToBeTested.getRestaurant().getId();
+        long nonExistingRestaurantId = existingRestaurantId + 50;
+
+        @Nested
+        class findMaxNumberOfMealsPerDayByRestaurantId {
+            @Test
+            void exists() {
+                assertTrue(restaurantRepository.findMaxNumberOfMealsPerDayByRestaurantId(existingRestaurantId).isPresent());
+            }
+
+            @Test
+            void notInDb() {
+                assertTrue(restaurantRepository.findMaxNumberOfMealsPerDayByRestaurantId(nonExistingRestaurantId).isEmpty());
+            }
+        }
+
+        @Nested
+        class findMaxNumberOfMealsPerDayRequiredByRestaurantId {
+            @Test
+            void exists() {
+                assertDoesNotThrow(() -> restaurantRepository.findMaxNumberOfMealsPerDayRequiredByRestaurantId(existingRestaurantId));
+            }
+
+            @Test
+            void notInDb() {
+                assertThrows(NoSuchElementException.class, () -> restaurantRepository.findMaxNumberOfMealsPerDayRequiredByRestaurantId(nonExistingRestaurantId));
+            }
+        }
+    }
+
+    @Nested
+    class EntityFieldsValidations {
+        @Nested
+        class DishEntity {
+            @Test
+            void blankOrNull() {
+                Dish dishWithNullName = new Dish().withName(null);
+                Dish dishWithEmptyName = new Dish().withName("");
+                assertThrows(ConstraintViolationException.class, () -> dishRepository.save(dishWithNullName));
+                assertThrows(ConstraintViolationException.class, () -> dishRepository.save(dishWithEmptyName));
+            }
+        }
+
+        @Nested
+        class PersonEntity {
+            @Test
+            void blankOrNull() {
+                Person personWithNullName = new Person().withFullName(null);
+                Person personWithBlankName = new Person().withFullName("");
+                assertThrows(ConstraintViolationException.class, () -> personRepository.save(personWithNullName));
+                assertThrows(ConstraintViolationException.class, () -> personRepository.save(personWithBlankName));
+            }
+        }
+
+        @Nested
+        class RestaurantEntity {
+            @Test
+            void blankOrNull() {
+                Restaurant restaurantWithNullName = new Restaurant().withName(null);
+                Restaurant restaurantWithBlankName = new Restaurant().withName("");
+                assertThrows(ConstraintViolationException.class, () -> restaurantRepository.save(restaurantWithNullName));
+                assertThrows(ConstraintViolationException.class, () -> restaurantRepository.save(restaurantWithBlankName));
+            }
+        }
+
+        @Nested
+        class PlanningEntity {
+            @Test
+            void blankOrNull() {
+                Planning planningWithNullDayOfWeek = new Planning().withDayOfWeek(null);
+                assertThrows(ConstraintViolationException.class, () -> planningRepository.save(planningWithNullDayOfWeek));
+            }
+        }
+
+        @Nested
+        class CredentialsEntity {
+            @Test
+            void blankOrNull() {
+                Credentials credentialsCorrect = new Credentials()
+                        .withUsername("username").withPassword("pass").withRole(Role.USER);
+                Credentials credentialsWithNullUsername = credentialsCorrect.withUsername(null);
+                Credentials credentialsWithNullPassword = credentialsCorrect.withPassword(null);
+                Credentials credentialsWithBlankUsername = credentialsCorrect.withUsername("");
+                Credentials credentialsWithBlankPassword = credentialsCorrect.withPassword("");
+                Credentials credentialsWithNullRole = credentialsCorrect.withRole(null);
+
+                assertThrows(ConstraintViolationException.class, () -> credentialsRepository.save(credentialsWithNullUsername));
+                assertThrows(ConstraintViolationException.class, () -> credentialsRepository.save(credentialsWithNullPassword));
+                assertThrows(ConstraintViolationException.class, () -> credentialsRepository.save(credentialsWithBlankUsername));
+                assertThrows(ConstraintViolationException.class, () -> credentialsRepository.save(credentialsWithBlankPassword));
+                assertThrows(ConstraintViolationException.class, () -> credentialsRepository.save(credentialsWithNullRole));
+
+            }
+        }
+    }
+
+    @Nested
+    class EntityAuditFields {
+        @Nested
+        class auditFieldsInPerson {
+            @Test
+            void creatingEntity() {
+                Person person = personRepository.save(PojoExampleCreation.createPersonExample(50));
+
+                assertNotNull(person.getCreatedDate());
+                assertNotNull(person.getCreatorUsername());
+                assertNotNull(person.getLastModifiedDate());
+                assertNotNull(person.getLastModifierUsername());
+                //todo: bug in Audit spotted while updating fields
+            }
+        }
+
+        @Nested
+        class auditFieldsInRestaurant {
+            @Test
+            void creatingEntity() {
+                Restaurant restaurant = restaurantRepository.save(PojoExampleCreation.createRestaurantExample(50)
+                        .withDishes(new HashSet<>(List.of(dishToBeTested))));
+
+                assertNotNull(restaurant.getCreatedDate());
+                assertNotNull(restaurant.getCreatorUsername());
+                assertNotNull(restaurant.getLastModifiedDate());
+                assertNotNull(restaurant.getLastModifierUsername());
+                //todo: bug in Audit spotted while updating fields
             }
         }
     }

@@ -1,6 +1,7 @@
 package com.example.peoplemeals.services.validations;
 
 import com.example.peoplemeals.repositories.PlanningRepository;
+import com.example.peoplemeals.repositories.RestaurantRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -8,7 +9,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import javax.transaction.Transactional;
 import java.time.DayOfWeek;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -21,10 +21,12 @@ class PlanningValidationImplTest {
     private PlanningValidation planningValidation;
     @Mock
     private PlanningRepository planningRepository;
+    @Mock
+    private RestaurantRepository restaurantRepository;
 
     @BeforeEach
     void setUp() {
-        planningValidation = new PlanningValidationImpl(planningRepository);
+        planningValidation = new PlanningValidationImpl(planningRepository, restaurantRepository);
     }
 
     @Nested
@@ -57,26 +59,35 @@ class PlanningValidationImplTest {
     }
 
     @Nested
-    class validateLessThan15RestaurantsInDayOfWeek {
+    class validateLessThanMaxNumberOfMealsPerDayInRestaurant {
         long restaurantId = 1L;
 
         @Test
         void isValid() {
             //given
-            int countExpected = 10;
-            given(planningRepository.countPlanningByRestaurantIdAndDayOfWeek(restaurantId, dayOfWeek)).willReturn(countExpected);
-            //then
-            assertTrue(planningValidation.validateLessThan15RestaurantsInDayOfWeek(restaurantId, dayOfWeek));
+            int countExpectedForExistingPlannings = 0;
+            int countExpectedForMaxNumberOfMealsPerDay = 10;
+            given(restaurantRepository.findMaxNumberOfMealsPerDayRequiredByRestaurantId(restaurantId)).willReturn(countExpectedForMaxNumberOfMealsPerDay);
+            given(planningRepository.countPlanningByRestaurantIdAndDayOfWeek(restaurantId, dayOfWeek)).willReturn(countExpectedForExistingPlannings);
+            //then (will return true as long as existingPlannings are lower than maxNumberOfMealsPerDay)
+            while (countExpectedForExistingPlannings < 10) {
+                assertTrue(planningValidation.validateLessThanMaxNumberOfMealsPerDayInRestaurant(restaurantId, dayOfWeek));
+                countExpectedForExistingPlannings++;
+            }
         }
 
         @Test
-        @Transactional
         void isNotValid() {
             //given
-            int countExpected = 15;
-            given(planningRepository.countPlanningByRestaurantIdAndDayOfWeek(restaurantId, dayOfWeek)).willReturn(countExpected);
-            //then
-            assertThrows(ValidationFailedException.class, () -> planningValidation.validateLessThan15RestaurantsInDayOfWeek(restaurantId, dayOfWeek));
+            int countExpectedForExistingPlannings = 10;
+            int countExpectedForMaxNumberOfMealsPerDay = 10;
+            given(restaurantRepository.findMaxNumberOfMealsPerDayRequiredByRestaurantId(restaurantId)).willReturn(countExpectedForMaxNumberOfMealsPerDay);
+            given(planningRepository.countPlanningByRestaurantIdAndDayOfWeek(restaurantId, dayOfWeek)).willReturn(countExpectedForExistingPlannings);
+            //then (will throw ValidationException as long as existingPlannings are equal or higher than maxNumberOfMealsPerDay)
+            while (countExpectedForExistingPlannings < 15) {
+                assertThrows(ValidationFailedException.class, () -> planningValidation.validateLessThanMaxNumberOfMealsPerDayInRestaurant(restaurantId, dayOfWeek));
+                countExpectedForExistingPlannings++;
+            }
         }
     }
 }
