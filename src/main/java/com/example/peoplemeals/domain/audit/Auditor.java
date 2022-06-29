@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 public class Auditor {
 
     @CreatedBy
-    @Column(name = "creator_username")
+    @Column(name = "creator_username", updatable = false)
     private String creatorUsername;
 
 
@@ -29,7 +29,7 @@ public class Auditor {
     @Column(name = "creator_date")
     private LocalDateTime createdDate;
 
-    @Column(name = "last_modifier_username")
+    @Column(name = "last_modifier_username", updatable = false)
     @LastModifiedBy
     private String lastModifierUsername;
 
