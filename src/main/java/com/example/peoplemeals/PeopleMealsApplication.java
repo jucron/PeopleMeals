@@ -2,6 +2,7 @@ package com.example.peoplemeals;
 
 import com.example.peoplemeals.api.v1.model.forms.UserForm;
 import com.example.peoplemeals.domain.security.Role;
+import com.example.peoplemeals.helpers.NoCoverageGenerated;
 import com.example.peoplemeals.services.CredentialsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +12,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
+@NoCoverageGenerated
 @SpringBootApplication
 public class PeopleMealsApplication {
 
@@ -19,6 +21,7 @@ public class PeopleMealsApplication {
     }
 }
 
+@NoCoverageGenerated
 @Component
 @RequiredArgsConstructor
 @Slf4j

@@ -1,6 +1,7 @@
 package com.example.peoplemeals.domain;
 
 import com.example.peoplemeals.domain.audit.Auditor;
+import com.example.peoplemeals.helpers.NoCoverageGenerated;
 import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -8,6 +9,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.util.UUID;
 
+@NoCoverageGenerated
 @Entity
 @Getter
 @Setter

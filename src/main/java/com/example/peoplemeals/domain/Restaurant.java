@@ -1,6 +1,7 @@
 package com.example.peoplemeals.domain;
 
 import com.example.peoplemeals.domain.audit.Auditor;
+import com.example.peoplemeals.helpers.NoCoverageGenerated;
 import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -13,6 +14,7 @@ import java.time.LocalTime;
 import java.util.Set;
 import java.util.UUID;
 
+@NoCoverageGenerated
 @Entity
 @Getter
 @Setter

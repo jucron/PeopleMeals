@@ -1,13 +1,13 @@
 package com.example.peoplemeals.api.v1.model.lists;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.With;
+import com.example.peoplemeals.helpers.NoCoverageGenerated;
+import lombok.*;
 
 import java.util.Set;
 
-@Data
+@NoCoverageGenerated
+@Getter
+@Setter
 @With
 @AllArgsConstructor
 @NoArgsConstructor

@@ -1,8 +1,10 @@
 package com.example.peoplemeals.api.v1.model.forms;
 
 import com.example.peoplemeals.domain.security.Role;
+import com.example.peoplemeals.helpers.NoCoverageGenerated;
 import lombok.*;
 
+@NoCoverageGenerated
 @Getter
 @Setter
 @EqualsAndHashCode

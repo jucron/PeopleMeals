@@ -8,12 +8,14 @@ import com.example.peoplemeals.domain.Dish;
 import com.example.peoplemeals.domain.Person;
 import com.example.peoplemeals.domain.Planning;
 import com.example.peoplemeals.domain.Restaurant;
+import com.example.peoplemeals.helpers.NoCoverageGenerated;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.Set;
 import java.util.UUID;
 
+@NoCoverageGenerated
 public class PojoExampleCreation {
 
     public static Dish createDishExample (int ref) {
@@ -23,6 +25,7 @@ public class PojoExampleCreation {
                 .withName("dishName_example_"+ref)
                 .withRecipeUrl("url_example_"+ref);
     }
+
     public static Person createPersonExample (int ref) {
         return new Person()
                 .withId(10L+ref)
@@ -32,6 +35,7 @@ public class PojoExampleCreation {
                 .withTelephone("telephone_example_"+ref)
                 .withFiscal("fiscal_example_"+ref);
     }
+
     public static Planning createPlanningExample (int ref) {
         return new Planning()
                 .withId(50L+ref)
@@ -41,6 +45,7 @@ public class PojoExampleCreation {
                 .withPerson(createPersonExample(ref))
                 .withRestaurant(createRestaurantExample(ref));
     }
+
     public static Restaurant createRestaurantExample (int ref) {
         return new Restaurant()
                 .withId(100L + ref)
@@ -52,12 +57,14 @@ public class PojoExampleCreation {
                 .withDishes(Set.of(createDishExample(ref)))
                 .withMaxNumberOfMealsPerDay(10);
     }
+
     public static DishDTO createDishDTOExample (int ref) {
         return new DishDTO()
                 .withUuid(UUID.randomUUID())
                 .withName("dishName_example_"+ref)
                 .withRecipeUrl("url_example_"+ref);
     }
+
     public static PersonDTO createPersonDTOExample (int ref) {
         return new PersonDTO()
                 .withUuid(UUID.randomUUID())
@@ -66,6 +73,7 @@ public class PojoExampleCreation {
                 .withTelephone("telephone_example_"+ref)
                 .withFiscal("fiscal_example_"+ref);
     }
+
     public static PlanningDTO createPlanningDTOExample (int ref) {
         return new PlanningDTO()
                 .withUuid(UUID.randomUUID())
@@ -73,6 +81,7 @@ public class PojoExampleCreation {
                 .withDishDTO(createDishDTOExample(ref))
                 .withPersonDTO(createPersonDTOExample(ref));
     }
+
     public static RestaurantDTO createRestaurantDTOExample (int ref) {
         return new RestaurantDTO()
                 .withUuid(UUID.randomUUID())

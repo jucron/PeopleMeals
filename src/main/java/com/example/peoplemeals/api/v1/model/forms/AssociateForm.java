@@ -1,7 +1,9 @@
 package com.example.peoplemeals.api.v1.model.forms;
 
+import com.example.peoplemeals.helpers.NoCoverageGenerated;
 import lombok.*;
 
+@NoCoverageGenerated
 @Getter
 @Setter
 @With

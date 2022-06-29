@@ -1,5 +1,6 @@
 package com.example.peoplemeals.domain;
 
+import com.example.peoplemeals.helpers.NoCoverageGenerated;
 import lombok.*;
 
 import javax.persistence.*;
@@ -7,6 +8,7 @@ import javax.validation.constraints.NotNull;
 import java.time.DayOfWeek;
 import java.util.UUID;
 
+@NoCoverageGenerated
 @Entity
 @Getter
 @Setter
