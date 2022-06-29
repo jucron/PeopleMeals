@@ -1,15 +1,14 @@
 package com.example.peoplemeals.api.v1.model;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.With;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Data
+@Getter
+@Setter
+@EqualsAndHashCode
 @With
 @AllArgsConstructor
 @NoArgsConstructor

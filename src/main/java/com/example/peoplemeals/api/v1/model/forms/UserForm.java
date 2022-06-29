@@ -1,12 +1,11 @@
 package com.example.peoplemeals.api.v1.model.forms;
 
 import com.example.peoplemeals.domain.security.Role;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.With;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
+@EqualsAndHashCode
 @With
 @AllArgsConstructor
 @NoArgsConstructor

@@ -1,19 +1,17 @@
 package com.example.peoplemeals.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.With;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.util.UUID;
 
 @Entity
-@Data
 @With
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 public class Dish {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

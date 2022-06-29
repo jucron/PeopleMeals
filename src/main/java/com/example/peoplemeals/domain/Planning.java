@@ -1,9 +1,6 @@
 package com.example.peoplemeals.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.With;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -11,7 +8,8 @@ import java.time.DayOfWeek;
 import java.util.UUID;
 
 @Entity
-@Data
+@Getter
+@Setter
 @With
 @AllArgsConstructor
 @NoArgsConstructor
