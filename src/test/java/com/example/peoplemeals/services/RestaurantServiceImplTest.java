@@ -13,6 +13,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import testUtils.PojoExampleCreation;
 
 import java.util.List;
@@ -61,11 +63,11 @@ class RestaurantServiceImplTest {
         class GetAndGetAllMethods {
             @Test
             void getElements() {
-                when(restaurantRepository.findAll()).thenReturn(List.of(new Restaurant()));
+                when(restaurantRepository.findAll(any(PageRequest.class))).thenReturn(new PageImpl<>(List.of(new Restaurant())));
                 //when
-                restaurantService.getAll();
+                restaurantService.getAll(0, 10, "name");
                 //then
-                verify(restaurantRepository).findAll();
+                verify(restaurantRepository).findAll(any(PageRequest.class));
             }
 
             @Test

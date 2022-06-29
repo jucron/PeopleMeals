@@ -38,7 +38,7 @@ public class PlanningServiceImpl implements PlanningService {
     public EntityDTOList<PlanningDTO> getAll() {
         return new EntityDTOList<>(planningRepository.findAll().stream()
                 .map(planningMapper::planningToPlanningDTO)
-                .collect(Collectors.toSet()));
+                .collect(Collectors.toList()));
     }
 
     @Override
@@ -91,7 +91,7 @@ public class PlanningServiceImpl implements PlanningService {
                         .findPersonsByRestaurantAndDayOfWeek(restaurantIdFromRepo, dayOfWeekCorrectFormat)
                         .stream()
                         .map(personMapper::personToPersonDTO)
-                        .collect(Collectors.toSet()));
+                        .collect(Collectors.toList()));
     }
 
     @Override
@@ -103,7 +103,7 @@ public class PlanningServiceImpl implements PlanningService {
                         .findPersonsByDishAndDayOfWeek(dishIdFromRepo, dayOfWeekCorrectFormat)
                         .stream()
                         .map(personMapper::personToPersonDTO)
-                        .collect(Collectors.toSet()));
+                        .collect(Collectors.toList()));
     }
 
     @Override
@@ -115,7 +115,7 @@ public class PlanningServiceImpl implements PlanningService {
                         .findAllNotInList(personsIDsInThisDayOfWeek)
                         .stream()
                         .map(personMapper::personToPersonDTO)
-                        .collect(Collectors.toSet()));
+                        .collect(Collectors.toList()));
     }
 }
 

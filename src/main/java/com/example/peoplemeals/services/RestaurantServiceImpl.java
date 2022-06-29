@@ -6,6 +6,8 @@ import com.example.peoplemeals.api.v1.model.lists.EntityDTOList;
 import com.example.peoplemeals.domain.Restaurant;
 import com.example.peoplemeals.repositories.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -18,10 +20,12 @@ public class RestaurantServiceImpl implements RestaurantService {
     private final RestaurantMapper restaurantMapper;
 
     @Override
-    public EntityDTOList<RestaurantDTO> getAll() {
-        return new EntityDTOList<>(restaurantRepository.findAll().stream()
+    public EntityDTOList<RestaurantDTO> getAll(Integer pageNo, Integer pageSize, String sortBy) {
+        return new EntityDTOList<>(restaurantRepository.
+                findAll(PageRequest.of(pageNo, pageSize, Sort.by(sortBy))).getContent()
+                .stream()
                 .map(restaurantMapper::restaurantToRestaurantDTO)
-                .collect(Collectors.toSet()));
+                .collect(Collectors.toList()));
     }
 
     @Override

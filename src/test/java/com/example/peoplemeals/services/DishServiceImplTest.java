@@ -13,6 +13,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import testUtils.PojoExampleCreation;
 
 import java.util.List;
@@ -61,11 +63,15 @@ class DishServiceImplTest {
         class GetAndGetAllMethods {
             @Test
             void getElements() {
-                when(dishRepository.findAll()).thenReturn(List.of(new Dish()));
+                //given
+                int defaultPageNo = 0;
+                int defaultPageSize = 10;
+                String defaultSortBy = "name";
+                when(dishRepository.findAll(any(PageRequest.class))).thenReturn(new PageImpl<>(List.of(new Dish())));
                 //when
-                dishService.getAll();
+                dishService.getAll(defaultPageNo, defaultPageSize, defaultSortBy);
                 //then
-                verify(dishRepository).findAll();
+                verify(dishRepository).findAll(any(PageRequest.class));
             }
 
             @Test

@@ -16,8 +16,11 @@ public class CredentialsController {
 
     @GetMapping({"/"})
     @ResponseStatus(HttpStatus.OK)
-    public EntityDTOList<Credentials> getUsers() {
-        return credentialsService.getAll();
+    public EntityDTOList<Credentials> getUsers(
+            @RequestParam(defaultValue = "0") Integer pageNo,
+            @RequestParam(defaultValue = "10") Integer pageSize,
+            @RequestParam(defaultValue = "username") String sortBy) {
+        return credentialsService.getAll(pageNo, pageSize, sortBy);
     }
 
     @PostMapping({"/"})

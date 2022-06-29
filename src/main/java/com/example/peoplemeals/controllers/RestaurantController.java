@@ -16,8 +16,11 @@ public class RestaurantController {
 
     @GetMapping({"/"})
     @ResponseStatus(HttpStatus.OK)
-    public EntityDTOList<RestaurantDTO> getAllRestaurants () {
-        return restaurantService.getAll();
+    public EntityDTOList<RestaurantDTO> getAllRestaurants(
+            @RequestParam(defaultValue = "0") Integer pageNo,
+            @RequestParam(defaultValue = "10") Integer pageSize,
+            @RequestParam(defaultValue = "name") String sortBy) {
+        return restaurantService.getAll(pageNo, pageSize, sortBy);
     }
 
     @GetMapping({"/{restaurantUuid}"})

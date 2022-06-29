@@ -4,7 +4,7 @@ import com.example.peoplemeals.api.v1.model.RestaurantDTO;
 import com.example.peoplemeals.api.v1.model.lists.EntityDTOList;
 
 public interface RestaurantService {
-    EntityDTOList<RestaurantDTO> getAll();
+    EntityDTOList<RestaurantDTO> getAll(Integer pageNo, Integer pageSize, String sortBy);
 
     RestaurantDTO get(String restaurantUuid);
 

@@ -7,6 +7,8 @@ import com.example.peoplemeals.repositories.CredentialsRepository;
 import com.example.peoplemeals.repositories.PersonRepository;
 import com.example.peoplemeals.services.validations.CredentialsValidation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -50,10 +52,12 @@ public class CredentialsServiceImpl implements CredentialsService, UserDetailsSe
     }
 
     @Override
-    public EntityDTOList<Credentials> getAll() {
-        return new EntityDTOList<>(credentialsRepository.findAll().stream()
+    public EntityDTOList<Credentials> getAll(Integer pageNo, Integer pageSize, String sortBy) {
+        return new EntityDTOList<>(credentialsRepository
+                .findAll(PageRequest.of(pageNo, pageSize, Sort.by(sortBy))).getContent()
+                .stream()
                 .peek(credentials -> credentials.setPassword("********"))
-                .collect(Collectors.toSet()));
+                .collect(Collectors.toList()));
     }
 
     @Override

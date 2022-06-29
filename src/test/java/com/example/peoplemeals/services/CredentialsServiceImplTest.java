@@ -16,12 +16,13 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.example.peoplemeals.domain.security.Role.USER;
@@ -79,11 +80,11 @@ class CredentialsServiceImplTest {
         @Test
         void getAll() {
             //given
-            given(credentialsRepository.findAll()).willReturn(new ArrayList<>(List.of(new Credentials())));
+            given(credentialsRepository.findAll(any(PageRequest.class))).willReturn(new PageImpl<>(List.of(new Credentials())));
             //when
-            EntityDTOList<Credentials> list = credentialsService.getAll();
+            EntityDTOList<Credentials> list = credentialsService.getAll(0, 10, "username");
             //then
-            verify(credentialsRepository).findAll();
+            verify(credentialsRepository).findAll(any(PageRequest.class));
             assertEquals("********", list.getEntityDTOList().iterator().next().getPassword());
         }
 

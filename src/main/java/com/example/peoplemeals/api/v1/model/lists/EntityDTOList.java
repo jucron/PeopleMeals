@@ -3,7 +3,7 @@ package com.example.peoplemeals.api.v1.model.lists;
 import com.example.peoplemeals.helpers.NoCoverageGenerated;
 import lombok.*;
 
-import java.util.Set;
+import java.util.List;
 
 @NoCoverageGenerated
 @Getter
@@ -12,5 +12,5 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 public class EntityDTOList<T>{
-    private Set<T> entityDTOList;
+    private List<T> entityDTOList;
 }

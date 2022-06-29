@@ -16,8 +16,11 @@ public class PersonController {
 
     @GetMapping({"/"})
     @ResponseStatus(HttpStatus.OK)
-    public EntityDTOList<PersonDTO> getAllPersons () {
-        return personService.getAll();
+    public EntityDTOList<PersonDTO> getAllPersons(
+            @RequestParam(defaultValue = "0") Integer pageNo,
+            @RequestParam(defaultValue = "10") Integer pageSize,
+            @RequestParam(defaultValue = "fullName") String sortBy) {
+        return personService.getAll(pageNo, pageSize, sortBy);
     }
 
     @GetMapping({"/{personUuid}"})

@@ -10,7 +10,7 @@ public interface DishService {
 
     DishDTO update(String dishUuid, DishDTO dishDTO);
 
-    EntityDTOList<DishDTO> getAll();
+    EntityDTOList<DishDTO> getAll(Integer pageNo, Integer pageSize, String sortBy);
 
     DishDTO get(String dishUuid);
 }

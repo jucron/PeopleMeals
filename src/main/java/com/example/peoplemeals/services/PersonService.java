@@ -7,7 +7,7 @@ public interface PersonService {
 
     PersonDTO get(String personUuid);
 
-    EntityDTOList<PersonDTO> getAll();
+    EntityDTOList<PersonDTO> getAll(Integer pageNo, Integer pageSize, String sortBy);
 
     PersonDTO add(PersonDTO personDTO);
 

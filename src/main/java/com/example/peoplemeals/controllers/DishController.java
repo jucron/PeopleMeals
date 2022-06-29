@@ -16,8 +16,11 @@ public class DishController {
 
     @GetMapping({"/"})
     @ResponseStatus(HttpStatus.OK)
-    public EntityDTOList<DishDTO> getAllDishes () {
-        return dishService.getAll();
+    public EntityDTOList<DishDTO> getAllDishes(
+            @RequestParam(defaultValue = "0") Integer pageNo,
+            @RequestParam(defaultValue = "10") Integer pageSize,
+            @RequestParam(defaultValue = "name") String sortBy) {
+        return dishService.getAll(pageNo, pageSize, sortBy);
     }
 
     @GetMapping({"/{dishUuid}"})

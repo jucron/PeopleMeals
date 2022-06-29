@@ -51,12 +51,16 @@ class PersonControllerTest {
 
         @Test
         void getAllPersonsFromRepo() throws Exception {
+            //given
+            int defaultPageNo = 0;
+            int defaultPageSize = 10;
+            String defaultSortBy = "fullName";
             //when
             mockMvc.perform(get(BASE_URL)
                             .accept(MediaType.APPLICATION_JSON)
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk());
-            verify(personService).getAll();
+            verify(personService).getAll(defaultPageNo, defaultPageSize, defaultSortBy);
         }
 
         @Test

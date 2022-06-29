@@ -9,5 +9,5 @@ public interface CredentialsService {
 
     void deactivateUser(String username);
 
-    EntityDTOList<Credentials> getAll();
+    EntityDTOList<Credentials> getAll(Integer pageNo, Integer pageSize, String sortBy);
 }
