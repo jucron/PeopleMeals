@@ -1,7 +1,11 @@
-# People meals 
+# People meals
+
 `by João Marcelo Renault`
 
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/jucron/PeopleMeals/tree/master.svg?style=svg&circle-token=54174309f349bce553da6585d36efe2725d7905d)](https://dl.circleci.com/status-badge/redirect/gh/jucron/PeopleMeals/tree/master)
+
 ## Setup
+
 ```docker
 > To start mysql container
 docker-compose up
@@ -9,6 +13,7 @@ docker-compose up
 > To start mysql container detached
 docker-compose up -d
 ```
+
 ## Usage
 ```html
 > With a browser, access: 
