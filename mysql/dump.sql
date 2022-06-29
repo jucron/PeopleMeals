@@ -10,9 +10,10 @@ CREATE TABLE `person` (
 CREATE TABLE `restaurant` (
   `id` bigint PRIMARY KEY AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
-  `opening_time` date NOT NULL,
-  `closing_time` date NOT NULL,
-  `staff_rest_day` date NOT NULL
+  `opening_time` date,
+  `closing_time` date,
+  `staff_rest_day` date,
+  `maxNumberOfMealsPerDay` bigint
 );
 
 CREATE TABLE `dish` (

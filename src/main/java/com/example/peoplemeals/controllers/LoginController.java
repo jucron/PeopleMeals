@@ -9,19 +9,23 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/")
 public class LoginController {
 
+    public static final String loginMessage = "Please login before proceeding.";
+    public static final String successMessage = "Login successful!";
+    public static final String logoutMessage = "You are now logged out.";
+
     @GetMapping("login")
     public String getLogin() {
-        throw new SecurityException("Unauthorized: please login before proceed");
+        throw new SecurityException(loginMessage);
     }
 
     @GetMapping("success")
     public String successLogin() {
-        throw new SecurityException("Login successful!", new Throwable("success"));
+        throw new SecurityException(successMessage, new Throwable("success"));
     }
 
     @GetMapping("logout_ok")
     public String logout() {
-        throw new SecurityException("You are now logged out.", new Throwable("success"));
+        throw new SecurityException(logoutMessage, new Throwable("success"));
     }
 
     @PostMapping("failure")

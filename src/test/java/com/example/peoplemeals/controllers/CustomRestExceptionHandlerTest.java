@@ -133,6 +133,21 @@ class CustomRestExceptionHandlerTest {
         }
 
         @Test
+        void handleSecurityException() throws Exception {
+            //given
+            doThrow(new SecurityException(exceptionCustomMessage))
+                    .when(dishService).remove(dishUuid);
+            //when and then
+            mockMvc.perform(delete(BASE_URL + dishUuid)
+                            .accept(MediaType.APPLICATION_JSON)
+                            .contentType(MediaType.APPLICATION_JSON))
+//                    .andDo(print())
+                    .andExpect(status().isUnauthorized())
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.message", equalTo(exceptionCustomMessage)));
+            verify(dishService).remove(dishUuid);
+        }
+
+        @Test
         void handleAnyOtherException() throws Exception {
             //given
             when(dishService.update(dishUuid, dishDTOThatWillResultError)).thenThrow(new RuntimeException());
