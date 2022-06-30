@@ -12,6 +12,12 @@ class DayOfWeekHelperTest {
     @Nested
     class SuccessTests {
         @Test
+        void validateUtilityClassInstantiation() {
+            final DayOfWeekHelper dayOfWeekHelperInstantiation = new DayOfWeekHelper();
+            assertNotNull(dayOfWeekHelperInstantiation);
+        }
+
+        @Test
         void validateADayOfWeek() {
             //given
             DayOfWeek dayOfWeek1 = DayOfWeek.MONDAY;

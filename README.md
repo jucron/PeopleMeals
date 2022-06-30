@@ -59,14 +59,21 @@ It was organized a service-oriented architecture as can be seen below
 
 [Planning Controller documentation here](https://documenter.getpostman.com/view/18570764/UzBvFNN3)
 
-
 ## Testing
 
 * There are Unit Tests for each method
-* An Integration Test was implemented for processes that require Database use
+* Two Integration Test were implemented:
+
+> for processes that require Database use
+
+> for Security authorization context environment
+
 * Postman public WorksSpace for testing:
 
 > [Postman - PeopleMeals endpoints Test](https://www.postman.com/jucron/workspace/peoplemeals-endpoints-test-joo-renault/overview)
 
 * Code coverage report from JaCoCo plugin:
-  ![img_2.png](img_2.png)
+
+![img_2.png](img_2.png)
+
+`Note: Classes with no practical reason to be tested were annotated with @NoCoverageGenerated`
