@@ -35,34 +35,38 @@ It was organized a service-oriented architecture as can be seen below
 
 ## REST APIs
 
+* Credentials Entity
+
+[Credentials Controller documentation here](https://documenter.getpostman.com/view/18570764/UzBvFNHe)
+
 * Login
 
-[Login documentation here](https://documenter.getpostman.com/view/18570764/UzBvFNMw)
+[Login Controller documentation here](https://documenter.getpostman.com/view/18570764/UzBvFNMw)
 
 * Dish Entity
 
-[Dish Entity documentation here](https://documenter.getpostman.com/view/18570764/UzBvFNMv)
+[Dish Controller documentation here](https://documenter.getpostman.com/view/18570764/UzBvFNMv)
 
 * Person Entity
 
-[Person Entity documentation here](https://documenter.getpostman.com/view/18570764/UzBvFNMy)
+[Person Controller documentation here](https://documenter.getpostman.com/view/18570764/UzBvFNMy)
 
 * Restaurant Entity
 
-[Restaurant Entity documentation here](https://documenter.getpostman.com/view/18570764/UzBvFNN2)
+[Restaurant Controller documentation here](https://documenter.getpostman.com/view/18570764/UzBvFNN2)
 
 * Planning Entity
 
-[Planning Entity documentation here](https://documenter.getpostman.com/view/18570764/UzBvFNN3)
+[Planning Controller documentation here](https://documenter.getpostman.com/view/18570764/UzBvFNN3)
 
-* Credentials Entity
-
-[Credentials Entity documentation here](https://documenter.getpostman.com/view/18570764/UzBvFNHe)
 
 ## Testing
 
 * There are Unit Tests for each method
 * An Integration Test was implemented for processes that require Database use
-* Postman collection for testing:
+* Postman public WorksSpace for testing:
 
 > [Postman - PeopleMeals endpoints Test](https://www.postman.com/jucron/workspace/peoplemeals-endpoints-test-joo-renault/overview)
+
+* Code coverage report from JaCoCo plugin:
+  ![img_2.png](img_2.png)

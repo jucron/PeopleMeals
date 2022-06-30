@@ -1,5 +1,6 @@
 package com.example.peoplemeals.config;
 
+import com.example.peoplemeals.helpers.NoCoverageGenerated;
 import com.example.peoplemeals.services.CredentialsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -84,6 +85,7 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
         );
     }
 
+    @NoCoverageGenerated
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.authenticationProvider(daoAuthenticationProvider());
