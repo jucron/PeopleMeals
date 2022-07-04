@@ -49,5 +49,6 @@ public class Restaurant extends Auditor {
 
     @Min(value = 1, message = "Restaurants should have at least one Meal per day")
     @Max(value = 200, message = "Restaurants should have less than 200 Meal per day")
+    @Column(name = "max_meals")
     private int maxNumberOfMealsPerDay;
 }

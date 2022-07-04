@@ -1,6 +1,6 @@
-package com.example.peoplemeals.helpers;
+package com.example.peoplemeals.services.validations;
 
-public class DayOfWeekHelper {
+public class DayOfWeekValidation {
 
     public static java.time.DayOfWeek validateDayOfWeek(String dayOfWeek) {
         try {

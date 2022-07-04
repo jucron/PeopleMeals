@@ -8,11 +8,11 @@ import com.example.peoplemeals.domain.Dish;
 import com.example.peoplemeals.domain.Person;
 import com.example.peoplemeals.domain.Planning;
 import com.example.peoplemeals.domain.Restaurant;
-import com.example.peoplemeals.helpers.DayOfWeekHelper;
 import com.example.peoplemeals.repositories.DishRepository;
 import com.example.peoplemeals.repositories.PersonRepository;
 import com.example.peoplemeals.repositories.PlanningRepository;
 import com.example.peoplemeals.repositories.RestaurantRepository;
+import com.example.peoplemeals.services.validations.DayOfWeekValidation;
 import com.example.peoplemeals.services.validations.PlanningValidation;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -111,7 +111,7 @@ class PlanningServiceImplTest {
                     .withPersonUuid("person_uuid")
                     .withRestaurantUuid("restaurant_uuid")
                     .withDayOfWeek(DayOfWeek.MONDAY.toString());
-            DayOfWeek dayOfWeekFormat = DayOfWeekHelper.validateDayOfWeek(form.getDayOfWeek());
+            DayOfWeek dayOfWeekFormat = DayOfWeekValidation.validateDayOfWeek(form.getDayOfWeek());
 
             @BeforeEach
             void commonStubs() {

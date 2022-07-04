@@ -31,7 +31,7 @@ public class Planning {
     @JoinColumn(name = "dish_id")
     private Dish dish;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "person_id")
     private Person person;
 

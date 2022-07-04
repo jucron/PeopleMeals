@@ -32,11 +32,13 @@ public class Credentials {
     @Column(name = "deactivation_date")
     private LocalDateTime deactivationDate; //If null, User still active
 
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
     @OneToOne
     @JoinColumn(name = "person_id")
     private Person person;
 
-    @NotNull
-    @Enumerated(EnumType.STRING)
-    private Role role;
+
 }

@@ -4,28 +4,43 @@
 
 [![CircleCI](https://dl.circleci.com/status-badge/img/gh/jucron/PeopleMeals/tree/master.svg?style=svg&circle-token=54174309f349bce553da6585d36efe2725d7905d)](https://dl.circleci.com/status-badge/redirect/gh/jucron/PeopleMeals/tree/master)
 
-## Setup
+## Setup by Docker
+
+Requirement: Only Docker installed.
+Pre-setup: Make sure the file [application.properties](src/main/resources/application.properties) have only active the
+profile #2 dev.
 
 ```docker
-> To start mysql container
-docker-compose up
+>First make sure application.properties
 
-> To start mysql container detached
+> First create an image of PeopleMeals application. From files directory, type:
+docker build -t peoplemeals .
+
+> Then start all containers in detach mode with the command below:
 docker-compose up -d
 ```
 
+**Note:** There will be included:
+
+* `MySQL container (3306:3306)`
+* `PhPMyAdmin container (8088:80)`
+
 ## Usage
+
 ```html
 > With a browser, access: 
 http://localhost:8088/
 ```
-**Note:** It will be shared a dump of the database on mysql folder, on that dump you can create a dump of the database if you want to, and it will be loaded when the DB is loaded.
+
+**Note:** It will be shared a dump of the database on mysql folder, on that dump you can create a dump of the database
+if you want to, and it will be loaded when the DB is loaded.
 
 ## Database schema plan
+
 Following relationships were implemented:
 
 [//]: # (<img src="database_schema.png" width=75% height=75%>)
-![img_1.png](img_1.png)
+![img_4.png](img_4.png)
 
 ## Architecture
 

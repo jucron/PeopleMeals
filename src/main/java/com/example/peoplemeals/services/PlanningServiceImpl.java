@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static com.example.peoplemeals.helpers.DayOfWeekHelper.validateDayOfWeek;
+import static com.example.peoplemeals.services.validations.DayOfWeekValidation.validateDayOfWeek;
 
 @Service
 @RequiredArgsConstructor

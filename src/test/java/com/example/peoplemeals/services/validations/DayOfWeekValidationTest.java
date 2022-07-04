@@ -1,4 +1,4 @@
-package com.example.peoplemeals.helpers;
+package com.example.peoplemeals.services.validations;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -7,14 +7,14 @@ import java.time.DayOfWeek;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class DayOfWeekHelperTest {
+class DayOfWeekValidationTest {
 
     @Nested
     class SuccessTests {
         @Test
         void validateUtilityClassInstantiation() {
-            final DayOfWeekHelper dayOfWeekHelperInstantiation = new DayOfWeekHelper();
-            assertNotNull(dayOfWeekHelperInstantiation);
+            final DayOfWeekValidation dayOfWeekValidationInstantiation = new DayOfWeekValidation();
+            assertNotNull(dayOfWeekValidationInstantiation);
         }
 
         @Test
@@ -24,9 +24,9 @@ class DayOfWeekHelperTest {
             DayOfWeek dayOfWeek2 = DayOfWeek.WEDNESDAY;
             DayOfWeek dayOfWeek3 = DayOfWeek.SUNDAY;
             //when
-            DayOfWeek dayOfWeekExtracted1 = DayOfWeekHelper.validateDayOfWeek(dayOfWeek1.toString());
-            DayOfWeek dayOfWeekExtracted2 = DayOfWeekHelper.validateDayOfWeek(dayOfWeek2.toString());
-            DayOfWeek dayOfWeekExtracted3 = DayOfWeekHelper.validateDayOfWeek(dayOfWeek3.toString());
+            DayOfWeek dayOfWeekExtracted1 = DayOfWeekValidation.validateDayOfWeek(dayOfWeek1.toString());
+            DayOfWeek dayOfWeekExtracted2 = DayOfWeekValidation.validateDayOfWeek(dayOfWeek2.toString());
+            DayOfWeek dayOfWeekExtracted3 = DayOfWeekValidation.validateDayOfWeek(dayOfWeek3.toString());
             //then
             assertAll(
                     () -> assertEquals(dayOfWeek1, dayOfWeekExtracted1),
@@ -41,12 +41,12 @@ class DayOfWeekHelperTest {
     class FailTests {
         @Test
         void nullParameter() {
-            assertThrows(IllegalArgumentException.class, () -> DayOfWeekHelper.validateDayOfWeek(null));
+            assertThrows(IllegalArgumentException.class, () -> DayOfWeekValidation.validateDayOfWeek(null));
         }
 
         @Test
         void wrongFormat() {
-            assertThrows(IllegalArgumentException.class, () -> DayOfWeekHelper.validateDayOfWeek("wrong-date-format"));
+            assertThrows(IllegalArgumentException.class, () -> DayOfWeekValidation.validateDayOfWeek("wrong-date-format"));
         }
     }
 
