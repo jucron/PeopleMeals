@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.NestedRuntimeException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import testUtils.PojoExampleCreation;
 
 import javax.validation.ConstraintViolationException;
@@ -22,6 +23,7 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@ActiveProfiles("default")
 @DataJpaTest
 @Import(PersistenceConfig.class)
 @WithMockUser(username = "username_example")

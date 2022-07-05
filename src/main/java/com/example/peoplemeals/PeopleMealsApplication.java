@@ -1,8 +1,17 @@
 package com.example.peoplemeals;
 
+import com.example.peoplemeals.api.v1.model.forms.UserForm;
+import com.example.peoplemeals.domain.security.Role;
 import com.example.peoplemeals.helpers.NoCoverageGenerated;
+import com.example.peoplemeals.services.CredentialsService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.annotation.Profile;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.stereotype.Component;
 
 @NoCoverageGenerated
 @SpringBootApplication
@@ -12,7 +21,8 @@ public class PeopleMealsApplication {
         SpringApplication.run(PeopleMealsApplication.class, args);
     }
 }
-/*
+
+@Profile("default")
 @NoCoverageGenerated
 @Component
 @RequiredArgsConstructor
@@ -35,6 +45,6 @@ class BootstrapData implements ApplicationListener<ContextRefreshedEvent> {
     }
 }
 
- */
+
 
 
