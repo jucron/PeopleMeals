@@ -35,6 +35,7 @@ public class CredentialsServiceImpl implements CredentialsService, UserDetailsSe
     @Override
     public void createUser(UserForm form) {
         credentialsValidation.validateNoSameUsernameInDatabase(form.getUsername());
+        credentialsValidation.validateRoleFormat(form.getRole());
         credentialsRepository.save(new Credentials()
                 .withUsername(form.getUsername())
                 .withPassword(passwordEncoder.encode(form.getPassword()))

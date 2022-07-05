@@ -28,18 +28,22 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static testUtils.JsonConverter.asJsonString;
 
-@ActiveProfiles("default")
+@ActiveProfiles(profiles = "default")
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ApplicationSecurityConfigTest {
 
     private final String UUID_example = UUID.randomUUID().toString();
+
     @Autowired
     private WebApplicationContext context;
+
     @Autowired
     private DishRepository dishRepository;
+
     @Autowired
     private CredentialsRepository credentialsRepository;
+
     private MockMvc mvc;
 
     @BeforeEach
@@ -150,14 +154,14 @@ class ApplicationSecurityConfigTest {
                                 .content(asJsonString(new UserForm()
                                         .withUsername("username")
                                         .withPassword("password")
-                                        .withRole(Role.ADMIN))))
+                                        .withRole(Role.ADMIN.toString()))))
                         .andExpect(status().isCreated());
             }
 
             @Test
             void delete_CredentialsController() throws Exception {
                 Credentials credentialsSaved = credentialsRepository.save(new Credentials()
-                        .withUsername("another_username").withPassword("password").withRole(Role.ADMIN));
+                        .withUsername("another_username").withPassword("password").withRole(Role.ADMIN.role));
                 mvc.perform(delete(BASE_URL + credentialsSaved.getUsername())
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON))

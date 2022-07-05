@@ -36,12 +36,12 @@ class BootstrapData implements ApplicationListener<ContextRefreshedEvent> {
         credentialsService.createUser(new UserForm()
                 .withUsername("admin")
                 .withPassword("admin")
-                .withRole(Role.ADMIN)
+                .withRole(Role.ADMIN.role.toUpperCase())
         );
         credentialsService.createUser(new UserForm()
                 .withUsername("user")
                 .withPassword("user")
-                .withRole(Role.USER));
+                .withRole(Role.USER.role.toUpperCase()));
     }
 }
 

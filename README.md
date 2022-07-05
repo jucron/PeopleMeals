@@ -4,32 +4,35 @@
 
 [![CircleCI](https://dl.circleci.com/status-badge/img/gh/jucron/PeopleMeals/tree/master.svg?style=svg&circle-token=54174309f349bce553da6585d36efe2725d7905d)](https://dl.circleci.com/status-badge/redirect/gh/jucron/PeopleMeals/tree/master)
 
-## Setup by Docker
+## Setup via Docker and JDK
 
-Requirement: Only Docker installed.
-Pre-setup: Make sure the file [application.properties](src/main/resources/application.properties) have only active the
+Requirement: Have Docker installed and make sure the
+file [application.properties](src/main/resources/application.properties) have only active the
 profile #2 dev.
 
+[//]: # (> First create an image of PeopleMeals application. From files directory, type:)
+
+[//]: # (docker build -t peoplemeals .)
+
 ```docker
->First make sure application.properties
-
-> First create an image of PeopleMeals application. From files directory, type:
-docker build -t peoplemeals .
-
-> Then start all containers in detach mode with the command below:
+> Start all containers in detach mode execute the command below:
 docker-compose up -d
+
+> Start application with JDK - version 11 or above 
 ```
 
-**Note:** There will be included:
+**Note:** There will be exposed the following in localhost:
 
-* `MySQL container (3306:3306)`
-* `PhPMyAdmin container (8088:80)`
+* `MySQL container: 3306`
+* `PhPMyAdmin container: 80`
+* `PeopleMeals application: 8080`
 
 ## Usage
 
 ```html
 > With a browser, access: 
 http://localhost:8088/
+(or your local url)
 ```
 
 **Note:** It will be shared a dump of the database on mysql folder, on that dump you can create a dump of the database
@@ -37,7 +40,7 @@ if you want to, and it will be loaded when the DB is loaded.
 
 ## Database schema plan
 
-Following relationships were implemented:
+The Database schema plan, which explicits the Entities relationships, is the following:
 
 [//]: # (<img src="database_schema.png" width=75% height=75%>)
 ![img_4.png](img_4.png)

@@ -26,10 +26,10 @@ public class Auditor {
 
 
     @CreatedDate
-    @Column(name = "creator_date")
+    @Column(name = "creator_date", updatable = false)
     private LocalDateTime createdDate;
 
-    @Column(name = "last_modifier_username", updatable = false)
+    @Column(name = "last_modifier_username")
     @LastModifiedBy
     private String lastModifierUsername;
 

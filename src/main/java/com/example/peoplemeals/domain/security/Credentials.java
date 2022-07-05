@@ -33,8 +33,8 @@ public class Credentials {
     private LocalDateTime deactivationDate; //If null, User still active
 
     @NotNull
-    @Enumerated(EnumType.STRING)
-    private Role role;
+//    @Enumerated(EnumType.STRING)
+    private String role;
 
     @OneToOne
     @JoinColumn(name = "person_id")

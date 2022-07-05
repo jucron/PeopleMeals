@@ -67,7 +67,7 @@ class RepositoryIntegrationTest {
         planningToBeTested = planningRepository.save(planning);
         //Populate Credentials repo:
         credentialsRepository.save(
-                new Credentials().withUsername("username").withPassword("password").withRole(Role.USER));
+                new Credentials().withUsername("username").withPassword("password").withRole(Role.USER.role));
     }
 
     @Nested
@@ -418,7 +418,7 @@ class RepositoryIntegrationTest {
             @Test
             void blankOrNull() {
                 Credentials credentialsCorrect = new Credentials()
-                        .withUsername("username").withPassword("pass").withRole(Role.USER);
+                        .withUsername("username").withPassword("pass").withRole(Role.USER.role);
                 Credentials credentialsWithNullUsername = credentialsCorrect.withUsername(null);
                 Credentials credentialsWithNullPassword = credentialsCorrect.withPassword(null);
                 Credentials credentialsWithBlankUsername = credentialsCorrect.withUsername("");

@@ -28,6 +28,21 @@ class CredentialsValidationImplTest {
 
     @org.junit.jupiter.api.Nested
     class validateNoSameUsernameInDatabase {
+        @Test
+        void isValid() {
+            //when
+            assertEquals(Role.USER, credentialsValidation.validateRoleFormat("USER"));
+            assertEquals(Role.ADMIN, credentialsValidation.validateRoleFormat("ADMIN"));
+        }
+
+        @Test
+        void isNotValid() {
+            assertThrows(ValidationFailedException.class, () -> credentialsValidation.validateRoleFormat("something"));
+        }
+    }
+
+    @org.junit.jupiter.api.Nested
+    class validateRoleFormat {
         String username = "username";
 
         @Test
@@ -50,14 +65,14 @@ class CredentialsValidationImplTest {
 
     @org.junit.jupiter.api.Nested
     class validateCredentialsActive {
-        Credentials credentials = new Credentials().withRole(Role.USER);
+        Credentials credentials = new Credentials().withRole(Role.USER.role);
 
         @Test
         void isValid() {
             //given
             credentials.setDeactivationDate(null);
             //when
-            assertEquals(credentials.getRole().role,
+            assertEquals(credentials.getRole(),
                     credentialsValidation.validateCredentialsActive(credentials));
         }
 

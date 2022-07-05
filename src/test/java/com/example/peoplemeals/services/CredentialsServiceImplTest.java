@@ -60,7 +60,7 @@ class CredentialsServiceImplTest {
     class SuccessfulServices {
         String username = "username_example";
         UserForm form = new UserForm()
-                .withUsername(username).withPassword("pass").withRole(USER);
+                .withUsername(username).withPassword("pass").withRole(USER.role.toUpperCase());
         String passEncoded = "pass_encoded";
 
         @Test
@@ -147,6 +147,7 @@ class CredentialsServiceImplTest {
             @AfterEach
             void commonChecks() {
                 verify(credentialsValidation).validateNoSameUsernameInDatabase(form.getUsername());
+                verify(credentialsValidation).validateRoleFormat(form.getRole());
                 verify(passwordEncoder).encode(form.getPassword());
             }
         }
