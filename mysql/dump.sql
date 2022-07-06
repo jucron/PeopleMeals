@@ -1,33 +1,33 @@
 CREATE TABLE `person` (
   `id` bigint PRIMARY KEY AUTO_INCREMENT,
   `uuid` binary(16) UNIQUE,
-  `fullname` varchar(255) NOT NULL,
-  `telephone` varchar(255),
-  `mobile` varchar(255),
-  `fiscal` varchar(255)
+  `fullname` varchar(100) NOT NULL,
+  `telephone` varchar(100),
+  `mobile` varchar(100),
+  `fiscal` varchar(100)
 );
 
 CREATE TABLE `restaurant` (
   `id` bigint PRIMARY KEY AUTO_INCREMENT,
   `uuid` binary(16) UNIQUE,
-  `name` varchar(255) NOT NULL,
-  `opening_time` varchar(255),
-  `closing_time` varchar(255),
-  `staff_rest_day` varchar(255),
+  `name` varchar(100) NOT NULL,
+  `opening_time` varchar(100),
+  `closing_time` varchar(100),
+  `staff_rest_day` varchar(100),
   `max_meals` bigint
 );
 
 CREATE TABLE `dish` (
   `id` bigint PRIMARY KEY AUTO_INCREMENT,
   `uuid` binary(16) UNIQUE,
-  `name` varchar(255) NOT NULL,
-  `recipe_url` varchar(255)
+  `name` varchar(100) NOT NULL,
+  `recipe_url` varchar(100)
 );
 
 CREATE TABLE `planning` (
   `id` bigint PRIMARY KEY AUTO_INCREMENT,
   `uuid` binary(16) UNIQUE,
-  `day_of_week` varchar(255) NOT NULL,
+  `day_of_week` varchar(10) NOT NULL,
   `dish_id` bigint,
   `person_id` bigint,
   `restaurant_id` bigint
@@ -41,10 +41,10 @@ CREATE TABLE `rt_restaurant_dish` (
 
 CREATE TABLE `credentials` (
   `id` bigint PRIMARY KEY AUTO_INCREMENT,
-  `username` varchar(255) NOT NULL,
-  `password` varchar(255) NOT NULL,
-  `deactivation_date` varchar(255),
-  `role` varchar(255) NOT NULL,
+  `username` varchar(100) NOT NULL,
+  `password` varchar(100) NOT NULL,
+  `deactivation_date` varchar(100),
+  `role` varchar(20) NOT NULL,
   `person_id` bigint
 );
 
@@ -64,13 +64,13 @@ INSERT INTO credentials (username, password, deactivation_date, role) VALUES ("a
 INSERT INTO credentials (username, password, deactivation_date, role) VALUES ("user", "$2a$10$BsRE7UwKEictb2KjdqJrL.1X/K8mbKVrKyutbrI45WpAvJafuo1si", null, "user");
 
 ALTER TABLE `person`
-ADD `creator_username` varchar(255),
-ADD `creator_date` varchar(255),
-ADD `last_modifier_username` varchar(255),
-ADD `last_modifier_date` varchar(255);
+ADD `creator_username` varchar(100),
+ADD `creator_date` varchar(100),
+ADD `last_modifier_username` varchar(100),
+ADD `last_modifier_date` varchar(100);
 
-alter table `restaurant`
-ADD `creator_username` varchar(255),
-ADD `creator_date` varchar(255),
-ADD `last_modifier_username` varchar(255),
-ADD `last_modifier_date` varchar(255);
+ALTER TABLE `restaurant`
+ADD `creator_username` varchar(100),
+ADD `creator_date` varchar(100),
+ADD `last_modifier_username` varchar(100),
+ADD `last_modifier_date` varchar(100);

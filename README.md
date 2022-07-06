@@ -43,7 +43,7 @@ if you want to, and it will be loaded when the DB is loaded.
 The Database schema plan, which explicits the Entities relationships, is the following:
 
 [//]: # (<img src="database_schema.png" width=75% height=75%>)
-![img_4.png](img_4.png)
+![img_1.png](img_1.png)
 
 ## Architecture
 
