@@ -7,6 +7,7 @@ import com.example.peoplemeals.api.v1.model.PersonDTO;
 import com.example.peoplemeals.api.v1.model.PlanningDTO;
 import com.example.peoplemeals.api.v1.model.forms.AssociateForm;
 import com.example.peoplemeals.api.v1.model.lists.EntityDTOList;
+import com.example.peoplemeals.domain.Person;
 import com.example.peoplemeals.domain.Planning;
 import com.example.peoplemeals.repositories.DishRepository;
 import com.example.peoplemeals.repositories.PersonRepository;
@@ -14,6 +15,7 @@ import com.example.peoplemeals.repositories.PlanningRepository;
 import com.example.peoplemeals.repositories.RestaurantRepository;
 import com.example.peoplemeals.services.validations.PlanningValidation;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
@@ -23,6 +25,7 @@ import java.util.stream.Collectors;
 
 import static com.example.peoplemeals.services.validations.DayOfWeekValidation.validateDayOfWeek;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PlanningServiceImpl implements PlanningService {
@@ -110,9 +113,10 @@ public class PlanningServiceImpl implements PlanningService {
     public EntityDTOList<PersonDTO> getPersonListWithNoDishByDay(String dayOfWeek) {
         DayOfWeek dayOfWeekCorrectFormat = validateDayOfWeek(dayOfWeek);
         List<Long> personsIDsInThisDayOfWeek = planningRepository.findPersonIDsByDayOfWeek(dayOfWeekCorrectFormat);
+        List<Person> personsNotInThisDayOfWeek = (personsIDsInThisDayOfWeek.size() == 0) ?
+                personRepository.findAll() : personRepository.findAllNotInList(personsIDsInThisDayOfWeek);
         return new EntityDTOList<PersonDTO>()
-                .withEntityDTOList(personRepository
-                        .findAllNotInList(personsIDsInThisDayOfWeek)
+                .withEntityDTOList(personsNotInThisDayOfWeek
                         .stream()
                         .map(personMapper::personToPersonDTO)
                         .collect(Collectors.toList()));

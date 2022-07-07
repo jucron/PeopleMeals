@@ -20,6 +20,7 @@ import testUtils.PojoExampleCreation;
 import javax.validation.ConstraintViolationException;
 import java.time.DayOfWeek;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -153,11 +154,19 @@ class RepositoryIntegrationTest {
             //given
             long personId = personToBeTested.getId();
             //when
-            //want to get list without the personToBeTested
-            List<Person> personListFetched = personRepository.findAllNotInList(List.of(personId));
+            List<Person> listWithoutOnePerson = personRepository.findAllNotInList(List.of(personId));
+            List<Person> listWithAllPersons = personRepository.findAllNotInList(Collections.emptyList());
+
+            List<Person> listWithoutPersons = personRepository.findAllNotInList(listWithAllPersons
+                    .stream()
+                    .map(Person::getId)
+                    .collect(Collectors.toList()));
+
             //then
-            assertEquals(1,personListFetched.size()); //total size of repo - list with one = (2-1) = 1.
-            assertNotEquals(personId,personListFetched.get(0).getId()); //list fetched should not have person in list as parameter
+            assertEquals(1, listWithoutOnePerson.size()); //total size of repo - list with one = (2-1) = 1.
+            assertNotEquals(personId, listWithoutOnePerson.get(0).getId()); //list fetched should not have person in list as parameter
+            assertEquals(2, listWithAllPersons.size()); //total size of repo - list with no_one = (2-0) = 2.
+            assertEquals(0, listWithoutPersons.size()); //total size of repo - list with everyone = (2-2) = 0.
         }
     }
 
@@ -292,15 +301,14 @@ class RepositoryIntegrationTest {
             @Test
             void match() {
                 //then
-                assertEquals(1,
-                        planningRepository.findPersonIDsByDayOfWeek(dayOfWeek).size());
+                assertEquals(1, planningRepository.findPersonIDsByDayOfWeek(dayOfWeek).size());
             }
 
             @Test
             void notAMatch() {
                 //then
                 assertEquals(0,
-                        planningRepository.findPersonIDsByDayOfWeek(DayOfWeek.SUNDAY).size());
+                        planningRepository.findPersonIDsByDayOfWeek(DayOfWeek.TUESDAY).size());
             }
         }
     }

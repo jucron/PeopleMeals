@@ -11,4 +11,7 @@ public interface PersonRepository extends PeopleMealRepository<Person, Long> {
 
     @Query("SELECT p FROM Person p WHERE p.id NOT IN :listOfPersons")
     List<Person> findAllNotInList(List<Long> listOfPersons);
+
+
+    //todo: found a bug when using native language (had to bypass in Service layer)
 }
