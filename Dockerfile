@@ -1,12 +1,12 @@
-FROM maven as BUILDER
+FROM openjdk:11-jdk as BUILDER
 WORKDIR /build
+COPY mvnw /build/
 COPY pom.xml /build/
-COPY src /build/src
-COPY mysql /build/mysql
 COPY .mvn /build/.mvn
-RUN mvn install -DskipTests
+COPY src /build/src
+RUN ./mvnw package -DskipTests
 
-FROM openjdk:11
+FROM openjdk:11-jre-slim
 ARG VERSION=0.0.1-SNAPSHOT
 ARG APP_NAME=PeopleMeals
 #ADD src/main/resources/application-dev.yml /app/application.yml

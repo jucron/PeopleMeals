@@ -3,7 +3,9 @@ package com.example.peoplemeals.services;
 
 import com.example.peoplemeals.api.v1.mapper.PersonMapper;
 import com.example.peoplemeals.api.v1.mapper.PlanningMapper;
+import com.example.peoplemeals.api.v1.model.PersonDTO;
 import com.example.peoplemeals.api.v1.model.forms.AssociateForm;
+import com.example.peoplemeals.api.v1.model.lists.EntityDTOList;
 import com.example.peoplemeals.domain.Dish;
 import com.example.peoplemeals.domain.Person;
 import com.example.peoplemeals.domain.Planning;
@@ -189,6 +191,14 @@ class PlanningServiceImplTest {
             String restaurantUuid = "restaurant_uuid";
             DayOfWeek dayOfWeekFormat = DayOfWeek.MONDAY;
             String dayOfWeek = dayOfWeekFormat.toString();
+            EntityDTOList<PersonDTO> personDTOListFetched;
+            int personDTOListFetchedSize = 1;
+            int timesInvokedPersonToPersonDTO = 1;
+
+            @BeforeEach
+            void commonStubs() {
+                when(personMapper.personToPersonDTO(any(Person.class))).thenReturn(new PersonDTO());
+            }
 
             @Test
             void getPersonListByRestaurantAndDay() {
@@ -197,7 +207,7 @@ class PlanningServiceImplTest {
                 when(planningRepository.findPersonsByRestaurantAndDayOfWeek(restaurantId, dayOfWeekFormat))
                         .thenReturn(new ArrayList<>(List.of(new Person())));
                 //when
-                planningService.getPersonListByRestaurantAndDay(restaurantUuid, dayOfWeek);
+                personDTOListFetched = planningService.getPersonListByRestaurantAndDay(restaurantUuid, dayOfWeek);
                 //then
                 verify(restaurantRepository).findIdRequiredByUuid(restaurantUuid);
                 verify(planningRepository).findPersonsByRestaurantAndDayOfWeek(restaurantId, dayOfWeekFormat);
@@ -210,14 +220,14 @@ class PlanningServiceImplTest {
                 when(planningRepository.findPersonsByDishAndDayOfWeek(dishId, dayOfWeekFormat))
                         .thenReturn(new ArrayList<>(List.of(new Person())));
                 //when
-                planningService.getPersonListByDishAndDay(dishUuid, dayOfWeek);
+                personDTOListFetched = planningService.getPersonListByDishAndDay(dishUuid, dayOfWeek);
                 //then
                 verify(dishRepository).findIdRequiredByUuid(dishUuid);
                 verify(planningRepository).findPersonsByDishAndDayOfWeek(dishId, dayOfWeekFormat);
             }
 
             @Test
-            void getPersonListWithNoDishByDay() {
+            void getPersonListWithNoDishByDay_onePersonReturned() {
                 //given
                 List<Long> personsIDs = new ArrayList<>(List.of(personId));
                 when(planningRepository.findPersonIDsByDayOfWeek(dayOfWeekFormat))
@@ -225,15 +235,34 @@ class PlanningServiceImplTest {
                 when(personRepository.findAllNotInList(personsIDs))
                         .thenReturn(new ArrayList<>(List.of(new Person())));
                 //when
-                planningService.getPersonListWithNoDishByDay(dayOfWeek);
+                personDTOListFetched = planningService.getPersonListWithNoDishByDay(dayOfWeek);
                 //then
                 verify(planningRepository).findPersonIDsByDayOfWeek(dayOfWeekFormat);
                 verify(personRepository).findAllNotInList(personsIDs);
             }
 
+            @Test
+            void getPersonListWithNoDishByDay_zeroPersonsReturned() {
+                //given
+                List<Long> emptyPersonsIDs = new ArrayList<>(List.of());
+                when(planningRepository.findPersonIDsByDayOfWeek(dayOfWeekFormat))
+                        .thenReturn(emptyPersonsIDs);
+                when(personRepository.findAll())
+                        .thenReturn(new ArrayList<>(List.of(new Person(), new Person())));
+                //when
+                personDTOListFetched = planningService.getPersonListWithNoDishByDay(dayOfWeek);
+                //then
+                verify(planningRepository).findPersonIDsByDayOfWeek(dayOfWeekFormat);
+                verify(personRepository, times(0)).findAllNotInList(emptyPersonsIDs);
+                verify(personRepository).findAll();
+                personDTOListFetchedSize = 2;
+                timesInvokedPersonToPersonDTO = 2;
+            }
+
             @AfterEach
             void commonChecks() {
-                verify(personMapper).personToPersonDTO(any(Person.class));
+                assertEquals(personDTOListFetchedSize, personDTOListFetched.getEntityDTOList().size());
+                verify(personMapper, times(timesInvokedPersonToPersonDTO)).personToPersonDTO(any(Person.class));
             }
 
         }

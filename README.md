@@ -4,34 +4,30 @@
 
 [![CircleCI](https://dl.circleci.com/status-badge/img/gh/jucron/PeopleMeals/tree/master.svg?style=svg&circle-token=54174309f349bce553da6585d36efe2725d7905d)](https://dl.circleci.com/status-badge/redirect/gh/jucron/PeopleMeals/tree/master)
 
-## Setup via Docker and JDK
+## Setup via Docker
 
 Requirement: Have Docker installed and make sure the
 file [application.properties](src/main/resources/application.properties) have only active the
 profile #2 dev.
 
-[//]: # (> First create an image of PeopleMeals application. From files directory, type:)
-
-[//]: # (docker build -t peoplemeals .)
-
 ```docker
-> Start all containers in detach mode execute the command below:
-docker-compose up -d
+> First you need to create an image of PeopleMeals application. From files directory, type:
+$ docker build -t peoplemeals .
 
-> Start application with JDK - version 11 or above 
+> Start all containers in detach mode by executing the following command:
+$ docker-compose up -d
+
 ```
 
 **Note:** There will be exposed the following in localhost:
 
 * `MySQL container: 3306`
-* `PhPMyAdmin container: 80`
 * `PeopleMeals application: 8080`
 
 ## Usage
 
 ```html
-> With a browser, access: 
-http://localhost:8088/
+> With a browser, access: http://localhost:8088/
 (or your local url)
 ```
 

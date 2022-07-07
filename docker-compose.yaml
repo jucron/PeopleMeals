@@ -3,7 +3,8 @@ version: '3.7'
 services:
 
   db:
-    image: mysql
+    image: mysql:5.7
+    container_name: peoplemeals_db
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: JG4yKk@JAqZp
@@ -15,21 +16,18 @@ services:
     volumes:
       - "./mysql/dump.sql:/docker-entrypoint-initdb.d/dump.sql"
 
-# todo: cannot containerize Application - Bug of DB connection failing
-#  peopleMealsApp:
-#    image: peoplemeals
-#    depends_on:
-#      - db
-#    links:
-#      - db
-#    restart: on-failure
-#    environment:
-##      - SPRING_PROFILES_ACTIVE=dev
-#      - SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3306/peoplemeals?autoReconnect=true&useSSL=false
-#      - SPRING_DATASOURCE_USERNAME=user
-#      - SPRING_DATASOURCE_PASSWORD=JG4yKk@JAqZp
-#      - SPRING_DATASOURCE_DRIVER-CLASS-NAME=com.mysql.cj.jdbc.Driver
-#      - SPRING_DATASOURCE_GENERATE-DLL=true
-#      - SPRING_DATASOURCE_DATABASE-PLATFORM=org.hibernate.dialect.MySQL5InnoDBDialect
-#    ports:
-#      - 8080:8080
+  peopleMealsApp:
+    image: peoplemeals
+    container_name: peoplemeals_app
+    depends_on:
+      - db
+    restart: on-failure
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/peoplemeals
+      - SPRING_DATASOURCE_USERNAME=user
+      - SPRING_DATASOURCE_PASSWORD=JG4yKk@JAqZp
+      - SPRING_DATASOURCE_DRIVER-CLASS-NAME=com.mysql.cj.jdbc.Driver
+      - SPRING_DATASOURCE_GENERATE-DLL=true
+      - SPRING_DATASOURCE_DATABASE-PLATFORM=org.hibernate.dialect.MySQL5InnoDBDialect
+    ports:
+      - 8080:8080
